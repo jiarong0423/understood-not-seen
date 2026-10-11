@@ -30,3 +30,10 @@ test("service worker: every precached file exists; /api is never cached; page li
   for (const s of ['rel="manifest"', 'rel="apple-touch-icon"', 'name="theme-color"']) assert.ok(html.includes(s), s);
   assert.match(readFileSync(web("js/app.js"), "utf8"), /serviceWorker\.register\("sw\.js"\)/);
 });
+
+test("release id is the same in the page, the code and the service worker", () => {
+  const html = readFileSync(web("index.html"), "utf8"), app = readFileSync(web("js/app.js"), "utf8"), sw = readFileSync(web("sw.js"), "utf8");
+  const a = html.match(/<meta name="build" content="([^"]+)">/)[1], b = app.match(/const BUILD = "([^"]+)"/)[1], c = sw.match(/const VERSION = "uns-([^"]+)"/)[1];
+  assert.equal(a, b); assert.equal(b, c);
+  assert.match(sw, /cache: "no-store"/);
+});

@@ -137,7 +137,8 @@ const server = http.createServer(async (req, res) => {
     if (!file.startsWith(ROOT)) return send(403, "forbidden", "text/plain");
     const data = await readFile(file);
     const type = MIME[extname(file)] || "application/octet-stream";
-    res.writeHead(200, { "content-type": type.startsWith("image/png") ? type : type + "; charset=utf-8" }); res.end(data);
+    const fresh = /^(text\/|application\/(json|javascript|manifest))/.test(type); // page, code, data: always ask the server again
+    res.writeHead(200, { "content-type": type.startsWith("image/png") ? type : type + "; charset=utf-8", "cache-control": fresh ? "no-cache" : "public, max-age=86400" }); res.end(data);
   } catch (e) { send(e.code === "ENOENT" ? 404 : 500, { error: "error" }); }
 });
 server.listen(PORT, HOST, () => console.log(`serving web/ on http://${HOST}:${PORT}  (qloo configured: ${!!KEY})`));

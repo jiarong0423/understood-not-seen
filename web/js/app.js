@@ -401,7 +401,17 @@ function start(html) {
   pushStep(3);
 }
 
+const BUILD = "2026-10-11.2"; // must match <meta name="build"> in index.html and VERSION in sw.js
+function sameBuild() {
+  const page = document.querySelector('meta[name="build"]')?.content;
+  if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
+  let tried = false; try { tried = sessionStorage.getItem("uns-reloaded") === BUILD; sessionStorage.setItem("uns-reloaded", BUILD); } catch (e) { /* blocked */ }
+  if (!tried) location.reload(); // an old page with new code (or the reverse): fetch both again, once
+  return tried;
+}
+
 async function init() {
+  if (!sameBuild()) return;
   history.replaceState({ step: 1 }, "", location.pathname + location.search);
   addEventListener("popstate", onBack);
   document.addEventListener("click", (e) => { const a = e.target.closest("a.pl-map"); if (a && !e.metaKey && !e.ctrlKey) { e.preventDefault(); openMap(a); } });

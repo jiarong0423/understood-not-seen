@@ -40,6 +40,8 @@ test("app files are served with the right types (manifest, icons, service worker
   assert.equal(await head("/icons/icon-192.png"), "image/png");
   assert.match(await head("/icons/icon.svg"), /image\/svg\+xml/);
   assert.match(await head("/sw.js"), /text\/javascript/);
+  for (const p of ["/", "/js/app.js", "/sw.js", "/kb/i18n.json"]) assert.equal((await fetch(`http://127.0.0.1:${PORT}${p}`)).headers.get("cache-control"), "no-cache", p);
+  assert.match((await fetch(`http://127.0.0.1:${PORT}/icons/icon-192.png`)).headers.get("cache-control"), /max-age/);
 });
 test("path traversal and hidden files are not served", async () => {
   for (const p of ["/..%2f.env", "/%2e%2e/.env", "/..%2fserver%2fserver.mjs", "/..%5c.env"]) {
