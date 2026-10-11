@@ -44,4 +44,5 @@ rules = {"ADULT": fb.ADULT_PATTERNS, "PERSONAL": fb.PERSONAL_PATTERNS, "SENS_Q":
     + "".join(f"export const {k} = {json.dumps(v, ensure_ascii=False)};\n" for k, v in rules.items()))
 print("exported rules:", {k: len(v) for k, v in rules.items()}, "| activities:", len(kb))
 (ROOT / "web" / "kb" / "expansion.json").write_text((ROOT / "kb" / "expansion.json").read_text(encoding="utf-8"))
+(ROOT / "web" / "kb" / "place_names.json").write_text((ROOT / "kb" / "place_names.json").read_text(encoding="utf-8"))
 (ROOT / "web" / "kb" / "calendar.json").write_text((ROOT / "kb" / "calendar.json").read_text(encoding="utf-8"))

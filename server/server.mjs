@@ -76,6 +76,9 @@ async function qloo(tag, city, taste = [], quality = false, trace = null) {
   const nameById = Object.fromEntries(taste.map((t) => [t.id, t.name]));
   const v = (j.results?.entities || []).slice(0, 5).map((e) => ({
     name: e.name, address: e.properties?.address || "",
+    about: String(e.properties?.short_description || "").slice(0, 140),
+    area: String(e.properties?.address || "").replace(/[一-鿿].*$/, "").replace(/[,\s]+$/, "").slice(0, 90), // the English part of the address
+    place_id: /^[A-Za-z0-9_-]{10,200}$/.test(e.external?.google_place?.[0]?.place_id || "") ? e.external.google_place[0].place_id : "",
     because: (e.query?.explainability?.["signal.interests.entities"] || []).map((x) => nameById[x.entity_id]).filter(Boolean),
   }));
   cache.set(k, { t: Date.now(), v });

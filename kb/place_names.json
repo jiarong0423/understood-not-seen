@@ -1,0 +1,157 @@
+{
+ "note": "Qloo stores one name per place. These entries are written by the developer: zh = official Chinese names of well-known places; en with translated=true = pinyin and translated type words, not official names. Names missing here are shown as Qloo stores them (see tools/unmapped_names.py). Check before relying on any entry.",
+ "names": {
+  "Ay-Chung Flour-Rice Noodle": {
+   "zh": "阿宗麵線"
+  },
+  "Caesar Park Taipei": {
+   "zh": "台北凱撒大飯店"
+  },
+  "Fuhong Beef Noodles": {
+   "zh": "富宏牛肉麵"
+  },
+  "Kuo Hua Golf & Country Club": {
+   "zh": "國華高爾夫鄉村俱樂部"
+  },
+  "Lin Dong Fang Beef Noodles": {
+   "zh": "林東芳牛肉麵"
+  },
+  "Liu Shan Dong": {
+   "zh": "劉山東牛肉麵"
+  },
+  "Mandarin Oriental, Taipei": {
+   "zh": "台北文華東方酒店"
+  },
+  "Miniatures Museum of Taiwan": {
+   "zh": "台灣袖珍博物館"
+  },
+  "Minsheng Park": {
+   "zh": "民生公園"
+  },
+  "Museum of National Taipei University of Education": {
+   "zh": "國立臺北教育大學北師美術館"
+  },
+  "Nanjichang Night Market": {
+   "zh": "南機場夜市"
+  },
+  "National Concert Hall": {
+   "zh": "國家音樂廳"
+  },
+  "National Palace Museum": {
+   "zh": "國立故宮博物院"
+  },
+  "Regent Taipei": {
+   "zh": "台北晶華酒店"
+  },
+  "Sanhe Night Market": {
+   "zh": "三和夜市"
+  },
+  "Songshan Raohe Night Market": {
+   "zh": "松山饒河街觀光夜市"
+  },
+  "Taipei City Jhong Jheng Sports Center": {
+   "zh": "臺北市中正運動中心"
+  },
+  "Taipei Da-An Sports Center": {
+   "zh": "臺北市大安運動中心"
+  },
+  "Taipei Fine Arts Museum": {
+   "zh": "臺北市立美術館"
+  },
+  "Taipei Music Center": {
+   "zh": "臺北流行音樂中心"
+  },
+  "Taipei Nangang Sports Center": {
+   "zh": "臺北市南港運動中心"
+  },
+  "Taipei National University of the Arts": {
+   "zh": "國立臺北藝術大學"
+  },
+  "Taipei Ningxia Night Market": {
+   "zh": "寧夏夜市"
+  },
+  "Taipei Tennis Center": {
+   "zh": "臺北市網球中心"
+  },
+  "Taipei Wenshan Sports Center": {
+   "zh": "臺北市文山運動中心"
+  },
+  "Taipei Xinyi Sports Center": {
+   "zh": "臺北市信義運動中心"
+  },
+  "Taipei Zhongshan Hall": {
+   "zh": "臺北市中山堂"
+  },
+  "The Grand Hotel": {
+   "zh": "圓山大飯店"
+  },
+  "The Howard Plaza Hotel Taipei": {
+   "zh": "台北福華大飯店"
+  },
+  "W Taipei": {
+   "zh": "台北W飯店"
+  },
+  "Yangmingshan Tien-Lai Resort & Spa": {
+   "zh": "陽明山天籟渡假酒店"
+  },
+  "Yungho Le Hua Night Market": {
+   "zh": "永和樂華夜市"
+  },
+  "不老松足湯新生行館": {
+   "en": "Bulaosong Foot Spa, Xinsheng Branch",
+   "translated": true
+  },
+  "六本木養生館": {
+   "en": "Roppongi Wellness House",
+   "translated": true
+  },
+  "凪NAGI 西門店": {
+   "en": "Nagi, Ximen Branch",
+   "translated": true
+  },
+  "唐居整復（信義一館）": {
+   "en": "Tangju Chiropractic, Xinyi Branch 1",
+   "translated": true
+  },
+  "喬大高爾夫學苑": {
+   "en": "Qiaoda Golf Academy",
+   "translated": true
+  },
+  "恆仁堂足體養生館massage【新北 專業按摩推薦】經絡按摩|腳底 肩頸按摩|指壓|油壓|精油|刮痧|拔罐|排毒|三重 蘆洲 推拿 推薦": {
+   "en": "Hengrentang Foot and Body Wellness, Massage",
+   "translated": true
+  },
+  "揮皇高爾夫球場": {
+   "en": "Huihuang Golf Course",
+   "translated": true
+  },
+  "文水藝文中心": {
+   "en": "Wenshui Arts Center",
+   "translated": true
+  },
+  "星聚點KTV台北旗艦館+星聚點AI撞球館+星聚點保齡球館": {
+   "en": "Xingjudian KTV Taipei Flagship, AI Billiards and Bowling",
+   "translated": true
+  },
+  "濃氣屋 拉麵 忠孝店": {
+   "en": "Nongqiwu Ramen, Zhongxiao Branch",
+   "translated": true
+  },
+  "獅傅按摩恢復中心 小巨蛋店": {
+   "en": "Shifu Massage Recovery Center, Taipei Arena Branch",
+   "translated": true
+  },
+  "石牌高爾夫練習場": {
+   "en": "Shipai Golf Driving Range",
+   "translated": true
+  },
+  "高手庭園保齡球館": {
+   "en": "Gaoshou Garden Bowling Alley",
+   "translated": true
+  },
+  "麵屋壹の穴 ICHI": {
+   "en": "Menya Ichi no Ana ICHI",
+   "translated": true
+  }
+ }
+}

@@ -783,6 +783,10 @@
   "waiting_chip": {
    "en": "oldest saved {months} months ago",
    "zh": "最早收藏於 {months} 個月前"
+  },
+  "open_map": {
+   "en": "Map",
+   "zh": "地圖"
   }
  },
  "invite": {

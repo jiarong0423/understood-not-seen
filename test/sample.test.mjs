@@ -17,29 +17,45 @@ const EXPECT = {
   "Concert calendar this autumn": "kw:Concert hall", "Symphony orchestra season programme": "ai", "Pilates for desk workers": "kw:Pilates studio",
   "Sports massage vs deep tissue massage": "kw:Massage", "Day spa near the city centre": "kw:Spa",
   "Fed rate decision: what it means for markets": "none", "Python asyncio tutorial": "none", "Weekly stock market newsletter": "none", "How transformers work": "none",
-  "羽球雙打戰術教學": "kw:Badminton court", "皮拉提斯入門課程": "kw:Pilates studio", "台北無菜單日料推薦": "kw:Fine dining restaurant",
-  "十月音樂會節目表": "kw:Concert hall", "台北火鍋推薦": "kw:Hot pot restaurant", "牛肉麵地圖": "kw:Noodle shop", "士林夜市攻略": "kw:Night market",
-  "Online banking login": "removed:personal_or_account", "Current rates": "removed:personal_or_account", "My health records portal": "removed:personal_or_account",
+      "Online banking login": "removed:personal_or_account", "Current rates": "removed:personal_or_account", "My health records portal": "removed:personal_or_account",
   "Router admin": "removed:private_host", "Settings": "removed:non_web_scheme", "Shared doc": "removed:sensitive_query",
   "Shuttlecock feather grades explained": "ai", "Birdie, bogey and the fairway: a first-timer's guide": "ai",
   "Strike, spare, split: reading lane oil patterns": "ai", "Reformer classes: what to expect on day one": "ai",
 };
-const html = readFileSync(new URL("../web/sample_bookmarks.html", import.meta.url), "utf8");
-const rows = [...html.matchAll(/<A (?:ADD_DATE="\d+" )?HREF="([^"]+)">([^<]+)<\/A>/g)].map((m) => ({ url: m[1], title: m[2], folders: [] }));
+const parse = (f) => [...readFileSync(new URL("../web/" + f, import.meta.url), "utf8").matchAll(/<A (?:ADD_DATE="\d+" )?HREF="([^"]+)">([^<]+)<\/A>/g)].map((m) => ({ url: m[1], title: m[2], folders: [] }));
+const EXPECT_ZH = {
+  "羽球雙打戰術教學": "kw:Badminton court", "匹克球規則解說": "kw:Pickleball court", "保齡球聯賽提高分數的技巧": "kw:Bowling alley", "室內游泳技巧練習": "kw:Swimming pool",
+  "網球發球基本功": "kw:Tennis court", "給新手的高爾夫揮桿基礎": "kw:Golf course", "鼎泰豐信義店": "kw:Noodle shop", "台北葡萄酒推薦": "kw:Wine bar",
+  "無菜單料理用餐禮儀": "kw:Fine dining restaurant", "東京拉麵指南": "kw:Ramen restaurant", "京都三日行程": "none", "維也納美術館參觀指南": "kw:Art museum",
+  "北海道精品飯店": "kw:Hotel", "二世谷滑雪季指南": "kw:Ski resort", "電台司令 OK Computer 完整專輯": "none", "今年秋天的音樂會行事曆": "kw:Concert hall",
+  "交響樂團樂季節目": "ai", "上班族的皮拉提斯": "kw:Pilates studio", "運動按摩與深層按摩的差別": "kw:Massage", "市區水療館": "kw:Spa",
+  "聯準會利率決議對市場的意義": "none", "非同步程式設計教學": "none", "每週股市電子報": "none", "轉換器模型運作原理": "none",
+  "網路銀行登入": "removed:personal_or_account", "目前利率": "removed:personal_or_account", "我的病歷入口網站": "removed:personal_or_account",
+  "路由器管理": "removed:private_host", "設定": "removed:non_web_scheme", "分享的文件": "removed:sensitive_query",
+  "鵝毛球與鴨毛球的差別": "ai", "小鳥球、柏忌與球道：新手入門": "ai", "全倒、補中、單瓶：看懂球道油紋": "ai", "核心床課程：第一堂課會發生什麼": "ai",
+};
+const SAMPLES = [["sample_bookmarks.html", EXPECT], ["sample_bookmarks.zh.html", EXPECT_ZH]];
 const kb = JSON.parse(readFileSync(new URL("../web/kb/activities.json", import.meta.url))).filter((a) => a.tag_id && !a.fallback_only);
 
-test("the sample and the expectation table list exactly the same bookmarks", () => {
-  assert.deepEqual(rows.map((r) => r.title).sort(), Object.keys(EXPECT).sort());
-});
-test("every sample bookmark is classified as expected", () => {
-  const wrong = [];
-  for (const it of rows) {
-    const r = classify({ ...it });
-    const host = new URL(it.url.startsWith("chrome:") ? "https://x.invalid" : it.url).hostname.replace(/^www\./, "");
-    const got = r ? "removed:" + r : (() => { const h = rankActivities([{ ...it, host }], kb, []).map((x) => x.activity); return h.length ? "kw:" + h.join("+") : null; })();
-    const want = EXPECT[it.title];
-    const ok = want === "ai" || want === "none" ? got === null : got === want;
-    if (!ok) wrong.push(`${it.title}: got ${got}, wanted ${want}`);
-  }
-  assert.deepEqual(wrong, []);
+for (const [file, table] of SAMPLES) {
+  const rows = parse(file);
+  test(`${file}: the sample and the expectation table list exactly the same bookmarks`, () => {
+    assert.deepEqual(rows.map((r) => r.title).sort(), Object.keys(table).sort());
+  });
+  test(`${file}: every bookmark is classified as expected`, () => {
+    const wrong = [];
+    for (const it of rows) {
+      const r = classify({ ...it });
+      const host = new URL(it.url.startsWith("chrome:") ? "https://x.invalid" : it.url).hostname.replace(/^www\./, "");
+      const got = r ? "removed:" + r : (() => { const h = rankActivities([{ ...it, host }], kb, []).map((x) => x.activity); return h.length ? "kw:" + h.join("+") : null; })();
+      const want = table[it.title];
+      const ok = want === "ai" || want === "none" ? got === null : got === want;
+      if (!ok) wrong.push(`${it.title}: got ${got}, wanted ${want}`);
+    }
+    assert.deepEqual(wrong, []);
+  });
+}
+test("each sample is one language: English titles have no Chinese, Chinese titles have no English sentence", () => {
+  for (const it of parse("sample_bookmarks.html")) assert.ok(!/[一-鿿]/.test(it.title), it.title);
+  for (const it of parse("sample_bookmarks.zh.html")) assert.ok(!/[A-Za-z]{3,}\s+[A-Za-z]{3,}\s+[A-Za-z]{3,}/.test(it.title), it.title);
 });

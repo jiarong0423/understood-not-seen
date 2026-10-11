@@ -1,8 +1,8 @@
 {
   "locked_on": "2026-10-11",
-  "reason": "final minimal style: flat default theme, 14 switchable themes, Lucide line icons",
+  "reason": "owner asked for one language per page: place details style (English descriptor, map link) added to the stylesheet",
   "files": {
-    "index.html <style>": "c606d13311432e39ff259fde06645c9107abf77f0ffcc12827f92d3c91d94aff",
+    "index.html <style>": "eeda8e36c1e95010de8f4c8ec20a22af020b1ee65c4f805cb69f4b2e3ecdac26",
     "js/themes.js": "0a38bcf42e63dd75c7dfcaa3c61b416409a93dc7abdb35949a4da15348ec0cda",
     "js/icons.js": "0913fd4af99974338cea2e82e8506ab99a3a194ac178f93bf961a5a9f4e9d39c",
     "icons/apple-touch-icon.png": "29bbce52705df761048ab3bd3b22331cdf6fbd9026765d64daddb9b44142f951",

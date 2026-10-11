@@ -91,6 +91,9 @@ Reading about work or news is never turned into a leisure need.
 `npm run security` runs three tools: **gitleaks** (secrets in the files and the whole git history), **semgrep** (static analysis for JavaScript, Node and Python, plus a secrets rule pack) and **npm audit** (dependency vulnerabilities; the app has no npm dependencies). A **pre-push hook** (`git config core.hooksPath .githooks`) runs gitleaks and the full test suite before any push and refuses to push without gitleaks.
 The server tests also cover path traversal, input validation, a monthly budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
 
+## One language per page
+Qloo stores one name per place and has no language setting, so place names go through a small mapping layer: `kb/place_names.json` (hand-written; entries marked `translated` are pinyin or translated type words, not official names), a rule that splits mixed names ("Mars Fitness 瑪爾斯全方位運動空間" shows the Latin part on the English page and the Chinese part on the Chinese page) and a fallback to Qloo's English descriptor. Names with no entry stay as Qloo stores them; `tools/unmapped_names.py` lists them. The demo has an English sample and a Chinese sample, and the button loads the one that matches the page.
+
 ## The look is locked
 The stylesheet, the 14 themes, the icon set and the app icons are hashed in `design.lock.json`, and a test fails if any of them changes. A deliberate change is re-locked with `node tools/lock_design.mjs --approve "reason"`. Language strings are audited by `test/i18n.test.mjs` (every string in English and Traditional Chinese, no stray English in the Chinese page).
 

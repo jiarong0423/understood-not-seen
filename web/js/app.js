@@ -3,6 +3,7 @@ import { loadKb, rankActivities, unmatched } from "./combine.js";
 import { supported, loadEmbedder, buildIndex, matchItems } from "./embed.js";
 import { expand, loadExpansion } from "./expand.js";
 import { waiting } from "./waiting.js";
+import { loadPlaceNames, placeName, hasForm } from "./names.js";
 import { loadCalendar, upcoming, isoDay, weekSeed, rotate } from "./calendar.js";
 import { activityIcon, glyph } from "./icons.js";
 import { candidateNames, MAX_TASTE } from "./taste.js";
@@ -13,7 +14,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PALETTE = ["#d97706", "#e11d48", "#7c3aed", "#0891b2", "#64748b", "#a16207", "#be185d", "#4d7c0f"];
 let i18n = null, cities = [];
 let lang = (navigator.language || "en").toLowerCase().startsWith("zh") ? "zh" : "en";
-const state = { kept: [], counts: {}, total: 0, chosen: [], kb: [], ideas: [], results: null, step: 1, tasteOn: [], exp: null, suggestions: [], extraOn: [], cal: null };
+const state = { kept: [], counts: {}, total: 0, chosen: [], kb: [], ideas: [], results: null, step: 1, tasteOn: [], exp: null, suggestions: [], extraOn: [], cal: null, placeNames: {} };
 
 const ui = (k) => i18n.ui[k][lang];
 const kbName = (name) => { const a = state.kb.find((x) => x.tag_id === name); return a ? a.activity : name; };
@@ -246,7 +247,10 @@ function renderResults() {
       body = "<ul>" + mine.map((p) => {
         const others = where.get(p.name).slice(1).map((o) => act(groups[o].activity));
         const why = (p.because || []).length ? `<span class="why">${esc(ui("because"))} ${esc(p.because.join(sep()))}</span>` : "";
-        return `<li><span>${esc(p.name)}${why}${others.length ? `<span class="also">${esc(ui("also"))}: ${esc(others.join(sep()))}</span>` : ""}</span></li>`;
+        const shown = placeName(p.name, lang, state.placeNames);
+        const about = lang === "en" && !hasForm(p.name, "en", state.placeNames) && (p.about || p.area) ? `<span class="pl-about">${esc([p.about, p.area].filter(Boolean).join(" · "))}</span>` : "";
+        const map = p.place_id ? ` <a class="pl-map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id)}" target="_blank" rel="noopener noreferrer">${esc(ui("open_map"))}</a>` : "";
+        return `<li><span title="${esc(p.name)}">${esc(shown)}${map}${about}${why}${others.length ? `<span class="also">${esc(ui("also"))}: ${esc(others.join(sep()))}</span>` : ""}</span></li>`;
       }).join("") + "</ul>";
     } else if (dup.length) {
       const firsts = [...new Set(dup.map((p) => act(groups[where.get(p.name)[0]].activity)))];
@@ -323,6 +327,7 @@ async function init() {
   state.kb = await loadKb();
   state.exp = await loadExpansion();
   state.cal = await loadCalendar();
+  state.placeNames = await loadPlaceNames();
   cities = (await (await fetch("kb/cities.json")).json()).cities;
   applyTheme(savedTheme() === "default" ? "default" : savedTheme());
   bindMenuKeys();
@@ -333,7 +338,7 @@ async function init() {
     if (state.total) { renderStats(false); renderNeeds(); renderIdeas(); renderExpand(); renderTaste(); updatePayload(); renderResults(); }
   });
   $("file").addEventListener("change", async (e) => { const f = e.target.files[0]; if (f) start(await f.text()); });
-  $("sample").addEventListener("click", async () => start(await (await fetch("sample_bookmarks.html")).text()));
+  $("sample").addEventListener("click", async () => start(await (await fetch(lang === "zh" ? "sample_bookmarks.zh.html" : "sample_bookmarks.html")).text()));
   $("city").addEventListener("change", () => { renderExpand(); updatePayload(); });
   $("quality").addEventListener("change", updatePayload);
   $("go").addEventListener("click", go);

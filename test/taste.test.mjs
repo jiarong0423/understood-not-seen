@@ -24,7 +24,7 @@ before(async () => {
     }
     const sig = u.searchParams.get("signal.interests.entities");
     const ents = sig
-      ? [{ name: "Ranked By Taste", properties: { address: "a" }, query: { explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
+      ? [{ name: "Ranked By Taste", external: { google_place: [{ place_id: "ChIJl2x52TmoQjQR-1T_Ft6XMz8" }] }, properties: { address: "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99號 2樓", short_description: "Popular indoor bowling center in Banqiao" }, query: { explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
       : [{ name: "Plain Result", properties: { address: "b" }, query: {} }];
     res.end(JSON.stringify({ results: { entities: ents } }));
   });
@@ -43,6 +43,10 @@ test("a saved place becomes a taste signal, explained by its name; unknown names
   assert.deepEqual(j.taste.unknown, ["Nonexistent Place"]);
   assert.equal(j.groups[0].places[0].name, "Ranked By Taste");
   assert.deepEqual(j.groups[0].places[0].because, ["Simple Kaffa"]);
+  const p0 = j.groups[0].places[0];
+  assert.equal(p0.about, "Popular indoor bowling center in Banqiao");
+  assert.equal(p0.area, "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99");
+  assert.equal(p0.place_id, "ChIJl2x52TmoQjQR-1T_Ft6XMz8");
   assert.deepEqual(j.groups[0].plain, ["Plain Result"]);
   const searches = seen.filter((s) => s.path === "/search");
   assert.equal(searches.length, 2);
