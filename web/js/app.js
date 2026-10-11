@@ -16,7 +16,8 @@ let lang = (navigator.language || "en").toLowerCase().startsWith("zh") ? "zh" : 
 const state = { kept: [], counts: {}, total: 0, chosen: [], kb: [], ideas: [], results: null, step: 1, tasteOn: [], exp: null, suggestions: [], extraOn: [], cal: null };
 
 const ui = (k) => i18n.ui[k][lang];
-const act = (name) => (lang === "zh" && i18n.activities[name] ? i18n.activities[name].zh : name);
+const kbName = (name) => { const a = state.kb.find((x) => x.tag_id === name); return a ? a.activity : name; };
+const act = (raw) => { const name = kbName(raw); return lang === "zh" && i18n.activities[name] ? i18n.activities[name].zh : name; };
 const need = (k) => i18n.needs[k][lang];
 const reason = (k) => (i18n.reasons[k] ? i18n.reasons[k][lang] : k);
 const icon = (name) => activityIcon(name);

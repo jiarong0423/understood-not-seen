@@ -91,6 +91,9 @@ Reading about work or news is never turned into a leisure need.
 `npm run security` runs three tools: **gitleaks** (secrets in the files and the whole git history), **semgrep** (static analysis for JavaScript, Node and Python, plus a secrets rule pack) and **npm audit** (dependency vulnerabilities; the app has no npm dependencies). A **pre-push hook** (`git config core.hooksPath .githooks`) runs gitleaks and the full test suite before any push and refuses to push without gitleaks.
 The server tests also cover path traversal, input validation, a monthly budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
 
+## The look is locked
+The stylesheet, the 14 themes, the icon set and the app icons are hashed in `design.lock.json`, and a test fails if any of them changes. A deliberate change is re-locked with `node tools/lock_design.mjs --approve "reason"`. Language strings are audited by `test/i18n.test.mjs` (every string in English and Traditional Chinese, no stray English in the Chinese page).
+
 ## Install it as an app (PWA)
 Open the hosted page in Chrome, Edge or Safari and choose "Install" or "Add to Home Screen". It opens full screen, and the app's own files work
 offline; place lookups still need a connection. Everything about your bookmarks still stays in the app on your device. Phone browsers cannot

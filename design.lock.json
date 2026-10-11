@@ -1,0 +1,14 @@
+{
+  "locked_on": "2026-10-11",
+  "reason": "final minimal style: flat default theme, 14 switchable themes, Lucide line icons",
+  "files": {
+    "index.html <style>": "c606d13311432e39ff259fde06645c9107abf77f0ffcc12827f92d3c91d94aff",
+    "js/themes.js": "0a38bcf42e63dd75c7dfcaa3c61b416409a93dc7abdb35949a4da15348ec0cda",
+    "js/icons.js": "0913fd4af99974338cea2e82e8506ab99a3a194ac178f93bf961a5a9f4e9d39c",
+    "icons/apple-touch-icon.png": "29bbce52705df761048ab3bd3b22331cdf6fbd9026765d64daddb9b44142f951",
+    "icons/icon-192.png": "a25c67249a514ff2054ce2f6ffb75647238b71f87cfd18ec798efe5958c2c6b8",
+    "icons/icon-512.png": "deb5dc09362ca3db470b00c3353f642d92f278f2d3c48edfccf25e03b21c4bd0",
+    "icons/icon-maskable-512.png": "483f3ff5fcf5fe74896e09c3d1ca6709f698f48250ca149f7e104dd37a9a0426",
+    "icons/icon.svg": "63d6468d56bb7d68cf7ab6f042110253b6f12661c210fc06b15cb2e8256a2272"
+  }
+}

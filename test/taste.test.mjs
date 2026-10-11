@@ -67,7 +67,7 @@ import { nameFromTitle } from "../web/js/taste.js";
 test("name proposals: brand-like first segments yes; phrases, pages and URLs no", () => {
   const yes = { "Simple Kaffa | Specialty coffee roasters": "Simple Kaffa", "Fika Fika Cafe - Nordic coffee": "Fika Fika Cafe", "DOUSHOP 古著店": "DOUSHOP 古著店", "Louisa Coffee": "Louisa Coffee" };
   for (const [t, n] of Object.entries(yes)) assert.equal(nameFromTitle(t), n, t);
-  for (const t of ["Craft beer taproom guide", "Pour over coffee at home guide", "Home", "https://x.com/a", "12345", "a", "Login | Site", "name@example.com"])
+  for (const t of ["Craft beer taproom guide", "Pour over coffee at home guide", "Home", "https://x.com/a", "12345", "a", "Login | Site", "name@example.com", "羽球雙打戰術教學", "台北火鍋推薦", "士林夜市攻略"])
     assert.equal(nameFromTitle(t), null, t);
 });
 
