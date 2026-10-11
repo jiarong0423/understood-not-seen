@@ -1,6 +1,6 @@
 // Service worker: lets the app open offline. Only the app's own files are cached; /api (places from Qloo) is never cached here
 // and other sites (the model download) are left to the browser. Network first, so a new version shows up as soon as you are online.
-const VERSION = "uns-2026-10-11.2"; // change with every release (also BUILD in index.html and js/app.js)
+const VERSION = "uns-2026-10-11.3"; // change with every release (also BUILD in index.html and js/app.js)
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "sample_bookmarks.html",
   "js/app.js", "js/gate.js", "js/rules.js", "js/combine.js", "js/embed.js", "js/themes.js", "js/taste.js", "js/expand.js", "js/calendar.js", "js/icons.js", "js/waiting.js",

@@ -2,7 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="build" content="2026-10-11.2">
+<meta name="build" content="2026-10-11.3">
+<!-- start downloading the reference data while the page is still being read (the code then finds it ready) -->
+<link rel="preload" href="kb/i18n.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="kb/activities.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="kb/cities.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="kb/expansion.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="kb/calendar.json" as="fetch" crossorigin="anonymous">
+<link rel="preload" href="kb/place_names.json" as="fetch" crossorigin="anonymous">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Understood, not seen</title>
 <meta name="description" content="Turn your bookmarks into place ideas without uploading them.">

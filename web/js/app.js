@@ -401,7 +401,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-11.2"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-11.3"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
@@ -412,6 +412,18 @@ function sameBuild() {
 
 async function init() {
   if (!sameBuild()) return;
+  // The buttons work at once: a click that comes before the data has loaded waits for it instead of being lost (slow networks).
+  let dataLoaded; const dataReady = new Promise((r) => { dataLoaded = r; });
+  $("file").addEventListener("change", async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    $("fileName").textContent = f.name; $("fileName").removeAttribute("data-i18n");
+    const text = await f.text(); await dataReady; start(text);
+  });
+  $("sample").addEventListener("click", async () => {
+    $("sample").disabled = true;
+    try { await dataReady; start(await (await fetch(lang === "zh" ? "sample_bookmarks.zh.html" : "sample_bookmarks.html")).text()); }
+    finally { $("sample").disabled = false; }
+  });
   history.replaceState({ step: 1 }, "", location.pathname + location.search);
   addEventListener("popstate", onBack);
   document.addEventListener("click", (e) => { const a = e.target.closest("a.pl-map"); if (a && !e.metaKey && !e.ctrlKey) { e.preventDefault(); openMap(a); } });
@@ -422,12 +434,11 @@ async function init() {
   $("homeBtn").addEventListener("click", () => { setStep(state.total ? 3 : 1); window.scrollTo({ top: 0, behavior: REDUCED ? "auto" : "smooth" }); });
   addEventListener("scroll", () => $("homeBtn").classList.toggle("hide", scrollY < 500), { passive: true });
   document.querySelectorAll(".bi[data-g]").forEach((el) => { el.innerHTML = glyph(el.dataset.g); });
-  i18n = await (await fetch("kb/i18n.json")).json();
-  state.kb = await loadKb();
-  state.exp = await loadExpansion();
-  state.cal = await loadCalendar();
-  state.placeNames = await loadPlaceNames();
-  cities = (await (await fetch("kb/cities.json")).json()).cities;
+  // all reference data at once, not one after another
+  [i18n, state.kb, state.exp, state.cal, state.placeNames, cities] = await Promise.all([
+    fetch("kb/i18n.json").then((r) => r.json()), loadKb(), loadExpansion(), loadCalendar(), loadPlaceNames(),
+    fetch("kb/cities.json").then((r) => r.json()).then((j) => j.cities),
+  ]);
   applyTheme(savedTheme() === "default" ? "default" : savedTheme());
   bindMenuKeys();
   applyStatic();
@@ -436,8 +447,6 @@ async function init() {
     applyStatic();
     if (state.total) { renderStats(false); renderNeeds(); renderIdeas(); renderExpand(); renderTaste(); updatePayload(); renderResults(); }
   });
-  $("file").addEventListener("change", async (e) => { const f = e.target.files[0]; if (f) { $("fileName").textContent = f.name; $("fileName").removeAttribute("data-i18n"); start(await f.text()); } });
-  $("sample").addEventListener("click", async () => start(await (await fetch(lang === "zh" ? "sample_bookmarks.zh.html" : "sample_bookmarks.html")).text()));
   $("city").addEventListener("change", () => { renderExpand(); updatePayload(); });
   $("quality").addEventListener("change", updatePayload);
   $("go").addEventListener("click", go);
@@ -445,6 +454,7 @@ async function init() {
   $("aiBtn").addEventListener("click", runAI);
   $("clearData").addEventListener("click", clearData);
   addEventListener("pagehide", saveSession); // remembers the scroll position too
+  dataLoaded();
   const nav = performance.getEntriesByType("navigation")[0];
   if (nav && nav.type === "back_forward") restoreSession(); // came back from another page: put things back as they were
   $("copy").addEventListener("click", async () => {
