@@ -78,7 +78,7 @@ def main():
     asked = 0
     keys = []
     for it in cands:
-        k = hashlib.sha1((clean_title(it.title) + "|" + it.host).encode()).hexdigest()
+        k = hashlib.sha1((clean_title(it.title) + "|" + it.host).encode()).hexdigest()  # nosemgrep: insecure-hash-algorithm-sha1  (cache key for local labels, not a security use)
         if k not in cache:
             asked += 1
             cache[k] = label(clean_title(it.title), it.host)
