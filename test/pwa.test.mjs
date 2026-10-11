@@ -23,7 +23,7 @@ test("icons exist and are the size the manifest says", () => {
 test("service worker: every precached file exists; /api is never cached; page links manifest and icons", () => {
   const sw = readFileSync(web("sw.js"), "utf8");
   const shell = [...sw.match(/const SHELL = \[([\s\S]*?)\];/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
-  assert.ok(shell.length > 20);
+  assert.ok(shell.length >= 4 && shell.length <= 10, "a small install: the rest is stored on first use");
   assert.deepEqual(shell.filter((f) => f !== "./" && !existsSync(web(f))), []);
   assert.match(sw, /startsWith\("\/api\/"\)/);
   const html = readFileSync(web("index.html"), "utf8");

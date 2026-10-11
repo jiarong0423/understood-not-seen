@@ -401,7 +401,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-11.4"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-11.5"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
@@ -463,5 +463,6 @@ async function init() {
 }
 init();
 if ("serviceWorker" in navigator && location.protocol !== "file:") {
-  addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => { /* private mode or blocked: the app works without it */ }); });
+  // registered a few seconds after the page has loaded, so installing never competes with the page for the network
+  addEventListener("load", () => setTimeout(() => { navigator.serviceWorker.register("sw.js").catch(() => { /* private mode or blocked: the app works without it */ }); }, 4000));
 }
