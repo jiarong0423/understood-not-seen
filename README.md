@@ -24,15 +24,29 @@ The decisions are rules plus a small on-device embedding model, not a chat model
 
 ## How it works
 
-```
-bookmarks.html  ──(stays in your browser)──►  1. Privacy gate      removes adult, account, personal, private-address
-                                                                    and identifier-bearing links, plus their neighbours
-                                              2. Combine           matches what is left to an activity knowledge base
-                                                                    (what each activity does for you: social, stress relief,
-                                                                     business talk, quiet time, culture ...)
-                                              3. You choose        optional: pick what you want from your time off
-                                              4. Preview           the full outgoing payload: {city, [Qloo tag ids]}
-                          ──(only after you approve)──►  Qloo place search via a thin proxy  ──►  places in your city
+![Architecture: two gates between your bookmarks and the world](assets/architecture.png)
+
+```mermaid
+flowchart LR
+  subgraph Device["Your browser tab, on your device"]
+    B["bookmarks.html"] --> G1{{"Gate 1: privacy<br/>fails closed"}}
+    G1 -->|kept| U["Understand<br/>73 activities x daily needs<br/>optional on-device model"]
+    G1 -.->|removed| X[("counts only<br/>never stored, never sent")]
+    U --> I["Ideas + beyond your bookmarks<br/>deeper, same feeling, goes with, balance"]
+    I --> G2{{"Gate 2: consent<br/>the exact payload is shown"}}
+    R["Results<br/>invitation, map in the page, evidence"]
+  end
+  subgraph Server["Thin proxy (Node, Zeabur)"]
+    P["validate, rate limit, budget,<br/>24 h cache, API key, trace"]
+  end
+  subgraph Q["Qloo API"]
+    S["/search"]
+    N["/v2/insights"]
+  end
+  G2 -->|"only after you press Find:<br/>city, tag ids, ticked names"| P
+  P --> S
+  P --> N
+  P -->|"places, because you saved X, trace"| R
 ```
 
 What stays on your device: the bookmark file, every title and URL, and the text of anything the gate removed (only counts are shown).
@@ -101,6 +115,15 @@ The stylesheet, the 14 themes, the icon set and the app icons are hashed in `des
 Open the hosted page in Chrome, Edge or Safari and choose "Install" or "Add to Home Screen". It opens full screen, and the app's own files work
 offline; place lookups still need a connection. Everything about your bookmarks still stays in the app on your device. Phone browsers cannot
 export bookmarks, so load a bookmarks.html exported on a computer.
+
+## Screenshots
+| Landing | Privacy gate | Ideas |
+|---|---|---|
+| ![Landing](assets/screenshots/1_landing.png) | ![Privacy gate](assets/screenshots/2_privacy_gate.png) | ![Ideas](assets/screenshots/3_ideas.png) |
+| **Consent: what leaves the device** | **Invitation and places** | **Evidence of every Qloo request** |
+| ![Consent](assets/screenshots/4_consent_payload.png) | ![Invitation and places](assets/screenshots/5_invitation_and_places.png) | ![Evidence](assets/screenshots/7_evidence.png) |
+
+Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen.zeabur.app (demo data via "Use sample bookmarks")
 
 ## Run it
 

@@ -426,7 +426,7 @@ async function init() {
     applyStatic();
     if (state.total) { renderStats(false); renderNeeds(); renderIdeas(); renderExpand(); renderTaste(); updatePayload(); renderResults(); }
   });
-  $("file").addEventListener("change", async (e) => { const f = e.target.files[0]; if (f) start(await f.text()); });
+  $("file").addEventListener("change", async (e) => { const f = e.target.files[0]; if (f) { $("fileName").textContent = f.name; $("fileName").removeAttribute("data-i18n"); start(await f.text()); } });
   $("sample").addEventListener("click", async () => start(await (await fetch(lang === "zh" ? "sample_bookmarks.zh.html" : "sample_bookmarks.html")).text()));
   $("city").addEventListener("change", () => { renderExpand(); updatePayload(); });
   $("quality").addEventListener("change", updatePayload);

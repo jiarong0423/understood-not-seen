@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#16181d"/>
+    </marker>
+    <marker id="arrowA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4338ca"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="1000" fill="#f6f3ec"/>
+  <text x="60" y="78" font-size="40" font-weight="700" fill="#16181d">Understood, not seen</text>
+  <text x="60" y="114" font-size="21" fill="#626672">How the agent works: two gates between your bookmarks and the world</text>
+
+  <!-- device -->
+  <rect x="60" y="150" width="860" height="790" rx="22" fill="#ffffff" stroke="#15803d" stroke-width="3" stroke-dasharray="10 7"/>
+  <text x="90" y="192" font-size="22" font-weight="700" fill="#15803d">YOUR BROWSER TAB · ON YOUR DEVICE</text>
+
+  <g font-size="19" fill="#16181d">
+    <rect x="95" y="220" width="250" height="96" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
+    <text x="120" y="258" font-weight="700">Bookmarks file</text>
+    <text x="120" y="286" fill="#626672" font-size="16">read in this tab only</text>
+
+    <rect x="395" y="220" width="250" height="96" rx="14" fill="#e9f5ee" stroke="#15803d" stroke-width="2.5"/>
+    <text x="420" y="258" font-weight="700">Gate 1 · Privacy</text>
+    <text x="420" y="286" fill="#15803d" font-size="16">fails closed, counts only</text>
+
+    <rect x="95" y="370" width="550" height="120" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
+    <text x="120" y="408" font-weight="700">Understand</text>
+    <text x="120" y="436" fill="#626672" font-size="16">73 activities × daily needs (social, stress relief, quiet time ...)</text>
+    <text x="120" y="462" fill="#626672" font-size="16">optional small on-device model · never a label for you</text>
+
+    <rect x="95" y="520" width="550" height="96" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
+    <text x="120" y="558" font-weight="700">Ideas + beyond your bookmarks</text>
+    <text x="120" y="586" fill="#626672" font-size="16">deeper · same feeling · goes with · balance · holidays</text>
+
+    <rect x="95" y="646" width="550" height="110" rx="14" fill="#eceafc" stroke="#4338ca" stroke-width="2.5"/>
+    <text x="120" y="684" font-weight="700">Gate 2 · Consent</text>
+    <text x="120" y="712" fill="#4338ca" font-size="16">you see the exact payload: city, place-tag ids,</text>
+    <text x="120" y="736" fill="#4338ca" font-size="16">and only the saved place names you tick</text>
+
+    <rect x="95" y="786" width="550" height="120" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
+    <text x="120" y="824" font-weight="700">Results</text>
+    <text x="120" y="852" fill="#626672" font-size="16">weekend / holiday invitation · map inside the page</text>
+    <text x="120" y="878" fill="#626672" font-size="16">evidence of every Qloo request · invite a friend</text>
+  </g>
+
+  <!-- never leaves -->
+  <rect x="680" y="220" width="210" height="270" rx="14" fill="#fff4ec" stroke="#b45309" stroke-width="2"/>
+  <text x="700" y="256" font-size="18" font-weight="700" fill="#b45309">Never leaves</text>
+  <g font-size="15" fill="#7a3d06">
+    <text x="700" y="290">• the bookmark file</text>
+    <text x="700" y="316">• every title and URL</text>
+    <text x="700" y="342">• removed links</text>
+    <text x="700" y="368">• your needs and ticks</text>
+    <text x="700" y="410">Session kept in this tab</text>
+    <text x="700" y="432">only; cleared on close or</text>
+    <text x="700" y="454">with "Clear saved data"</text>
+  </g>
+
+  <!-- arrows inside device -->
+  <g stroke="#16181d" stroke-width="2.2" fill="none">
+    <line x1="345" y1="268" x2="390" y2="268" marker-end="url(#arrow)"/>
+    <path d="M520 316 L520 343 L370 343 L370 366" marker-end="url(#arrow)"/>
+    <line x1="370" y1="490" x2="370" y2="516" marker-end="url(#arrow)"/>
+    <line x1="370" y1="616" x2="370" y2="642" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- proxy -->
+  <rect x="990" y="430" width="250" height="330" rx="18" fill="#ffffff" stroke="#16181d" stroke-width="2"/>
+  <text x="1012" y="470" font-size="20" font-weight="700" fill="#16181d">Thin proxy</text>
+  <text x="1012" y="496" font-size="15" fill="#626672">Node, no dependencies</text>
+  <g font-size="15" fill="#16181d">
+    <text x="1012" y="536">• input validation</text>
+    <text x="1012" y="564">• per-visitor rate limit</text>
+    <text x="1012" y="592">• monthly budget guard</text>
+    <text x="1012" y="620">• 24 h memory cache</text>
+    <text x="1012" y="648">• API key: server only</text>
+    <text x="1012" y="676">• request trace</text>
+    <text x="1012" y="716" fill="#626672">hosted on Zeabur</text>
+  </g>
+
+  <!-- qloo -->
+  <rect x="1310" y="430" width="240" height="330" rx="18" fill="#16181d"/>
+  <text x="1335" y="474" font-size="22" font-weight="700" fill="#ffffff">Qloo API</text>
+  <g font-size="15" fill="#e6e6ef">
+    <text x="1335" y="516" font-weight="700" fill="#ffffff">/search</text>
+    <text x="1335" y="540">saved place → entity</text>
+    <text x="1335" y="582" font-weight="700" fill="#ffffff">/v2/insights</text>
+    <text x="1335" y="606">filter.tags + location</text>
+    <text x="1335" y="630">signal.interests.entities</text>
+    <text x="1335" y="654">feature.explainability</text>
+    <text x="1335" y="678">signal.interests.tags</text>
+    <text x="1335" y="702">filter.rating.min</text>
+  </g>
+
+  <!-- the only outgoing path -->
+  <path d="M645 700 C 820 700, 860 560, 984 560" stroke="#4338ca" stroke-width="3.5" fill="none" marker-end="url(#arrowA)"/>
+  <rect x="672" y="604" width="232" height="62" rx="10" fill="#4338ca"/>
+  <text x="686" y="630" font-size="15" font-weight="700" fill="#ffffff">only after you press Find</text>
+  <text x="686" y="652" font-size="15" fill="#ffffff">{city, tag ids, ticked names}</text>
+  <line x1="1240" y1="560" x2="1304" y2="560" stroke="#16181d" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="1304" y1="660" x2="1246" y2="660" stroke="#16181d" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <text x="1250" y="548" font-size="13" fill="#16181d">key</text>
+  <text x="1250" y="684" font-size="13" fill="#16181d">places</text>
+  <path d="M990 720 C 860 790, 760 846, 650 846" stroke="#16181d" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="990" y="792" font-size="15" fill="#16181d">← places + "because you saved X" + trace</text>
+
+  <text x="990" y="880" font-size="16" fill="#626672">Decisions are rules plus a small on-device model, not a chat model.</text>
+  <text x="990" y="906" font-size="16" fill="#626672">A person stays in the loop at the consent gate.</text>
+</svg>

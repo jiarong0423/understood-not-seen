@@ -803,6 +803,14 @@
   "clear_data": {
    "en": "Clear saved data and cache",
    "zh": "清除暫存與快取"
+  },
+  "choose_file": {
+   "en": "Choose file",
+   "zh": "選擇檔案"
+  },
+  "no_file": {
+   "en": "No file chosen",
+   "zh": "尚未選擇檔案"
   }
  },
  "invite": {
