@@ -290,11 +290,23 @@ async function sendInvite() {
   } catch (e) { /* share sheet dismissed or clipboard blocked: nothing to do */ }
 }
 
+// Each step is a history entry: Back returns to the previous step and keeps what you loaded; it never leaves the page.
+function pushStep(n) { if ((history.state || {}).step !== n) history.pushState({ step: n }, "", "#step" + n); }
+function onBack(e) {
+  const n = (e.state || {}).step || 1;
+  if (n < 4) $("s5").classList.add("hide");                 // leaving the places step: hide the results, keep the ideas
+  if (n >= 4 && state.results) $("s5").classList.remove("hide"); // Forward again: show the results that are already there
+  const target = n >= 4 ? "s5" : n === 3 ? "s4" : "s1";
+  setStep(n === 1 && state.total ? 3 : n);
+  $(target).scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
+}
+
 async function go() {
   const body = updatePayload();
   $("s5").classList.remove("hide");
   $("results").innerHTML = body.tags.map(() => '<div class="skeleton"></div>').join("");
   setStep(4);
+  pushStep(4);
   $("s5").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
   try {
     const r = await fetch("/api/recommend", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
@@ -320,9 +332,12 @@ function start(html) {
   renderNeeds();
   refreshIdeas();
   setStep(3);
+  pushStep(3);
 }
 
 async function init() {
+  history.replaceState({ step: 1 }, "", location.pathname + location.search);
+  addEventListener("popstate", onBack);
   document.querySelectorAll(".bi[data-g]").forEach((el) => { el.innerHTML = glyph(el.dataset.g); });
   i18n = await (await fetch("kb/i18n.json")).json();
   state.kb = await loadKb();
