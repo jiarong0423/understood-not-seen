@@ -11,7 +11,7 @@ const EXPECT = {
   "Badminton doubles tactics for beginners": "kw:Badminton court", "Pickleball rules explained": "kw:Pickleball court",
   "Bowling league tips for higher scores": "kw:Bowling alley", "Indoor swimming technique drills": "kw:Swimming pool",
   "Tennis serve basics": "kw:Tennis court", "Golf swing basics for newcomers": "kw:Golf course",
-  "Din Tai Fung Xinyi Branch": "kw:Noodle shop", "Best wine bars in Taipei": "kw:Wine bar", "Omakase etiquette guide": "kw:Fine dining restaurant",
+  "Din Tai Fung Xinyi Branch": "kw:Noodle shop", "Simple Kaffa | Specialty coffee roasters in Taipei": "kw:Coffee shop", "Best wine bars in Taipei": "kw:Wine bar", "Omakase etiquette guide": "kw:Fine dining restaurant",
   "Ramen guide to Tokyo": "kw:Ramen restaurant", "Kyoto 3-day itinerary": "none", "Art museums to visit in Vienna": "kw:Art museum",
   "Boutique hotel in Hokkaido": "kw:Hotel", "Ski season guide to Niseko": "kw:Ski resort", "Radiohead - OK Computer (full album)": "none",
   "Concert calendar this autumn": "kw:Concert hall", "Symphony orchestra season programme": "ai", "Pilates for desk workers": "kw:Pilates studio",
@@ -25,7 +25,7 @@ const EXPECT = {
 const parse = (f) => [...readFileSync(new URL("../web/" + f, import.meta.url), "utf8").matchAll(/<A (?:ADD_DATE="\d+" )?HREF="([^"]+)">([^<]+)<\/A>/g)].map((m) => ({ url: m[1], title: m[2], folders: [] }));
 const EXPECT_ZH = {
   "羽球雙打戰術教學": "kw:Badminton court", "匹克球規則解說": "kw:Pickleball court", "保齡球聯賽提高分數的技巧": "kw:Bowling alley", "室內游泳技巧練習": "kw:Swimming pool",
-  "網球發球基本功": "kw:Tennis court", "給新手的高爾夫揮桿基礎": "kw:Golf course", "鼎泰豐信義店": "kw:Noodle shop", "台北葡萄酒推薦": "kw:Wine bar",
+  "網球發球基本功": "kw:Tennis court", "給新手的高爾夫揮桿基礎": "kw:Golf course", "鼎泰豐信義店": "kw:Noodle shop", "Simple Kaffa｜台北精品咖啡": "kw:Coffee shop", "台北葡萄酒推薦": "kw:Wine bar",
   "無菜單料理用餐禮儀": "kw:Fine dining restaurant", "東京拉麵指南": "kw:Ramen restaurant", "京都三日行程": "none", "維也納美術館參觀指南": "kw:Art museum",
   "北海道精品飯店": "kw:Hotel", "二世谷滑雪季指南": "kw:Ski resort", "電台司令 OK Computer 完整專輯": "none", "今年秋天的音樂會行事曆": "kw:Concert hall",
   "交響樂團樂季節目": "ai", "上班族的皮拉提斯": "kw:Pilates studio", "運動按摩與深層按摩的差別": "kw:Massage", "市區水療館": "kw:Spa",
