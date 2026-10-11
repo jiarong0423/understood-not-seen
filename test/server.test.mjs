@@ -73,3 +73,25 @@ test("per-IP rate limit", async () => {
   for (let i = 0; i < 25; i++) codes.push((await call("POST", "/api/recommend", { city: "Atlantis", tags: [] })).status);
   assert.ok(codes.includes(429), "no 429 seen: " + codes.join(","));
 });
+
+// Behind a proxy the limit must be per visitor, not per proxy: own server with TRUST_PROXY=1 and forwarded addresses.
+test("behind a proxy the rate limit counts each visitor separately (TRUST_PROXY=1), and ignores forged headers without it", async () => {
+  const port = await freePort();
+  const kid = spawn("node", ["server/server.mjs"], { env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", QLOO_API_KEY: "", TRUST_PROXY: "1" }, stdio: "ignore" });
+  try {
+    for (let i = 0; i < 40; i++) { try { if ((await fetch(`http://127.0.0.1:${port}/api/health`)).ok) break; } catch { await wait(100); } }
+    const post = (ip) => fetch(`http://127.0.0.1:${port}/api/recommend`, { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": ip }, body: JSON.stringify({ city: "Taipei", tags: ["urn:tag:category:place:spa"] }) }).then((r) => r.status);
+    const a = []; for (let i = 0; i < 22; i++) a.push(await post("203.0.113.7"));
+    assert.ok(a.includes(429), "visitor A should be limited after 20 requests");
+    assert.notEqual(await post("203.0.113.8"), 429, "visitor B behind the same proxy must not be limited by A");
+  } finally { kid.kill("SIGTERM"); }
+  // without TRUST_PROXY a forged header must not buy a fresh allowance (own server, so earlier tests cannot have used up the limit)
+  const port2 = await freePort();
+  const kid2 = spawn("node", ["server/server.mjs"], { env: { ...process.env, PORT: String(port2), HOST: "127.0.0.1", QLOO_API_KEY: "", TRUST_PROXY: "0" }, stdio: "ignore" });
+  try {
+    for (let i = 0; i < 40; i++) { try { if ((await fetch(`http://127.0.0.1:${port2}/api/health`)).ok) break; } catch { await wait(100); } }
+    const forged = [];
+    for (let i = 0; i < 25; i++) forged.push((await fetch(`http://127.0.0.1:${port2}/api/recommend`, { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": "198.51.100." + i }, body: JSON.stringify({ city: "Taipei", tags: ["urn:tag:category:place:spa"] }) })).status);
+    assert.ok(forged.includes(429), "forged X-Forwarded-For must not bypass the limit when TRUST_PROXY is off");
+  } finally { kid2.kill("SIGTERM"); }
+});

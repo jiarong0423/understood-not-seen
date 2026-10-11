@@ -14,6 +14,17 @@ const BASE = process.env.QLOO_BASE || "https://hackathon.api.qloo.com"; // overr
 const CITIES = new Set(JSON.parse(await readFile(join(ROOT, "kb", "cities.json"), "utf8")).cities.map((c) => c.en));
 const TAG_RE = /^urn:tag:[a-z_]+:place(?::[a-z0-9_]+){1,2}$/;
 const MONTHLY_BUDGET = Number(process.env.QLOO_MONTHLY_BUDGET || 8000); // keep headroom under the 10,000 limit
+// Behind a proxy (Zeabur, Cloudflare) every request arrives from the proxy's address, so the per-IP limit needs the visitor's address from the
+// proxy's header. Only when TRUST_PROXY=1 (set in the Dockerfile): on a direct connection those headers can be forged.
+const TRUST_PROXY = process.env.TRUST_PROXY === "1";
+const clientIp = (req) => {
+  if (TRUST_PROXY) {
+    const cf = req.headers["cf-connecting-ip"], xff = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+    const ip = (typeof cf === "string" && cf.trim()) || xff;
+    if (/^[0-9a-fA-F:.]{3,45}$/.test(ip)) return ip;
+  }
+  return req.socket.remoteAddress;
+};
 const GAP_MS = 250, TTL_MS = 24 * 3600 * 1000, PER_IP_PER_MIN = 20;
 const kb = JSON.parse(await readFile(join(ROOT, "kb", "activities.json"), "utf8"));
 const nameOf = Object.fromEntries(kb.filter((a) => a.tag_id).map((a) => [a.tag_id, a.activity]));
@@ -89,7 +100,7 @@ const server = http.createServer(async (req, res) => {
   const send = (code, obj, type = "application/json") => { res.writeHead(code, { "content-type": type }); res.end(typeof obj === "string" ? obj : JSON.stringify(obj)); };
   try {
     if (req.method === "POST" && req.url === "/api/recommend") {
-      const ip = req.socket.remoteAddress, now = Date.now();
+      const ip = clientIp(req), now = Date.now();
       const arr = (hits.get(ip) || []).filter((t) => now - t < 60000); arr.push(now); hits.set(ip, arr);
       if (arr.length > PER_IP_PER_MIN) return send(429, { error: "slow_down" });
       let body = ""; for await (const ch of req) { body += ch; if (body.length > 4000) return send(413, { error: "too_large" }); }
