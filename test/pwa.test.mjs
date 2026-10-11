@@ -35,5 +35,5 @@ test("release id is the same in the page, the code and the service worker", () =
   const html = readFileSync(web("index.html"), "utf8"), app = readFileSync(web("js/app.js"), "utf8"), sw = readFileSync(web("sw.js"), "utf8");
   const a = html.match(/<meta name="build" content="([^"]+)">/)[1], b = app.match(/const BUILD = "([^"]+)"/)[1], c = sw.match(/const VERSION = "uns-([^"]+)"/)[1];
   assert.equal(a, b); assert.equal(b, c);
-  assert.match(sw, /cache: "no-store"/);
+  assert.doesNotMatch(sw, /clients\.claim\(\)/, "a new worker must not take over a page that is still loading");
 });

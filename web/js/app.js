@@ -401,7 +401,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-11.3"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-11.4"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
