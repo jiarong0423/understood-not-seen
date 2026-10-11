@@ -141,4 +141,8 @@ const server = http.createServer(async (req, res) => {
     res.writeHead(200, { "content-type": type.startsWith("image/png") ? type : type + "; charset=utf-8", "cache-control": fresh ? "no-cache" : "public, max-age=86400" }); res.end(data);
   } catch (e) { send(e.code === "ENOENT" ? 404 : 500, { error: "error" }); }
 });
+// Behind a hosting proxy that reuses connections, keep idle connections open longer than the proxy does (Node's default is 5 s);
+// otherwise the proxy can send a request on a connection Node has just closed, and that request hangs.
+server.keepAliveTimeout = 65000;
+server.headersTimeout = 66000;
 server.listen(PORT, HOST, () => console.log(`serving web/ on http://${HOST}:${PORT}  (qloo configured: ${!!KEY})`));

@@ -401,7 +401,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-11.5"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-11.6"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
@@ -412,6 +412,7 @@ function sameBuild() {
 
 async function init() {
   if (!sameBuild()) return;
+  window.__unsStarted = true; // tells the safety net in index.html that the app is running
   // The buttons work at once: a click that comes before the data has loaded waits for it instead of being lost (slow networks).
   let dataLoaded; const dataReady = new Promise((r) => { dataLoaded = r; });
   $("file").addEventListener("change", async (e) => {

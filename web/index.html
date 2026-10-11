@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="build" content="2026-10-11.5">
+<meta name="build" content="2026-10-11.6">
 <!-- start downloading the reference data while the page is still being read (the code then finds it ready) -->
 <link rel="preload" href="kb/i18n.json" as="fetch" crossorigin="anonymous">
 <link rel="preload" href="kb/activities.json" as="fetch" crossorigin="anonymous">
@@ -194,6 +194,19 @@ footer{margin-top:34px;text-align:center;font-size:13.5px;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
 @media (max-width:520px){.stat{padding:10px}.card{padding:16px}.pill{padding:7px 11px}}
 </style>
+<script>
+  // Safety net: if the app has not started within 10 s (a stalled download), offer a reload instead of a page that does nothing.
+  setTimeout(function () {
+    if (window.__unsStarted || document.getElementById("uns-stall")) return;
+    var zh = (navigator.language || "").toLowerCase().indexOf("zh") === 0;
+    var b = document.createElement("button");
+    b.id = "uns-stall"; b.type = "button";
+    b.textContent = zh ? "還在載入⋯點這裡重新整理" : "Still loading… tap to reload";
+    b.setAttribute("style", "position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:99;padding:10px 16px;border-radius:999px;border:1px solid #4338ca;background:#fff;color:#4338ca;font:600 14px system-ui,sans-serif;cursor:pointer");
+    b.onclick = function () { location.reload(); };
+    document.body.appendChild(b);
+  }, 10000);
+</script>
 </head>
 <body>
 <div class="wrap">

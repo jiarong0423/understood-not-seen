@@ -1,6 +1,6 @@
 // Service worker: lets the app open offline. Only the app's own files are cached; /api (places from Qloo) is never cached here
 // and other sites (the model download) are left to the browser. Network first, so a new version shows up as soon as you are online.
-const VERSION = "uns-2026-10-11.5"; // change with every release (also BUILD in index.html and js/app.js)
+const VERSION = "uns-2026-10-11.6"; // change with every release (also BUILD in index.html and js/app.js)
 // Only the essentials are fetched at install; every other file is stored the first time the page uses it (network first, below).
 // A big install burst of ~30 parallel downloads, right while the visitor reloads, sometimes stalled requests on the host.
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg"];

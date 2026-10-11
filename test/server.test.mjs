@@ -97,3 +97,10 @@ test("behind a proxy the rate limit counts each visitor separately (TRUST_PROXY=
     assert.ok(forged.includes(429), "forged X-Forwarded-For must not bypass the limit when TRUST_PROXY is off");
   } finally { kid2.kill("SIGTERM"); }
 });
+
+test("keep-alive outlasts a hosting proxy and the page has a stall safety net", async () => {
+  const src = (await import("node:fs")).readFileSync(new URL("../server/server.mjs", import.meta.url), "utf8");
+  assert.match(src, /keepAliveTimeout = 65000/); assert.match(src, /headersTimeout = 66000/);
+  const html = (await import("node:fs")).readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
+  assert.match(html, /__unsStarted/); assert.match((await import("node:fs")).readFileSync(new URL("../web/js/app.js", import.meta.url), "utf8"), /window\.__unsStarted = true/);
+});
