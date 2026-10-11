@@ -1,0 +1,183 @@
+{
+ "note": "Hand-written by the developer from the user's own pasted logic (docs/USER_ARGUMENTS_LOG.md). Not measured. It describes activities, never a person.",
+ "families": {
+  "racket and court sports": [
+   "Badminton court",
+   "Pickleball court",
+   "Tennis court",
+   "Squash court",
+   "Table tennis",
+   "Sports club",
+   "Sporting goods store"
+  ],
+  "strength and recovery": [
+   "Gym",
+   "Yoga studio",
+   "Pilates studio",
+   "Physical therapist",
+   "Massage",
+   "Health food store"
+  ],
+  "outdoors": [
+   "Hiking area",
+   "Outdoor sports store",
+   "Fishing store",
+   "Ski resort"
+  ],
+  "coffee and tea": [
+   "Coffee shop",
+   "Tea house",
+   "Bakery",
+   "Dessert shop",
+   "Book store"
+  ],
+  "beer and bars": [
+   "Brewery",
+   "Pub",
+   "Beer store",
+   "Beer garden",
+   "Cocktail bar",
+   "Wine bar"
+  ],
+  "cooking": [
+   "Cooking class",
+   "Kitchen supply store",
+   "Butcher shop",
+   "Market",
+   "Health food store"
+  ],
+  "fashion": [
+   "Clothing store",
+   "Vintage clothing store",
+   "Boutique",
+   "Shoe store",
+   "Jewelry store"
+  ],
+  "collecting and making": [
+   "Toy store",
+   "Collectibles store",
+   "Craft store",
+   "Stationery store",
+   "Gift shop"
+  ],
+  "art and culture": [
+   "Art museum",
+   "Art gallery",
+   "Book store",
+   "Concert hall",
+   "Live music venue"
+  ],
+  "table games": [
+   "Bowling alley",
+   "Billiards",
+   "Karaoke bar"
+  ],
+  "music and night": [
+   "Live music venue",
+   "Night club",
+   "Karaoke bar",
+   "Concert hall"
+  ]
+ },
+ "goes_with": {
+  "Fishing store": [
+   "Cooking class",
+   "Butcher shop",
+   "Outdoor sports store"
+  ],
+  "Hiking area": [
+   "Outdoor sports store",
+   "Coffee shop",
+   "Health food store"
+  ],
+  "Ski resort": [
+   "Outdoor sports store",
+   "Spa",
+   "Hotel"
+  ],
+  "Badminton court": [
+   "Sporting goods store",
+   "Bubble tea store",
+   "Physical therapist"
+  ],
+  "Tennis court": [
+   "Sporting goods store",
+   "Physical therapist"
+  ],
+  "Gym": [
+   "Health food store",
+   "Physical therapist"
+  ],
+  "Cooking class": [
+   "Market",
+   "Kitchen supply store",
+   "Wine bar"
+  ],
+  "Coffee shop": [
+   "Book store",
+   "Bakery",
+   "Stationery store"
+  ],
+  "Book store": [
+   "Coffee shop",
+   "Stationery store",
+   "Tea house"
+  ],
+  "Brewery": [
+   "Beer store",
+   "Yakiniku restaurant",
+   "Live music venue"
+  ],
+  "Vintage clothing store": [
+   "Coffee shop",
+   "Market",
+   "Boutique"
+  ],
+  "Art museum": [
+   "Coffee shop",
+   "Book store",
+   "Art gallery"
+  ],
+  "Concert hall": [
+   "Wine bar",
+   "Fine dining restaurant"
+  ],
+  "Golf course": [
+   "Fine dining restaurant",
+   "Sporting goods store"
+  ],
+  "Squash court": [
+   "Sporting goods store",
+   "Physical therapist"
+  ],
+  "Table tennis": [
+   "Sporting goods store",
+   "Bubble tea store"
+  ]
+ },
+ "balance": {
+  "stress_relief": [
+   "mental_comfort",
+   "quiet_solo"
+  ],
+  "skill_display": [
+   "mental_comfort",
+   "quiet_solo"
+  ],
+  "business_talk": [
+   "mental_comfort",
+   "outdoors"
+  ],
+  "social": [
+   "quiet_solo"
+  ],
+  "entertainment": [
+   "culture",
+   "quiet_solo"
+  ],
+  "shopping": [
+   "outdoors",
+   "culture"
+  ]
+ }
+}

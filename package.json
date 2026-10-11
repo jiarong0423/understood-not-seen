@@ -1,0 +1,13 @@
+{
+  "name": "understood-not-seen",
+  "version": "0.1.0",
+  "description": "Turn bookmarks into place ideas without uploading them. Privacy gate in the browser, Qloo taste graph for places.",
+  "type": "module",
+  "license": "MIT",
+  "private": false,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/server.mjs",
+    "test": "node --test test/gate.test.mjs test/routing.test.mjs test/sample.test.mjs test/server.test.mjs test/taste.test.mjs test/expand.test.mjs test/calendar.test.mjs test/pwa.test.mjs"
+  }
+}

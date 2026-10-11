@@ -1,0 +1,1211 @@
+[
+ {
+  "activity": "Badminton court",
+  "functions": [
+   "social",
+   "stress_relief"
+  ],
+  "source": "user",
+  "tag_id": "urn:tag:category:place:badminton_court",
+  "keywords": [
+   "badminton",
+   "羽球",
+   "羽毛球",
+   "羽毛球"
+  ]
+ },
+ {
+  "activity": "Pickleball court",
+  "functions": [
+   "social",
+   "stress_relief"
+  ],
+  "source": "user",
+  "tag_id": "urn:tag:category:place:pickleball_court",
+  "fallback_tags": [
+   "urn:tag:category:place:badminton_court",
+   "urn:tag:category:place:tennis_court"
+  ],
+  "fallback_note": "shares courts with badminton and tennis (user knowledge)",
+  "keywords": [
+   "pickleball",
+   "匹克球"
+  ]
+ },
+ {
+  "activity": "Golf course",
+  "functions": [
+   "business_talk"
+  ],
+  "source": "user",
+  "tag_id": "urn:tag:category:place:golf_course",
+  "keywords": [
+   "golf",
+   "高爾夫",
+   "高尔夫",
+   "揮桿",
+   "挥杆"
+  ]
+ },
+ {
+  "activity": "Bowling alley",
+  "functions": [
+   "skill_display"
+  ],
+  "source": "user",
+  "tag_id": "urn:tag:category:place:bowling_alley",
+  "keywords": [
+   "bowling",
+   "保齡",
+   "保龄"
+  ]
+ },
+ {
+  "activity": "Billiards",
+  "functions": [
+   "skill_display"
+  ],
+  "source": "user",
+  "tag_id": "urn:tag:category:place:pool_hall",
+  "note": "the billiards-hall tag returned nothing in any city; pool_hall works (measured)",
+  "keywords": [
+   "billiard",
+   "pool hall",
+   "snooker",
+   "撞球",
+   "桌球",
+   "台球"
+  ]
+ },
+ {
+  "activity": "Physical therapy",
+  "functions": [
+   "physical_repair"
+  ],
+  "source": "gemini path 1",
+  "tag_id": null,
+  "keywords": []
+ },
+ {
+  "activity": "Massage",
+  "functions": [
+   "physical_repair",
+   "mental_comfort"
+  ],
+  "source": "gemini path 1+2",
+  "tag_id": "urn:tag:category:place:massage_therapist",
+  "fallback_tags": [
+   "urn:tag:category:place:massage_spa"
+  ],
+  "fallback_note": "massage is also offered at massage spas (measured: both return places)",
+  "keywords": [
+   "massage",
+   "按摩",
+   "推拿"
+  ]
+ },
+ {
+  "activity": "Spa",
+  "functions": [
+   "mental_comfort"
+  ],
+  "source": "gemini path 2",
+  "tag_id": "urn:tag:category:place:spa",
+  "keywords": [
+   "spa",
+   "芳療",
+   "芳疗",
+   "水療",
+   "水疗"
+  ]
+ },
+ {
+  "activity": "Meditation",
+  "functions": [
+   "mental_comfort"
+  ],
+  "source": "gemini path 2",
+  "tag_id": null,
+  "keywords": []
+ },
+ {
+  "activity": "Cocktail bar",
+  "functions": [
+   "mental_comfort",
+   "social"
+  ],
+  "source": "gemini path 2",
+  "tag_id": "urn:tag:category:place:cocktail_bar",
+  "keywords": [
+   "cocktail",
+   "speakeasy",
+   "酒吧",
+   "調酒",
+   "调酒"
+  ]
+ },
+ {
+  "activity": "Wine bar",
+  "functions": [
+   "mental_comfort",
+   "social"
+  ],
+  "source": "gemini path 2",
+  "tag_id": "urn:tag:category:place:wine_bar",
+  "keywords": [
+   "wine",
+   "whisky",
+   "whiskey",
+   "品酒",
+   "威士忌",
+   "紅酒",
+   "红酒",
+   "葡萄酒"
+  ]
+ },
+ {
+  "activity": "Concert hall",
+  "functions": [
+   "stress_relief",
+   "entertainment"
+  ],
+  "source": "gemini shared",
+  "tag_id": "urn:tag:category:place:concert_hall",
+  "keywords": [
+   "concert",
+   "演唱會",
+   "演唱会",
+   "音樂會",
+   "音乐会",
+   "音樂廳",
+   "音乐厅"
+  ]
+ },
+ {
+  "activity": "Swimming pool",
+  "functions": [
+   "quiet_solo"
+  ],
+  "source": "gemini satellite (lawyers/accountants)",
+  "tag_id": "urn:tag:category:place:swimming_pool",
+  "keywords": [
+   "swimming",
+   "游泳"
+  ]
+ },
+ {
+  "activity": "Pilates studio",
+  "functions": [
+   "quiet_solo",
+   "physical_repair"
+  ],
+  "source": "gemini satellite + path 1",
+  "tag_id": "urn:tag:category:place:pilates_studio",
+  "keywords": [
+   "pilates",
+   "皮拉提斯",
+   "普拉提"
+  ]
+ },
+ {
+  "activity": "Art museum",
+  "functions": [
+   "culture",
+   "quiet_solo"
+  ],
+  "source": "gemini satellite (culture trips)",
+  "tag_id": "urn:tag:category:place:art_museum",
+  "keywords": [
+   "museum",
+   "exhibition",
+   "美術館",
+   "美术馆",
+   "展覽",
+   "展览",
+   "博物館",
+   "博物馆"
+  ]
+ },
+ {
+  "activity": "Yacht club",
+  "functions": [
+   "status_display",
+   "social"
+  ],
+  "source": "gemini satellite (web3)",
+  "tag_id": "urn:tag:category:place:yacht_club",
+  "keywords": [
+   "yacht",
+   "遊艇",
+   "游艇"
+  ]
+ },
+ {
+  "activity": "Fine dining restaurant",
+  "functions": [
+   "business_talk",
+   "status_display"
+  ],
+  "source": "gemini (finance, sat.)",
+  "tag_id": "urn:tag:category:place:fine_dining_restaurant",
+  "keywords": [
+   "fine dining",
+   "omakase",
+   "michelin",
+   "米其林",
+   "無菜單",
+   "无菜单",
+   "板前"
+  ]
+ },
+ {
+  "activity": "Tennis court",
+  "functions": [
+   "social",
+   "stress_relief",
+   "business_talk"
+  ],
+  "source": "gemini (racket sports, networking)",
+  "tag_id": "urn:tag:category:place:tennis_court",
+  "keywords": [
+   "tennis",
+   "網球",
+   "网球"
+  ]
+ },
+ {
+  "activity": "Ski resort",
+  "functions": [
+   "stress_relief",
+   "status_display"
+  ],
+  "source": "gemini (travel)",
+  "tag_id": "urn:tag:category:place:ski_resort",
+  "keywords": [
+   "ski",
+   "skiing",
+   "滑雪"
+  ]
+ },
+ {
+  "activity": "Hotel",
+  "functions": [
+   "mental_comfort"
+  ],
+  "source": "gemini (travel)",
+  "tag_id": "urn:tag:category:place:hotel",
+  "keywords": [
+   "hotel",
+   "resort",
+   "飯店",
+   "饭店",
+   "酒店",
+   "民宿"
+  ]
+ },
+ {
+  "activity": "Massage spa",
+  "functions": [
+   "physical_repair",
+   "mental_comfort"
+  ],
+  "source": "fallback for Massage (measured)",
+  "tag_id": "urn:tag:category:place:massage_spa",
+  "fallback_only": true,
+  "keywords": []
+ },
+ {
+  "activity": "Hot pot restaurant",
+  "functions": [
+   "social"
+  ],
+  "source": "user-supplied dining notes: shared hot pot is a social buffer; table-side service suits business meals",
+  "tag_id": "urn:tag:genre:place:restaurant:hot_pot",
+  "keywords": [
+   "hot pot",
+   "hotpot",
+   "shabu",
+   "火鍋",
+   "火锅",
+   "涮涮鍋",
+   "鍋物"
+  ]
+ },
+ {
+  "activity": "Ramen restaurant",
+  "functions": [
+   "quiet_solo",
+   "quick_meal"
+  ],
+  "source": "user-supplied dining notes: counter seating, solo meal ritual, clear order-to-bowl flow",
+  "tag_id": "urn:tag:genre:place:restaurant:ramen",
+  "keywords": [
+   "ramen",
+   "拉麵",
+   "拉面"
+  ]
+ },
+ {
+  "activity": "Noodle shop",
+  "functions": [
+   "quick_meal"
+  ],
+  "source": "user-supplied dining notes: traditional snacks as quick, reliable meals",
+  "tag_id": "urn:tag:genre:place:restaurant:noodle_shop",
+  "keywords": [
+   "beef noodle",
+   "noodle shop",
+   "din tai fung",
+   "dumpling",
+   "xiaolongbao",
+   "牛肉麵",
+   "牛肉面",
+   "滷肉飯",
+   "卤肉饭",
+   "小吃",
+   "黑白切",
+   "鼎泰豐",
+   "小籠包",
+   "水餃"
+  ]
+ },
+ {
+  "activity": "Night market",
+  "functions": [
+   "social",
+   "entertainment"
+  ],
+  "source": "user-supplied dining notes: traditional street snacks",
+  "tag_id": "urn:tag:genre:place:night_market",
+  "keywords": [
+   "night market",
+   "夜市"
+  ]
+ },
+ {
+  "activity": "Clothing store",
+  "functions": [
+   "shopping",
+   "status_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:clothing_store",
+  "keywords": [
+   "clothing store",
+   "streetwear",
+   "apparel",
+   "t-shirt",
+   "fashion shop",
+   "outfit",
+   "服飾",
+   "選貨",
+   "穿搭",
+   "T恤"
+  ]
+ },
+ {
+  "activity": "Vintage clothing store",
+  "functions": [
+   "shopping",
+   "status_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:vintage_clothing_store",
+  "keywords": [
+   "vintage",
+   "second-hand clothing",
+   "secondhand clothes",
+   "古著",
+   "二手服",
+   "中古服飾"
+  ]
+ },
+ {
+  "activity": "Boutique",
+  "functions": [
+   "shopping",
+   "status_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:boutique",
+  "keywords": [
+   "concept store",
+   "select shop",
+   "選物",
+   "選貨店",
+   "精品店"
+  ]
+ },
+ {
+  "activity": "Shoe store",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:shoe_store",
+  "keywords": [
+   "sneakers",
+   "shoe store",
+   "footwear",
+   "球鞋",
+   "鞋店",
+   "運動鞋"
+  ]
+ },
+ {
+  "activity": "Toy store",
+  "functions": [
+   "shopping",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:toy_store",
+  "keywords": [
+   "toy store",
+   "action figure",
+   "collectible toy",
+   "玩具",
+   "公仔",
+   "盒玩",
+   "模型玩具"
+  ]
+ },
+ {
+  "activity": "Collectibles store",
+  "functions": [
+   "shopping",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:collectibles_store",
+  "keywords": [
+   "trading card",
+   "collectible",
+   "collectibles",
+   "卡牌",
+   "收藏卡",
+   "收藏品"
+  ]
+ },
+ {
+  "activity": "Gift shop",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:gift_shop",
+  "keywords": [
+   "gift shop",
+   "souvenir",
+   "souvenirs",
+   "伴手禮",
+   "紀念品",
+   "文創",
+   "禮品"
+  ]
+ },
+ {
+  "activity": "Jewelry store",
+  "functions": [
+   "shopping",
+   "status_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:jewelry_store",
+  "keywords": [
+   "jewelry",
+   "jewellery",
+   "飾品",
+   "珠寶"
+  ]
+ },
+ {
+  "activity": "Book store",
+  "functions": [
+   "quiet_solo",
+   "culture",
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:book_store",
+  "keywords": [
+   "bookstore",
+   "book store",
+   "reading list",
+   "書店",
+   "選書",
+   "獨立書店"
+  ]
+ },
+ {
+  "activity": "Stationery store",
+  "functions": [
+   "shopping",
+   "quiet_solo"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:stationery_store",
+  "keywords": [
+   "stationery",
+   "notebook shop",
+   "文具",
+   "手帳",
+   "筆記本"
+  ]
+ },
+ {
+  "activity": "Craft store",
+  "functions": [
+   "shopping",
+   "quiet_solo"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:craft_store",
+  "keywords": [
+   "craft store",
+   "craft supplies",
+   "handmade",
+   "手作",
+   "手工藝",
+   "材料行"
+  ]
+ },
+ {
+  "activity": "Department store",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:department_store",
+  "keywords": [
+   "department store",
+   "百貨",
+   "百貨公司",
+   "周年慶"
+  ]
+ },
+ {
+  "activity": "Shopping mall",
+  "functions": [
+   "shopping",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:shopping_mall",
+  "keywords": [
+   "shopping mall",
+   "outlet mall",
+   "商場",
+   "購物中心"
+  ]
+ },
+ {
+  "activity": "Market",
+  "functions": [
+   "shopping",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:market",
+  "keywords": [
+   "farmers market",
+   "flea market",
+   "street market",
+   "傳統市場",
+   "市集",
+   "跳蚤市場"
+  ]
+ },
+ {
+  "activity": "Coffee shop",
+  "functions": [
+   "quiet_solo",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:coffee_shop",
+  "keywords": [
+   "coffee",
+   "cafe",
+   "café",
+   "espresso",
+   "咖啡",
+   "咖啡廳",
+   "手沖"
+  ]
+ },
+ {
+  "activity": "Tea house",
+  "functions": [
+   "quiet_solo",
+   "mental_comfort"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:tea_house",
+  "keywords": [
+   "tea house",
+   "teahouse",
+   "tea ceremony",
+   "茶館",
+   "茶藝",
+   "茶席"
+  ]
+ },
+ {
+  "activity": "Bakery",
+  "functions": [
+   "social",
+   "quick_meal"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:bakery",
+  "keywords": [
+   "bakery",
+   "bread",
+   "pastry",
+   "croissant",
+   "麵包",
+   "烘焙",
+   "可頌"
+  ]
+ },
+ {
+  "activity": "Dessert shop",
+  "functions": [
+   "social",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:dessert_shop",
+  "keywords": [
+   "dessert",
+   "cake",
+   "ice cream",
+   "甜點",
+   "蛋糕",
+   "冰品"
+  ]
+ },
+ {
+  "activity": "Bubble tea store",
+  "functions": [
+   "quick_meal",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:bubble_tea_store",
+  "keywords": [
+   "bubble tea",
+   "boba",
+   "milk tea",
+   "手搖",
+   "珍奶",
+   "珍珠奶茶",
+   "手搖飲"
+  ]
+ },
+ {
+  "activity": "Brunch restaurant",
+  "functions": [
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:brunch_restaurant",
+  "keywords": [
+   "brunch",
+   "早午餐"
+  ]
+ },
+ {
+  "activity": "Vegetarian restaurant",
+  "functions": [
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:vegetarian_restaurant",
+  "keywords": [
+   "vegetarian",
+   "vegan",
+   "plant-based",
+   "蔬食",
+   "素食"
+  ]
+ },
+ {
+  "activity": "Yakiniku restaurant",
+  "functions": [
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:yakiniku_restaurant",
+  "keywords": [
+   "yakiniku",
+   "korean bbq",
+   "bbq",
+   "燒肉",
+   "烤肉"
+  ]
+ },
+ {
+  "activity": "Sushi restaurant",
+  "functions": [
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:sushi_restaurant",
+  "keywords": [
+   "sushi",
+   "壽司",
+   "握壽司",
+   "sashimi",
+   "生魚片"
+  ]
+ },
+ {
+  "activity": "Pub",
+  "functions": [
+   "social",
+   "mental_comfort"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:pub",
+  "keywords": [
+   "pub",
+   "tavern",
+   "酒館",
+   "居酒屋"
+  ]
+ },
+ {
+  "activity": "Brewery",
+  "functions": [
+   "social",
+   "mental_comfort"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:brewery",
+  "keywords": [
+   "brewery",
+   "craft beer",
+   "hazy ipa",
+   "stout",
+   "精釀",
+   "啤酒",
+   "啤酒瘋"
+  ]
+ },
+ {
+  "activity": "Beer store",
+  "functions": [
+   "shopping",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:beer_store",
+  "keywords": [
+   "beer store",
+   "bottle shop",
+   "啤酒專賣",
+   "啤酒專賣店"
+  ]
+ },
+ {
+  "activity": "Beer garden",
+  "functions": [
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:beer_garden",
+  "keywords": [
+   "beer garden",
+   "啤酒花園",
+   "啤酒屋"
+  ]
+ },
+ {
+  "activity": "Night club",
+  "functions": [
+   "social",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:night_club",
+  "keywords": [
+   "nightclub",
+   "night club",
+   "dj set",
+   "夜店",
+   "舞廳"
+  ]
+ },
+ {
+  "activity": "Karaoke bar",
+  "functions": [
+   "social",
+   "stress_relief",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:karaoke_bar",
+  "keywords": [
+   "karaoke",
+   "ktv",
+   "卡拉ok",
+   "唱歌"
+  ]
+ },
+ {
+  "activity": "Live music venue",
+  "functions": [
+   "entertainment",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:live_music_venue",
+  "keywords": [
+   "live house",
+   "live music",
+   "現場演出",
+   "展演空間",
+   "音樂祭"
+  ]
+ },
+ {
+  "activity": "Movie theater",
+  "functions": [
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:movie_theater",
+  "keywords": [
+   "movie theater",
+   "cinema",
+   "電影院",
+   "戲院",
+   "imax"
+  ]
+ },
+ {
+  "activity": "Cooking class",
+  "functions": [
+   "learning",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:cooking_class",
+  "keywords": [
+   "cooking class",
+   "cooking workshop",
+   "recipe",
+   "recipes",
+   "烹飪課",
+   "料理課",
+   "食譜",
+   "做菜",
+   "家常菜"
+  ]
+ },
+ {
+  "activity": "Kitchen supply store",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:kitchen_supply_store",
+  "keywords": [
+   "kitchenware",
+   "cookware",
+   "kitchen supply",
+   "廚具",
+   "鍋具"
+  ]
+ },
+ {
+  "activity": "Butcher shop",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:butcher_shop",
+  "keywords": [
+   "butcher",
+   "meat",
+   "steak",
+   "肉品",
+   "肉舖",
+   "牛排"
+  ]
+ },
+ {
+  "activity": "Hiking area",
+  "functions": [
+   "outdoors",
+   "stress_relief",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:hiking_area",
+  "keywords": [
+   "hiking",
+   "hiking trail",
+   "trekking",
+   "登山",
+   "步道",
+   "健行"
+  ]
+ },
+ {
+  "activity": "Yoga studio",
+  "functions": [
+   "mental_comfort",
+   "quiet_solo",
+   "physical_repair"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:yoga_studio",
+  "keywords": [
+   "yoga",
+   "瑜伽",
+   "vinyasa"
+  ]
+ },
+ {
+  "activity": "Gym",
+  "functions": [
+   "stress_relief",
+   "physical_repair"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:gym",
+  "keywords": [
+   "gym",
+   "weight training",
+   "strength training",
+   "workout",
+   "重訓",
+   "健身",
+   "增肌"
+  ]
+ },
+ {
+  "activity": "Sports club",
+  "functions": [
+   "social",
+   "stress_relief"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:sports_club",
+  "keywords": [
+   "sports club",
+   "sports center",
+   "運動中心",
+   "運動俱樂部"
+  ]
+ },
+ {
+  "activity": "Sporting goods store",
+  "functions": [
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:sporting_goods_store",
+  "keywords": [
+   "sporting goods",
+   "sports shop",
+   "運動用品",
+   "球拍",
+   "racket shop"
+  ]
+ },
+ {
+  "activity": "Outdoor sports store",
+  "functions": [
+   "shopping",
+   "outdoors"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:outdoor_sports_store",
+  "keywords": [
+   "outdoor gear",
+   "camping gear",
+   "戶外用品",
+   "露營用品"
+  ]
+ },
+ {
+  "activity": "Fishing store",
+  "functions": [
+   "outdoors",
+   "quiet_solo",
+   "shopping"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:fishing_store",
+  "keywords": [
+   "fishing",
+   "fishing tackle",
+   "lure fishing",
+   "fly fishing",
+   "釣魚",
+   "路亞",
+   "毛鉤",
+   "釣具"
+  ]
+ },
+ {
+  "activity": "Physical therapist",
+  "functions": [
+   "physical_repair"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:physical_therapist",
+  "keywords": [
+   "physiotherapy",
+   "physical therapy",
+   "physiotherapist",
+   "物理治療",
+   "復健"
+  ]
+ },
+ {
+  "activity": "Health food store",
+  "functions": [
+   "shopping",
+   "physical_repair"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:health_food_store",
+  "keywords": [
+   "health food",
+   "dietary supplement",
+   "protein powder",
+   "保健食品",
+   "蛋白粉"
+  ]
+ },
+ {
+  "activity": "Art gallery",
+  "functions": [
+   "culture",
+   "quiet_solo"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:art_gallery",
+  "keywords": [
+   "art gallery",
+   "藝廊",
+   "畫廊"
+  ]
+ },
+ {
+  "activity": "Squash court",
+  "functions": [
+   "social",
+   "stress_relief",
+   "skill_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:squash_court",
+  "keywords": [
+   "squash",
+   "壁球",
+   "squash court"
+  ]
+ },
+ {
+  "activity": "Table tennis",
+  "functions": [
+   "social",
+   "stress_relief",
+   "skill_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:table_tennis_facility",
+  "keywords": [
+   "table tennis",
+   "ping pong",
+   "桌球",
+   "乒乓球",
+   "乒乓"
+  ]
+ },
+ {
+  "activity": "Rock climbing gym",
+  "functions": [
+   "social",
+   "stress_relief",
+   "skill_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:rock_climbing_gym",
+  "keywords": [
+   "rock climbing",
+   "bouldering",
+   "climbing gym",
+   "攀岩",
+   "抱石"
+  ]
+ },
+ {
+  "activity": "Escape room",
+  "functions": [
+   "social",
+   "entertainment"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:escape_room_center",
+  "keywords": [
+   "escape room",
+   "密室逃脫",
+   "密室",
+   "劇本殺"
+  ]
+ },
+ {
+  "activity": "Go-karting",
+  "functions": [
+   "social",
+   "entertainment",
+   "skill_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:go_karting_venue",
+  "keywords": [
+   "go-kart",
+   "go kart",
+   "karting",
+   "卡丁車"
+  ]
+ },
+ {
+  "activity": "Diving center",
+  "functions": [
+   "outdoors",
+   "skill_display"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:diving_center",
+  "keywords": [
+   "scuba",
+   "scuba diving",
+   "freediving",
+   "潛水",
+   "浮潛"
+  ]
+ },
+ {
+  "activity": "Archery range",
+  "functions": [
+   "skill_display",
+   "stress_relief",
+   "social"
+  ],
+  "source": "developer proposal (needs mapping); tag measured in Qloo",
+  "tag_id": "urn:tag:category:place:archery_range",
+  "keywords": [
+   "archery",
+   "bow shooting",
+   "射箭"
+  ]
+ }
+]

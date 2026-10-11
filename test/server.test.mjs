@@ -1,0 +1,75 @@
+// Server protections: validation, path traversal, monthly budget, per-IP rate limit.
+// Starts its own server on a free port picked at run time with a fake key and an unreachable Qloo address (no real quota is used),
+// and always stops it afterwards. Run: node --test test/server.test.mjs
+import test, { before, after } from "node:test";
+import assert from "node:assert/strict";
+import { spawn } from "node:child_process";
+import http from "node:http";
+import net from "node:net";
+
+let PORT = 0;
+let child;
+const freePort = () => new Promise((res, rej) => { const s = net.createServer(); s.listen(0, "127.0.0.1", () => { const p = s.address().port; s.close(() => res(p)); }); s.on("error", rej); });
+const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const call = (method, path, body) => new Promise((resolve, reject) => {
+  const req = http.request({ host: "127.0.0.1", port: PORT, method, path, headers: { "content-type": "application/json" } }, (res) => {
+    let d = ""; res.on("data", (c) => (d += c)); res.on("end", () => resolve({ status: res.statusCode, body: d }));
+  });
+  req.on("error", reject); if (body !== undefined) req.write(typeof body === "string" ? body : JSON.stringify(body)); req.end();
+});
+const portOpen = () => new Promise((r) => { const s = net.connect(PORT, "127.0.0.1"); s.on("connect", () => { s.destroy(); r(true); }); s.on("error", () => r(false)); });
+
+before(async () => {
+  PORT = await freePort();
+  child = spawn("node", ["server/server.mjs"], {
+    env: { ...process.env, PORT: String(PORT), HOST: "127.0.0.1", QLOO_API_KEY: "fake-key-for-tests", QLOO_BASE: "http://127.0.0.1:9", QLOO_MONTHLY_BUDGET: "3" },
+    stdio: "ignore",
+  });
+  for (let i = 0; i < 30 && !(await portOpen()); i++) await wait(100);
+});
+after(async () => { child.kill("SIGTERM"); for (let i = 0; i < 30 && (await portOpen()); i++) await wait(100); });
+
+test("serves the page and health", async () => {
+  assert.equal((await call("GET", "/")).status, 200);
+  const h = JSON.parse((await call("GET", "/api/health")).body);
+  assert.equal(h.ok, true); assert.equal(h.configured, true);
+});
+test("app files are served with the right types (manifest, icons, service worker)", async () => {
+  const head = async (p) => (await fetch(`http://127.0.0.1:${PORT}${p}`)).headers.get("content-type");
+  assert.match(await head("/manifest.webmanifest"), /application\/manifest\+json/);
+  assert.equal(await head("/icons/icon-192.png"), "image/png");
+  assert.match(await head("/icons/icon.svg"), /image\/svg\+xml/);
+  assert.match(await head("/sw.js"), /text\/javascript/);
+});
+test("path traversal and hidden files are not served", async () => {
+  for (const p of ["/..%2f.env", "/%2e%2e/.env", "/..%2fserver%2fserver.mjs", "/..%5c.env"]) {
+    const r = await call("GET", p); assert.ok(r.status === 403 || r.status === 404, p + " -> " + r.status);
+    assert.ok(!/QLOO_API_KEY|fake-key/.test(r.body), "leaked content for " + p);
+  }
+});
+test("input validation", async () => {
+  const ok = "urn:tag:category:place:spa";
+  assert.equal((await call("POST", "/api/recommend", { city: "Atlantis", tags: [ok] })).status, 400);
+  assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["urn:tag:evil;drop"] })).status, 400);
+  assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: Array(13).fill(ok) })).status, 400);
+  assert.equal((await call("POST", "/api/recommend", "not json")).status >= 400, true);
+  assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["x".repeat(5000)] })).status, 413);
+});
+test("taste names are validated", async () => {
+  const ok = "urn:tag:category:place:spa";
+  for (const taste of [Array(6).fill("Cafe A"), ["x"], ["a".repeat(61)], [5], ["bad\nname"], "Cafe A"])
+    assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: [ok], taste })).status, 400, JSON.stringify(taste).slice(0, 40));
+});
+test("monthly budget guard returns 503 and never calls beyond the limit", async () => {
+  const tags = ["urn:tag:category:place:spa", "urn:tag:category:place:hotel", "urn:tag:category:place:art_museum", "urn:tag:category:place:golf_course"];
+  const statuses = [];
+  for (const t of tags) statuses.push((await call("POST", "/api/recommend", { city: "Taipei", tags: [t] })).status);
+  assert.deepEqual(statuses.slice(0, 3), [200, 200, 200]);
+  assert.equal(statuses[3], 503);
+  assert.equal(JSON.parse((await call("GET", "/api/health")).body).used, 3);
+});
+test("per-IP rate limit", async () => {
+  const codes = [];
+  for (let i = 0; i < 25; i++) codes.push((await call("POST", "/api/recommend", { city: "Atlantis", tags: [] })).status);
+  assert.ok(codes.includes(429), "no 429 seen: " + codes.join(","));
+});

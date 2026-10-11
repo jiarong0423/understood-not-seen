@@ -1,0 +1,60 @@
+{
+ "note": "coverage = cells with places out of 40 (8 activities x up to 5 places), measured 2026-10-11 against Qloo",
+ "cities": [
+  {
+   "en": "Taipei",
+   "zh": "台北",
+   "coverage": 36
+  },
+  {
+   "en": "New Taipei",
+   "zh": "新北",
+   "coverage": 37
+  },
+  {
+   "en": "Taichung",
+   "zh": "台中",
+   "coverage": 31
+  },
+  {
+   "en": "Kaohsiung",
+   "zh": "高雄",
+   "coverage": 30
+  },
+  {
+   "en": "Taoyuan",
+   "zh": "桃園",
+   "coverage": 27
+  },
+  {
+   "en": "Tainan",
+   "zh": "台南",
+   "coverage": 23
+  },
+  {
+   "en": "Hsinchu",
+   "zh": "新竹",
+   "coverage": 11
+  },
+  {
+   "en": "Singapore",
+   "zh": "新加坡",
+   "coverage": 39
+  },
+  {
+   "en": "London",
+   "zh": "倫敦",
+   "coverage": 40
+  },
+  {
+   "en": "Tokyo",
+   "zh": "東京",
+   "coverage": 37
+  },
+  {
+   "en": "New York",
+   "zh": "紐約",
+   "coverage": 35
+  }
+ ]
+}

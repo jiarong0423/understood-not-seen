@@ -1,0 +1,953 @@
+{
+ "activities": {
+  "Badminton court": {
+   "zh": "羽球場"
+  },
+  "Pickleball court": {
+   "zh": "匹克球場"
+  },
+  "Golf course": {
+   "zh": "高爾夫球場"
+  },
+  "Bowling alley": {
+   "zh": "保齡球館"
+  },
+  "Billiards": {
+   "zh": "撞球場"
+  },
+  "Massage": {
+   "zh": "按摩"
+  },
+  "Spa": {
+   "zh": "水療 SPA"
+  },
+  "Cocktail bar": {
+   "zh": "調酒酒吧"
+  },
+  "Wine bar": {
+   "zh": "葡萄酒吧"
+  },
+  "Concert hall": {
+   "zh": "音樂廳"
+  },
+  "Swimming pool": {
+   "zh": "游泳池"
+  },
+  "Pilates studio": {
+   "zh": "皮拉提斯教室"
+  },
+  "Art museum": {
+   "zh": "美術館"
+  },
+  "Yacht club": {
+   "zh": "遊艇俱樂部"
+  },
+  "Fine dining restaurant": {
+   "zh": "高級餐廳"
+  },
+  "Tennis court": {
+   "zh": "網球場"
+  },
+  "Ski resort": {
+   "zh": "滑雪場"
+  },
+  "Hotel": {
+   "zh": "飯店"
+  },
+  "Massage spa": {
+   "zh": "按摩水療館"
+  },
+  "Hot pot restaurant": {
+   "zh": "火鍋店"
+  },
+  "Ramen restaurant": {
+   "zh": "拉麵店"
+  },
+  "Noodle shop": {
+   "zh": "麵店小吃"
+  },
+  "Night market": {
+   "zh": "夜市"
+  },
+  "Clothing store": {
+   "zh": "服飾店"
+  },
+  "Vintage clothing store": {
+   "zh": "古著店"
+  },
+  "Boutique": {
+   "zh": "選物店"
+  },
+  "Shoe store": {
+   "zh": "鞋店"
+  },
+  "Toy store": {
+   "zh": "玩具店"
+  },
+  "Collectibles store": {
+   "zh": "收藏品店"
+  },
+  "Gift shop": {
+   "zh": "禮品與紀念品店"
+  },
+  "Jewelry store": {
+   "zh": "飾品店"
+  },
+  "Book store": {
+   "zh": "書店"
+  },
+  "Stationery store": {
+   "zh": "文具店"
+  },
+  "Craft store": {
+   "zh": "手作材料店"
+  },
+  "Department store": {
+   "zh": "百貨公司"
+  },
+  "Shopping mall": {
+   "zh": "購物中心"
+  },
+  "Market": {
+   "zh": "市集"
+  },
+  "Coffee shop": {
+   "zh": "咖啡館"
+  },
+  "Tea house": {
+   "zh": "茶館"
+  },
+  "Bakery": {
+   "zh": "烘焙坊"
+  },
+  "Dessert shop": {
+   "zh": "甜點店"
+  },
+  "Bubble tea store": {
+   "zh": "手搖飲店"
+  },
+  "Brunch restaurant": {
+   "zh": "早午餐店"
+  },
+  "Vegetarian restaurant": {
+   "zh": "蔬食餐廳"
+  },
+  "Yakiniku restaurant": {
+   "zh": "燒肉店"
+  },
+  "Sushi restaurant": {
+   "zh": "壽司店"
+  },
+  "Pub": {
+   "zh": "酒館"
+  },
+  "Brewery": {
+   "zh": "啤酒廠與精釀"
+  },
+  "Beer store": {
+   "zh": "啤酒專賣店"
+  },
+  "Beer garden": {
+   "zh": "啤酒花園"
+  },
+  "Night club": {
+   "zh": "夜店"
+  },
+  "Karaoke bar": {
+   "zh": "KTV 與卡拉OK"
+  },
+  "Live music venue": {
+   "zh": "Live House 展演空間"
+  },
+  "Movie theater": {
+   "zh": "電影院"
+  },
+  "Cooking class": {
+   "zh": "料理課"
+  },
+  "Kitchen supply store": {
+   "zh": "廚具店"
+  },
+  "Butcher shop": {
+   "zh": "肉舖"
+  },
+  "Hiking area": {
+   "zh": "登山步道"
+  },
+  "Yoga studio": {
+   "zh": "瑜伽教室"
+  },
+  "Gym": {
+   "zh": "健身房"
+  },
+  "Sports club": {
+   "zh": "運動中心與俱樂部"
+  },
+  "Sporting goods store": {
+   "zh": "運動用品店"
+  },
+  "Outdoor sports store": {
+   "zh": "戶外用品店"
+  },
+  "Fishing store": {
+   "zh": "釣具店"
+  },
+  "Physical therapist": {
+   "zh": "物理治療所"
+  },
+  "Health food store": {
+   "zh": "健康食品店"
+  },
+  "Art gallery": {
+   "zh": "藝廊"
+  },
+  "Squash court": {
+   "zh": "壁球場"
+  },
+  "Table tennis": {
+   "zh": "桌球"
+  },
+  "Rock climbing gym": {
+   "zh": "攀岩館"
+  },
+  "Escape room": {
+   "zh": "密室逃脫"
+  },
+  "Go-karting": {
+   "zh": "卡丁車"
+  },
+  "Diving center": {
+   "zh": "潛水中心"
+  },
+  "Archery range": {
+   "zh": "射箭場"
+  }
+ },
+ "needs": {
+  "social": {
+   "en": "Social",
+   "zh": "社交"
+  },
+  "stress_relief": {
+   "en": "Stress relief",
+   "zh": "舒壓"
+  },
+  "business_talk": {
+   "en": "Business talk",
+   "zh": "談事情"
+  },
+  "skill_display": {
+   "en": "Show a skill",
+   "zh": "展現技術"
+  },
+  "physical_repair": {
+   "en": "Physical recovery",
+   "zh": "身體恢復"
+  },
+  "mental_comfort": {
+   "en": "Mental comfort",
+   "zh": "心靈放鬆"
+  },
+  "quiet_solo": {
+   "en": "Quiet time",
+   "zh": "安靜獨處"
+  },
+  "culture": {
+   "en": "Culture",
+   "zh": "文化藝文"
+  },
+  "status_display": {
+   "en": "Showcase",
+   "zh": "展現風格"
+  },
+  "entertainment": {
+   "en": "Entertainment",
+   "zh": "娛樂"
+  },
+  "quick_meal": {
+   "en": "Quick meal",
+   "zh": "快速用餐"
+  },
+  "shopping": {
+   "en": "Shopping and finds",
+   "zh": "逛街挖寶"
+  },
+  "outdoors": {
+   "en": "Outdoors",
+   "zh": "親近戶外"
+  },
+  "learning": {
+   "en": "Learn something",
+   "zh": "學點新東西"
+  }
+ },
+ "reasons": {
+  "adult": {
+   "en": "Adult content",
+   "zh": "成人內容"
+  },
+  "personal_or_account": {
+   "en": "Accounts and personal pages",
+   "zh": "帳號與個人頁面"
+  },
+  "private_host": {
+   "en": "Private or local addresses",
+   "zh": "私人或內部位址"
+  },
+  "non_web_scheme": {
+   "en": "Browser internal pages",
+   "zh": "瀏覽器內部頁面"
+  },
+  "sensitive_query": {
+   "en": "Links with identifiers",
+   "zh": "含識別碼的連結"
+  },
+  "domain_contagion": {
+   "en": "Same site as a removed page",
+   "zh": "與已移除頁面同一網站"
+  },
+  "folder_contagion": {
+   "en": "Folder with removed pages",
+   "zh": "含已移除頁面的資料夾"
+  },
+  "bad_url": {
+   "en": "Unreadable links",
+   "zh": "無法讀取的連結"
+  }
+ },
+ "ui": {
+  "title": {
+   "en": "Understood, not seen",
+   "zh": "被理解，不被看見"
+  },
+  "sub": {
+   "en": "Your bookmarks are read in this browser tab. Nothing is uploaded. Only the places you approve are looked up.",
+   "zh": "書籤只在這個瀏覽器分頁內讀取，不會上傳。只有你同意的場所類別才會被查詢。"
+  },
+  "s1": {
+   "en": "1. Load bookmarks",
+   "zh": "1. 載入書籤"
+  },
+  "s1help": {
+   "en": "Export from Chrome: Bookmark Manager, menu, Export bookmarks. Or try the sample.",
+   "zh": "從 Chrome 匯出：書籤管理員、選單、匯出書籤。也可以先試範例。"
+  },
+  "sample": {
+   "en": "Use sample bookmarks",
+   "zh": "使用範例書籤"
+  },
+  "s2": {
+   "en": "2. What stayed on your device",
+   "zh": "2. 留在你裝置上的部分"
+  },
+  "read": {
+   "en": "Links read in your browser",
+   "zh": "在瀏覽器內讀取的連結"
+  },
+  "removed": {
+   "en": "Removed",
+   "zh": "已移除"
+  },
+  "kept": {
+   "en": "Kept for ideas",
+   "zh": "保留用來想點子"
+  },
+  "s2note": {
+   "en": "Only counts are shown for removed links. Their text is not stored and not displayed.",
+   "zh": "已移除的連結只顯示數量，內容不會儲存也不會顯示。"
+  },
+  "s3": {
+   "en": "3. What do you want from your time off?",
+   "zh": "3. 你想從休閒時間得到什麼？"
+  },
+  "optional": {
+   "en": "(optional)",
+   "zh": "（可不選）"
+  },
+  "s3help": {
+   "en": "Pick any. This is your choice, not a guess about you.",
+   "zh": "可以任選。這是你自己的選擇，不是對你的推測。"
+  },
+  "s4": {
+   "en": "4. Ideas to look up",
+   "zh": "4. 要查詢的點子"
+  },
+  "idea": {
+   "en": "Idea",
+   "zh": "點子"
+  },
+  "why": {
+   "en": "Why",
+   "zh": "原因"
+  },
+  "city": {
+   "en": "City",
+   "zh": "城市"
+  },
+  "payload": {
+   "en": "If you continue, only this goes out:",
+   "zh": "如果繼續，只會送出："
+  },
+  "go": {
+   "en": "Find places",
+   "zh": "查詢場所"
+  },
+  "s5": {
+   "en": "5. Places",
+   "zh": "5. 場所"
+  },
+  "looking": {
+   "en": "Looking up places...",
+   "zh": "查詢中..."
+  },
+  "nomatch": {
+   "en": "Nothing matched yet. Pick what you want from your time off above.",
+   "zh": "目前沒有符合的項目。請在上面選擇你想要的。"
+  },
+  "mentions": {
+   "en": "bookmark(s) mention it",
+   "zh": "個書籤提到"
+  },
+  "chose": {
+   "en": "you chose",
+   "zh": "你選了"
+  },
+  "via": {
+   "en": "No dedicated listing in this city, showing:",
+   "zh": "此城市沒有專屬資料，改顯示："
+  },
+  "shared": {
+   "en": "(shared courts)",
+   "zh": "（共用場地）"
+  },
+  "noplaces": {
+   "en": "No places found in this city.",
+   "zh": "這個城市沒有找到場所。"
+  },
+  "offline": {
+   "en": "The place lookup service is not connected in this build yet.",
+   "zh": "場所查詢服務尚未連上。"
+  },
+  "lang": {
+   "en": "中文",
+   "zh": "English"
+  },
+  "limited": {
+   "en": "limited data",
+   "zh": "資料較少"
+  },
+  "ai_title": {
+   "en": "Find more with on-device matching",
+   "zh": "用裝置上的比對找出更多"
+  },
+  "ai_help": {
+   "en": "Optional. A small language model (about 120 MB, downloaded once and kept in your browser) compares the titles that matched nothing with the activities, so paraphrases are found too. Your bookmarks still never leave this tab.",
+   "zh": "可選。一個小型語言模型（約 120 MB，只下載一次、存在你的瀏覽器裡）把沒有比對到的標題和活動做語意比對，換句話說也找得到。你的書籤仍然不會離開這個分頁。"
+  },
+  "ai_btn": {
+   "en": "Start on-device matching",
+   "zh": "啟動裝置上的比對"
+  },
+  "ai_loading": {
+   "en": "Loading the model",
+   "zh": "載入模型中"
+  },
+  "ai_working": {
+   "en": "Reading bookmarks",
+   "zh": "閱讀書籤中"
+  },
+  "ai_done": {
+   "en": "Done. Bookmarks read:",
+   "zh": "完成。已閱讀書籤："
+  },
+  "ai_found": {
+   "en": "Maybe you are looking for:",
+   "zh": "或許你在找："
+  },
+  "ai_unsupported": {
+   "en": "This browser cannot run WebAssembly, so on-device matching is skipped. Keyword matching still works.",
+   "zh": "這個瀏覽器無法執行 WebAssembly，已略過裝置上的比對。關鍵字比對仍可使用。"
+  },
+  "ai_error": {
+   "en": "The model could not start here. Keyword matching still works.",
+   "zh": "模型無法在這裡啟動。關鍵字比對仍可使用。"
+  },
+  "ai_matched": {
+   "en": "Titles matched to an idea:",
+   "zh": "比對到點子的標題："
+  },
+  "tagline": {
+   "en": "Be understood without being seen.",
+   "zh": "被理解，但不被看見。"
+  },
+  "badge1": {
+   "en": "Runs in your browser",
+   "zh": "在你的瀏覽器內執行"
+  },
+  "badge2": {
+   "en": "Nothing is uploaded",
+   "zh": "不會上傳任何書籤"
+  },
+  "badge3": {
+   "en": "You approve every lookup",
+   "zh": "每次查詢都由你同意"
+  },
+  "diag_title": {
+   "en": "How your data moves",
+   "zh": "你的資料怎麼流動"
+  },
+  "diag_device": {
+   "en": "On your device",
+   "zh": "在你的裝置上"
+  },
+  "diag_outside": {
+   "en": "Outside",
+   "zh": "裝置之外"
+  },
+  "diag_a": {
+   "en": "Your bookmarks",
+   "zh": "你的書籤"
+  },
+  "diag_b": {
+   "en": "Privacy gate",
+   "zh": "隱私閘門"
+  },
+  "diag_c": {
+   "en": "Ideas you approve",
+   "zh": "你同意的點子"
+  },
+  "diag_d": {
+   "en": "Qloo",
+   "zh": "Qloo"
+  },
+  "diag_note": {
+   "en": "Only a city and place-category ids go out.",
+   "zh": "只有城市與場所類別編號會送出。"
+  },
+  "step1": {
+   "en": "Load",
+   "zh": "載入"
+  },
+  "step2": {
+   "en": "Review",
+   "zh": "檢視"
+  },
+  "step3": {
+   "en": "Ideas",
+   "zh": "點子"
+  },
+  "step4": {
+   "en": "Places",
+   "zh": "場所"
+  },
+  "stat_read": {
+   "en": "links read",
+   "zh": "讀取的連結"
+  },
+  "stat_removed": {
+   "en": "removed",
+   "zh": "已移除"
+  },
+  "stat_kept": {
+   "en": "kept for ideas",
+   "zh": "保留想點子"
+  },
+  "include": {
+   "en": "Include",
+   "zh": "納入"
+  },
+  "copy": {
+   "en": "Copy",
+   "zh": "複製"
+  },
+  "copied": {
+   "en": "Copied",
+   "zh": "已複製"
+  },
+  "payload_title": {
+   "en": "Everything that leaves your device",
+   "zh": "會離開你裝置的全部內容"
+  },
+  "foot": {
+   "en": "Places come from Qloo. Open source, MIT license.",
+   "zh": "場所資料來自 Qloo。開源，MIT 授權。"
+  },
+  "ideas_hint": {
+   "en": "Untick anything you do not want looked up.",
+   "zh": "不想查的可以取消勾選。"
+  },
+  "tagline_html": {
+   "en": "Be understood <em>without being seen.</em>",
+   "zh": "被理解，<em>但不被看見。</em>"
+  },
+  "theme": {
+   "en": "Style",
+   "zh": "風格"
+  },
+  "theme_default": {
+   "en": "Paper (default)",
+   "zh": "紙感（預設）"
+  },
+  "theme_hint": {
+   "en": "Style changes only the look. Alt+S opens this menu.",
+   "zh": "風格只改外觀。Alt+S 可開關這個選單。"
+  },
+  "same_as": {
+   "en": "Same places as",
+   "zh": "場所與以下相同："
+  },
+  "also": {
+   "en": "also",
+   "zh": "也屬於"
+  },
+  "src_bm": {
+   "en": "from your bookmarks",
+   "zh": "來自你的書籤"
+  },
+  "src_need": {
+   "en": "you chose",
+   "zh": "你選的"
+  },
+  "taste_title": {
+   "en": "Go deeper with places you saved (optional)",
+   "zh": "用你收藏過的店再深入（可選）"
+  },
+  "taste_help": {
+   "en": "Names taken from your bookmark titles. Tick up to 5 and Qloo ranks places by taste similar to them, not only by category. A ticked name is sent to Qloo and shows in the box below. Nothing is ticked by default.",
+   "zh": "從你的書籤標題取出的名稱。最多勾選 5 個，Qloo 會依與它們相近的品味排序，而不只看類別。勾選的名稱會送給 Qloo，並顯示在下方方框。預設都不勾選。"
+  },
+  "taste_none": {
+   "en": "No names to suggest from these bookmarks.",
+   "zh": "這些書籤沒有可建議的名稱。"
+  },
+  "taste_limit": {
+   "en": "Up to 5 names.",
+   "zh": "最多 5 個名稱。"
+  },
+  "because": {
+   "en": "because you saved",
+   "zh": "因為你收藏了"
+  },
+  "taste_unknown": {
+   "en": "Qloo did not recognise these names, so they were not used:",
+   "zh": "Qloo 不認得這些名稱，因此沒有使用："
+  },
+  "taste_differs": {
+   "en": "places changed by your taste",
+   "zh": "個場所因你的品味而不同"
+  },
+  "taste_used": {
+   "en": "Taste signals used:",
+   "zh": "使用的品味訊號："
+  },
+  "quality": {
+   "en": "Quality first",
+   "zh": "質感優先"
+  },
+  "quality_help": {
+   "en": "Ask Qloo for refined, minimalist, artisan places and leave out anything rated below 4.3. Adds one setting to the box below.",
+   "zh": "請 Qloo 優先找精緻、簡約、手作質感的場所，並排除評分低於 4.3 的。會在下方方框多一個設定。"
+  },
+  "quality_relaxed": {
+   "en": "Nothing met the quality bar here, so the ordinary list is shown for:",
+   "zh": "這裡沒有場所達到質感門檻，因此改顯示一般清單："
+  },
+  "quality_changed": {
+   "en": "places changed by quality-first",
+   "zh": "個場所因質感優先而不同"
+  },
+  "expand_title": {
+   "en": "Beyond your bookmarks (optional)",
+   "zh": "書籤之外的延伸（可選）"
+  },
+  "expand_help": {
+   "en": "Ideas that sit next to the ones you ticked. They describe activities, not you. Nothing is ticked by default; a ticked one is added to the box below.",
+   "zh": "和你勾選的點子相鄰的活動。描述的是活動，不是你這個人。預設都不勾選；勾選後會加進下方方框。"
+  },
+  "path_deeper": {
+   "en": "Deeper",
+   "zh": "更深入"
+  },
+  "path_same": {
+   "en": "Same feeling",
+   "zh": "相同的感覺"
+  },
+  "path_with": {
+   "en": "Goes with",
+   "zh": "常一起出現"
+  },
+  "path_balance": {
+   "en": "Balance",
+   "zh": "換個平衡"
+  },
+  "expand_from": {
+   "en": "from",
+   "zh": "來自"
+  },
+  "invite_title": {
+   "en": "This weekend",
+   "zh": "這個週末"
+  },
+  "invite_one": {
+   "en": "Want to {verb}? How about {a}?",
+   "zh": "想{verb}嗎？來試試{a}吧。"
+  },
+  "invite_two": {
+   "en": "Want to {verb}? How about {a} or {b}?",
+   "zh": "週末想{verb}嗎？來場{a}或{b}吧！"
+  },
+  "invite_step": {
+   "en": "Start small: one hour, one friend. These are places, not events, and opening hours are not checked.",
+   "zh": "小步開始：先約一小時，找一個人一起。這裡列的是場所，不是活動場次，也沒有核對營業時間。"
+  },
+  "invite_more_one": {
+   "en": "Or want to {verb}? How about {a}?",
+   "zh": "或是想{verb}？來{a}吧。"
+  },
+  "invite_more_two": {
+   "en": "Or want to {verb}? How about {a} or {b}?",
+   "zh": "或是想{verb}？來{a}或{b}吧。"
+  },
+  "path_occasion": {
+   "en": "Occasion",
+   "zh": "節日"
+  },
+  "occasion_line": {
+   "en": "{when}: {name} ({date})",
+   "zh": "{when}：{name}（{date}）"
+  },
+  "occasion_in": {
+   "en": "In {n} days",
+   "zh": "還有 {n} 天"
+  },
+  "occasion_now": {
+   "en": "On now",
+   "zh": "就在這幾天"
+  },
+  "occasion_tw": {
+   "en": "Taiwan holidays and international days. Dates are from public sources: check your own work calendar.",
+   "zh": "含台灣假期與國際節日，日期取自公開資料，請以你自己的工作行事曆為準。"
+  },
+  "mode_calendar": {
+   "en": "Following the calendar",
+   "zh": "跟著行事曆"
+  },
+  "mode_weekly": {
+   "en": "This week's picks (they change weekly)",
+   "zh": "本週輪替（每週換一批）"
+  },
+  "ritual_label": {
+   "en": "A small ritual",
+   "zh": "一個小儀式"
+  },
+  "evidence_title": {
+   "en": "Evidence: every Qloo request behind this page",
+   "zh": "證據：這個頁面背後的每一筆 Qloo 請求"
+  },
+  "evidence_help": {
+   "en": "Endpoint, parameters, status, time and result count, exactly as sent. The API key is never shown. Cached means answered from this server's memory, not a new request.",
+   "zh": "端點、參數、狀態、耗時與結果數，與實際送出的一致。API 金鑰不會顯示。「快取」代表由伺服器記憶體回答，不是新的請求。"
+  },
+  "evidence_cached": {
+   "en": "cached",
+   "zh": "快取"
+  },
+  "evidence_results": {
+   "en": "results",
+   "zh": "筆結果"
+  },
+  "invite_friend": {
+   "en": "Invite a friend",
+   "zh": "邀朋友"
+  },
+  "invite_friend_done": {
+   "en": "Copied. Paste it into your chat.",
+   "zh": "已複製，貼到你的聊天裡。"
+  },
+  "invite_msg": {
+   "en": "{when}: want to do this together? {line} A place to start: {place}.",
+   "zh": "{when}，要不要一起？{line} 可以從這裡開始：{place}。"
+  },
+  "prep_label": {
+   "en": "Get ready",
+   "zh": "提前準備"
+  },
+  "waiting_label": {
+   "en": "Saved a while ago",
+   "zh": "收藏很久了"
+  },
+  "waiting_line": {
+   "en": "{months} months ago you saved “{title}”. Is this the weekend?",
+   "zh": "{months} 個月前你收藏了「{title}」。這個週末是不是時候？"
+  },
+  "waiting_chip": {
+   "en": "oldest saved {months} months ago",
+   "zh": "最早收藏於 {months} 個月前"
+  }
+ },
+ "invite": {
+  "verbs": {
+   "social": {
+    "zh": "找人聚一聚",
+    "en": "get together with someone"
+   },
+   "stress_relief": {
+    "zh": "動一動",
+    "en": "get moving"
+   },
+   "business_talk": {
+    "zh": "輕鬆聊點正事",
+    "en": "talk business at an easy pace"
+   },
+   "skill_display": {
+    "zh": "秀一手",
+    "en": "show a skill"
+   },
+   "physical_repair": {
+    "zh": "照顧一下身體",
+    "en": "look after your body"
+   },
+   "mental_comfort": {
+    "zh": "好好放鬆",
+    "en": "unwind"
+   },
+   "quiet_solo": {
+    "zh": "安靜一下",
+    "en": "have some quiet time"
+   },
+   "culture": {
+    "zh": "充實一下",
+    "en": "feed your curiosity"
+   },
+   "status_display": {
+    "zh": "犒賞自己",
+    "en": "treat yourself"
+   },
+   "entertainment": {
+    "zh": "玩一下",
+    "en": "have some fun"
+   },
+   "quick_meal": {
+    "zh": "吃點好的",
+    "en": "grab something good"
+   },
+   "shopping": {
+    "zh": "出門逛逛挖寶",
+    "en": "go hunting for finds"
+   },
+   "outdoors": {
+    "zh": "出去走走",
+    "en": "get outside"
+   },
+   "learning": {
+    "zh": "學點新東西",
+    "en": "learn something new"
+   }
+  },
+  "hooks": {
+   "Badminton court": {
+    "zh": "社交羽球",
+    "en": "a friendly badminton game"
+   },
+   "Pickleball court": {
+    "zh": "匹克球",
+    "en": "pickleball"
+   },
+   "Tennis court": {
+    "zh": "網球",
+    "en": "tennis"
+   },
+   "Golf course": {
+    "zh": "一場輕鬆的高爾夫",
+    "en": "a relaxed round of golf"
+   },
+   "Bowling alley": {
+    "zh": "保齡球",
+    "en": "bowling"
+   },
+   "Billiards": {
+    "zh": "撞球",
+    "en": "a game of pool"
+   },
+   "Hiking area": {
+    "zh": "一條步道",
+    "en": "a trail"
+   },
+   "Coffee shop": {
+    "zh": "一間好咖啡館",
+    "en": "a good coffee shop"
+   },
+   "Cooking class": {
+    "zh": "一堂料理課",
+    "en": "a cooking class"
+   },
+   "Yoga studio": {
+    "zh": "一堂瑜伽",
+    "en": "a yoga class"
+   },
+   "Pilates studio": {
+    "zh": "一堂皮拉提斯",
+    "en": "a pilates class"
+   },
+   "Gym": {
+    "zh": "一次健身",
+    "en": "a gym session"
+   },
+   "Art museum": {
+    "zh": "一場展覽",
+    "en": "an exhibition"
+   },
+   "Live music venue": {
+    "zh": "一場現場演出",
+    "en": "a live show"
+   },
+   "Karaoke bar": {
+    "zh": "一場 KTV",
+    "en": "a karaoke night"
+   },
+   "Brewery": {
+    "zh": "一杯精釀",
+    "en": "a craft beer"
+   },
+   "Book store": {
+    "zh": "逛一間書店",
+    "en": "a bookstore visit"
+   },
+   "Vintage clothing store": {
+    "zh": "逛古著店",
+    "en": "a vintage shop crawl"
+   },
+   "Fine dining restaurant": {
+    "zh": "一份精緻晚餐",
+    "en": "a refined dinner",
+    "need": "status_display"
+   },
+   "Wine bar": {
+    "zh": "一杯好酒",
+    "en": "a good glass of wine"
+   },
+   "Spa": {
+    "zh": "一次水療",
+    "en": "a spa visit"
+   },
+   "Massage": {
+    "zh": "一次按摩",
+    "en": "a massage"
+   },
+   "Tea house": {
+    "zh": "一壺好茶",
+    "en": "a proper pot of tea"
+   },
+   "Sushi restaurant": {
+    "zh": "一頓壽司",
+    "en": "a sushi dinner",
+    "need": "status_display"
+   },
+   "Yakiniku restaurant": {
+    "zh": "一頓燒肉",
+    "en": "a yakiniku dinner",
+    "need": "status_display"
+   }
+  }
+ }
+}

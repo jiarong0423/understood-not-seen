@@ -1,0 +1,280 @@
+{
+ "note": "Taiwan dates are the official government work calendar for 2026 and 2027 as reported by ETtoday, 104 and TVBS (links in sources). It applies to government offices; private employers follow the Labor Standards Act, so check your own. INTL entries are widely celebrated days, not public holidays. Local public holidays of Singapore, London, Tokyo and New York are not included. Easter 2027 and US Thanksgiving 2026 are computed from their usual rules. Re-check before relying on any date.",
+ "sources": [
+  "https://www.ettoday.net/news/20260521/3169805.htm",
+  "https://blog.104.com.tw/2027-taiwan-government-calendar/",
+  "https://www.bnext.com.tw/article/83581/2026-vacation"
+ ],
+ "non_tw_cities": [
+  "Singapore",
+  "London",
+  "Tokyo",
+  "New York"
+ ],
+ "entries": [
+  {
+   "id": "tw-2026-guangfu",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2026-10-24",
+   "end": "2026-10-26",
+   "zh": "光復節連假",
+   "en": "Taiwan Retrocession Day long weekend",
+   "acts": [
+    "Hiking area",
+    "Hot pot restaurant",
+    "Hotel"
+   ],
+   "ritual": {
+    "zh": "連假第一天早起，選一條沒走過的步道，帶一壺熱茶，山頂喝完再下山。",
+    "en": "On day one, get up early, pick a trail you have not walked and carry a flask of tea to drink at the top."
+   }
+  },
+  {
+   "id": "intl-2026-halloween",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2026-10-31",
+   "end": "2026-10-31",
+   "zh": "萬聖節",
+   "en": "Halloween",
+   "acts": [
+    "Night club",
+    "Pub",
+    "Toy store",
+    "Clothing store"
+   ],
+   "ritual": {
+    "zh": "出門前花十分鐘換上一件小小的裝扮，哪怕只是一頂帽子。",
+    "en": "Take ten minutes to put on one small costume piece before you go out, even just a hat."
+   },
+   "prep": {
+    "zh": "該想想萬聖節的裝扮了，給孩子，或給自己。",
+    "en": "Time to think about Halloween costumes, for the kids or for yourself."
+   }
+  },
+  {
+   "id": "intl-2026-singles",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2026-11-11",
+   "end": "2026-11-11",
+   "zh": "雙十一購物節",
+   "en": "Singles' Day sales",
+   "acts": [
+    "Shopping mall",
+    "Boutique"
+   ],
+   "ritual": {
+    "zh": "下單前先寫下三樣真正想要的東西，其他都放回購物車。",
+    "en": "Write down the three things you really want before you buy anything, and leave the rest in the cart."
+   }
+  },
+  {
+   "id": "intl-2026-blackfriday",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2026-11-27",
+   "end": "2026-11-27",
+   "zh": "黑色星期五",
+   "en": "Black Friday",
+   "acts": [
+    "Shopping mall",
+    "Clothing store"
+   ],
+   "ritual": {
+    "zh": "先決定一個預算和一件想找的東西，逛完當天就收手。",
+    "en": "Set one budget and one thing to look for, and stop when the day is done."
+   }
+  },
+  {
+   "id": "intl-2026-xmaseve",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2026-12-24",
+   "end": "2026-12-24",
+   "zh": "平安夜",
+   "en": "Christmas Eve",
+   "acts": [
+    "Fine dining restaurant",
+    "Wine bar",
+    "Gift shop"
+   ],
+   "ritual": {
+    "zh": "訂位前先決定今晚穿什麼，吃飯時把手機放進包包。",
+    "en": "Choose what to wear before you book, and keep your phone in your bag during the meal."
+   },
+   "prep": {
+    "zh": "平安夜的好位子通常先被訂走，現在先訂位、挑好禮物。",
+    "en": "The good tables go first on Christmas Eve: book now and pick the gift."
+   }
+  },
+  {
+   "id": "tw-2026-xingxian",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2026-12-25",
+   "end": "2026-12-27",
+   "zh": "行憲紀念日連假",
+   "en": "Constitution Day long weekend",
+   "acts": [
+    "Fine dining restaurant",
+    "Spa",
+    "Hotel"
+   ],
+   "ritual": {
+    "zh": "三天裡留一個晚上給自己：安排一頓好好坐下來的晚餐，不趕時間。",
+    "en": "Keep one evening of the three days for a proper sit-down dinner with no rush."
+   }
+  },
+  {
+   "id": "intl-2026-nye",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2026-12-31",
+   "end": "2026-12-31",
+   "zh": "跨年夜",
+   "en": "New Year's Eve",
+   "acts": [
+    "Live music venue",
+    "Night club"
+   ],
+   "ritual": {
+    "zh": "倒數前寫下一件明年想完成的小事，放進口袋。",
+    "en": "Before the countdown, write one small thing you want to finish next year and put it in your pocket."
+   }
+  },
+  {
+   "id": "tw-2027-newyear",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2027-01-01",
+   "end": "2027-01-03",
+   "zh": "元旦連假",
+   "en": "New Year long weekend",
+   "acts": [
+    "Hiking area",
+    "Coffee shop",
+    "Hotel"
+   ],
+   "ritual": {
+    "zh": "新年第一天去一個高處或一間安靜的咖啡館，替今年寫下三行。",
+    "en": "On the first day, go somewhere high or a quiet cafe and write three lines for the year."
+   }
+  },
+  {
+   "id": "tw-2027-cny",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2027-02-04",
+   "end": "2027-02-10",
+   "zh": "農曆春節（7 天）",
+   "en": "Lunar New Year (7 days)",
+   "acts": [
+    "Hot pot restaurant",
+    "Market",
+    "Hotel",
+    "Gift shop"
+   ],
+   "ritual": {
+    "zh": "圍爐前先出門走一小段路，帶一份在地伴手禮回家。",
+    "en": "Take a short walk before the family meal and bring home a local gift."
+   },
+   "prep": {
+    "zh": "過年前先備年貨、安排圍爐的地方。",
+    "en": "Before the New Year, stock up and settle where the family meal will be."
+   }
+  },
+  {
+   "id": "intl-2027-valentine",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2027-02-14",
+   "end": "2027-02-14",
+   "zh": "情人節",
+   "en": "Valentine's Day",
+   "acts": [
+    "Fine dining restaurant",
+    "Wine bar",
+    "Gift shop"
+   ],
+   "ritual": {
+    "zh": "為對方或自己挑一個小小的、手寫的東西，再去吃那頓飯。",
+    "en": "Choose one small handwritten thing for someone or yourself, then go to the dinner."
+   },
+   "prep": {
+    "zh": "情人節前先訂位，再挑一份小禮物。",
+    "en": "Book the table first, then choose a small gift."
+   }
+  },
+  {
+   "id": "tw-2027-228",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2027-02-27",
+   "end": "2027-03-01",
+   "zh": "和平紀念日連假",
+   "en": "Peace Memorial Day long weekend",
+   "acts": [
+    "Art museum",
+    "Tea house"
+   ],
+   "ritual": {
+    "zh": "找一個展覽或一間茶館，安靜地度過其中一個下午。",
+    "en": "Spend one afternoon in an exhibition or a tea house, quietly."
+   }
+  },
+  {
+   "id": "intl-2027-easter",
+   "region": "INTL",
+   "kind": "observance",
+   "start": "2027-03-28",
+   "end": "2027-03-28",
+   "zh": "復活節",
+   "en": "Easter",
+   "acts": [
+    "Brunch restaurant",
+    "Bakery"
+   ],
+   "ritual": {
+    "zh": "早午餐前先買一份剛出爐的麵包，慢慢吃。",
+    "en": "Buy something fresh from the oven before brunch and eat it slowly."
+   }
+  },
+  {
+   "id": "tw-2027-qingming",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2027-04-03",
+   "end": "2027-04-06",
+   "zh": "兒童節清明連假（4 天）",
+   "en": "Children's and Tomb-Sweeping long weekend (4 days)",
+   "acts": [
+    "Hiking area",
+    "Cooking class"
+   ],
+   "ritual": {
+    "zh": "出發前先打一通電話或傳一則訊息給想念的人，再出門走走。",
+    "en": "Call or message someone you miss before heading out for a walk."
+   }
+  },
+  {
+   "id": "tw-2027-labour",
+   "region": "TW",
+   "kind": "holiday",
+   "start": "2027-04-30",
+   "end": "2027-05-02",
+   "zh": "勞動節連假",
+   "en": "Labour Day long weekend",
+   "acts": [
+    "Hiking area",
+    "Spa",
+    "Hotel"
+   ],
+   "ritual": {
+    "zh": "把三天裡的一天留給身體：走路、泡湯或做一堂課，晚上早點睡。",
+    "en": "Give one of the three days to your body: a walk, a soak or a class, and an early night."
+   }
+  }
+ ]
+}
