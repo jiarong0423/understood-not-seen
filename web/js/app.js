@@ -249,7 +249,7 @@ function renderResults() {
         const why = (p.because || []).length ? `<span class="why">${esc(ui("because"))} ${esc(p.because.join(sep()))}</span>` : "";
         const shown = placeName(p.name, lang, state.placeNames);
         const about = lang === "en" && !hasForm(p.name, "en", state.placeNames) && (p.about || p.area) ? `<span class="pl-about">${esc([p.about, p.area].filter(Boolean).join(" · "))}</span>` : "";
-        const map = p.place_id ? ` <a class="pl-map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id)}" target="_blank" rel="noopener noreferrer">${esc(ui("open_map"))}</a>` : "";
+        const map = p.place_id ? ` <a class="pl-map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id)}&hl=${lang === "zh" ? "zh-TW" : "en"}" target="_blank" rel="noopener noreferrer">${esc(ui("open_map"))}</a>` : "";
         return `<li><span title="${esc(p.name)}">${esc(shown)}${map}${about}${why}${others.length ? `<span class="also">${esc(ui("also"))}: ${esc(others.join(sep()))}</span>` : ""}</span></li>`;
       }).join("") + "</ul>";
     } else if (dup.length) {
@@ -283,7 +283,8 @@ async function runAI() {
 
 async function sendInvite() {
   try {
-    if (navigator.share) { await navigator.share({ text: state.inviteText }); return; }
+    // phones get the share sheet; a desktop only copies the text (a share sheet there looks like it is about to send something)
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) { await navigator.share({ text: state.inviteText }); return; }
     await navigator.clipboard.writeText(state.inviteText);
     $("inviteDone").textContent = ui("invite_friend_done");
   } catch (e) { /* share sheet dismissed or clipboard blocked: nothing to do */ }
