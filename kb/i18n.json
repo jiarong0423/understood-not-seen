@@ -787,6 +787,22 @@
   "open_map": {
    "en": "Map",
    "zh": "地圖"
+  },
+  "map_back": {
+   "en": "Back",
+   "zh": "返回"
+  },
+  "map_full": {
+   "en": "Open in Google Maps",
+   "zh": "在 Google 地圖開啟"
+  },
+  "home": {
+   "en": "Home",
+   "zh": "首頁"
+  },
+  "clear_data": {
+   "en": "Clear saved data and cache",
+   "zh": "清除暫存與快取"
   }
  },
  "invite": {

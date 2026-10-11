@@ -168,7 +168,39 @@ function updatePayload() {
   if ($("quality").checked) body.quality = true;
   $("payload").textContent = JSON.stringify(body, null, 1);
   $("go").disabled = !body.tags.length;
+  saveSession();
   return body;
+}
+
+// Session state, so coming back from another page restores where you were. Kept in THIS tab only (sessionStorage, cleared when the
+// tab closes). Removed bookmarks are never stored, only what the page already shows; nothing here is sent anywhere.
+const SESSION_KEY = "uns-session";
+function saveSession() {
+  if (!state.total) return;
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ v: 1, lang, total: state.total, counts: state.counts,
+      kept: state.kept.map((it) => ({ title: it.title, host: it.host, added: it.added || 0, hints: it.hints || [] })),
+      chosen: state.chosen, off: state.ideas.filter((x) => !x.on).map((x) => x.activity), extraOn: state.extraOn, tasteOn: state.tasteOn,
+      quality: $("quality").checked, city: $("city").value, results: state.results, step: state.step, scroll: scrollY }));
+  } catch (e) { /* storage blocked or full: the page still works, it just will not restore */ }
+}
+function restoreSession() {
+  let s; try { s = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null"); } catch (e) { s = null; }
+  if (!s || s.v !== 1 || !s.total) return false;
+  if (s.lang && s.lang !== lang) { lang = s.lang; applyStatic(); }
+  Object.assign(state, { kept: s.kept, counts: s.counts, total: s.total, chosen: s.chosen || [], ideas: [], extraOn: s.extraOn || [], tasteOn: s.tasteOn || [], results: s.results || null });
+  for (const id of ["s2", "s3", "s4", "s2b"]) $(id).classList.remove("hide");
+  $("aiBtn").classList.toggle("hide", !supported());
+  $("city").value = s.city || "Taipei"; $("quality").checked = !!s.quality;
+  renderStats(false); renderNeeds();
+  refreshIdeas();
+  state.ideas.forEach((x) => { x.on = !(s.off || []).includes(x.activity); }); // the ticks the visitor had
+  renderIdeas(); renderExpand(); renderTaste(); updatePayload();
+  if (state.results) { $("s5").classList.remove("hide"); renderResults(); }
+  const step = s.step || 3;
+  setStep(step); history.replaceState({ step }, "", "#step" + step);
+  requestAnimationFrame(() => scrollTo(0, s.scroll || 0));
+  return true;
 }
 
 // Every place is listed once, under the first idea that returned it; other ideas that also returned it are shown as small tags.
@@ -249,7 +281,8 @@ function renderResults() {
         const why = (p.because || []).length ? `<span class="why">${esc(ui("because"))} ${esc(p.because.join(sep()))}</span>` : "";
         const shown = placeName(p.name, lang, state.placeNames);
         const about = lang === "en" && !hasForm(p.name, "en", state.placeNames) && (p.about || p.area) ? `<span class="pl-about">${esc([p.about, p.area].filter(Boolean).join(" · "))}</span>` : "";
-        const map = p.place_id ? ` <a class="pl-map" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id)}&hl=${lang === "zh" ? "zh-TW" : "en"}" target="_blank" rel="noopener noreferrer">${esc(ui("open_map"))}</a>` : "";
+        const full = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id || "")}&hl=${lang === "zh" ? "zh-TW" : "en"}`;
+        const map = p.place_id ? ` <a class="pl-map" href="${full}" data-name="${esc(shown)}" data-q="${esc(p.name + (p.area ? " " + p.area : ""))}" target="_blank" rel="noopener noreferrer">${esc(ui("open_map"))}</a>` : "";
         return `<li><span title="${esc(p.name)}">${esc(shown)}${map}${about}${why}${others.length ? `<span class="also">${esc(ui("also"))}: ${esc(others.join(sep()))}</span>` : ""}</span></li>`;
       }).join("") + "</ul>";
     } else if (dup.length) {
@@ -292,7 +325,39 @@ async function sendInvite() {
 
 // Each step is a history entry: Back returns to the previous step and keeps what you loaded; it never leaves the page.
 function pushStep(n) { if ((history.state || {}).step !== n) history.pushState({ step: n }, "", "#step" + n); }
+// A new frame each time: changing an existing frame's address adds entries to the browser history, and then Back would move inside
+// the map instead of closing it. Removing the frame drops those entries.
+function freshFrame(url) {
+  const f = document.createElement("iframe");
+  f.id = "mapFrame"; f.title = "map"; f.referrerPolicy = "no-referrer";
+  if (url) f.src = url;
+  $("mapFrame").replaceWith(f);
+}
+// Clear everything this page keeps in the browser (the saved session, the offline copy, the style choice) and start fresh.
+async function clearData() {
+  try { sessionStorage.clear(); } catch (e) { /* blocked */ }
+  try { localStorage.removeItem("uns-theme"); } catch (e) { /* blocked */ }
+  try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (e) { /* blocked */ }
+  try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) { /* blocked */ }
+  location.replace(location.pathname);
+}
+// The map opens inside the page (the visitor never leaves, so nothing is lost); Back, Esc or the Back button close it.
+function openMap(a) {
+  $("mapTitle").textContent = a.dataset.name;
+  $("mapFull").href = a.href;
+  freshFrame(`https://maps.google.com/maps?q=${encodeURIComponent(a.dataset.q)}&hl=${lang === "zh" ? "zh-TW" : "en"}&z=16&output=embed`);
+  $("mapPanel").classList.remove("hide");
+  history.pushState({ step: (history.state || {}).step || 4, map: true }, "", location.hash || "#step4");
+  $("mapBack").focus();
+}
+function closeMap(fromHistory) {
+  if ($("mapPanel").classList.contains("hide")) return;
+  $("mapPanel").classList.add("hide");
+  freshFrame(null);
+  if (!fromHistory && (history.state || {}).map) history.back();
+}
 function onBack(e) {
+  if (!$("mapPanel").classList.contains("hide")) { closeMap(true); return; } // Back while the map is open only closes the map
   const n = (e.state || {}).step || 1;
   if (n < 4) $("s5").classList.add("hide");                 // leaving the places step: hide the results, keep the ideas
   if (n >= 4 && state.results) $("s5").classList.remove("hide"); // Forward again: show the results that are already there
@@ -314,6 +379,7 @@ async function go() {
     state.results = await r.json();
     state.results.city = body.city;
     renderResults();
+    saveSession();
   } catch (e) {
     $("results").innerHTML = `<p class="fine">${esc(ui("offline"))}</p>`;
   }
@@ -338,6 +404,13 @@ function start(html) {
 async function init() {
   history.replaceState({ step: 1 }, "", location.pathname + location.search);
   addEventListener("popstate", onBack);
+  document.addEventListener("click", (e) => { const a = e.target.closest("a.pl-map"); if (a && !e.metaKey && !e.ctrlKey) { e.preventDefault(); openMap(a); } });
+  $("mapBack").addEventListener("click", () => closeMap(false));
+  $("mapPanel").addEventListener("click", (e) => { if (e.target === $("mapPanel")) closeMap(false); });
+  addEventListener("keydown", (e) => { if (e.key === "Escape") closeMap(false); });
+  // Home: back to the top of the page, keeping everything loaded
+  $("homeBtn").addEventListener("click", () => { setStep(state.total ? 3 : 1); window.scrollTo({ top: 0, behavior: REDUCED ? "auto" : "smooth" }); });
+  addEventListener("scroll", () => $("homeBtn").classList.toggle("hide", scrollY < 500), { passive: true });
   document.querySelectorAll(".bi[data-g]").forEach((el) => { el.innerHTML = glyph(el.dataset.g); });
   i18n = await (await fetch("kb/i18n.json")).json();
   state.kb = await loadKb();
@@ -360,6 +433,10 @@ async function init() {
   $("go").addEventListener("click", go);
   document.addEventListener("click", (e) => { if (e.target.closest("#inviteBtn")) sendInvite(); }); // the button is re-created whenever results are drawn
   $("aiBtn").addEventListener("click", runAI);
+  $("clearData").addEventListener("click", clearData);
+  addEventListener("pagehide", saveSession); // remembers the scroll position too
+  const nav = performance.getEntriesByType("navigation")[0];
+  if (nav && nav.type === "back_forward") restoreSession(); // came back from another page: put things back as they were
   $("copy").addEventListener("click", async () => {
     try { await navigator.clipboard.writeText($("payload").textContent); $("copy").textContent = ui("copied"); setTimeout(() => { $("copy").textContent = ui("copy"); }, 1200); } catch (e) { /* clipboard may be blocked */ }
   });

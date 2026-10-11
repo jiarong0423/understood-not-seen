@@ -1,8 +1,8 @@
 {
   "locked_on": "2026-10-11",
-  "reason": "owner asked for one language per page: place details style (English descriptor, map link) added to the stylesheet",
+  "reason": "owner asked for a Back button on the map and a Home button: in-page map panel and home button styles",
   "files": {
-    "index.html <style>": "eeda8e36c1e95010de8f4c8ec20a22af020b1ee65c4f805cb69f4b2e3ecdac26",
+    "index.html <style>": "a0b325db47b7e5adff72a9fd9c19d3d4247ea01ff45cddb08a019024f10e29b9",
     "js/themes.js": "0a38bcf42e63dd75c7dfcaa3c61b416409a93dc7abdb35949a4da15348ec0cda",
     "js/icons.js": "0913fd4af99974338cea2e82e8506ab99a3a194ac178f93bf961a5a9f4e9d39c",
     "icons/apple-touch-icon.png": "29bbce52705df761048ab3bd3b22331cdf6fbd9026765d64daddb9b44142f951",
