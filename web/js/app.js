@@ -14,6 +14,7 @@ const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PALETTE = ["#d97706", "#e11d48", "#7c3aed", "#0891b2", "#64748b", "#a16207", "#be185d", "#4d7c0f"];
 let i18n = null, cities = [];
 let lang = (navigator.language || "en").toLowerCase().startsWith("zh") ? "zh" : "en";
+const MAX_TAGS = 12; // the server refuses more than this in one lookup (server/server.mjs, /api/recommend)
 const state = { kept: [], counts: {}, total: 0, chosen: [], kb: [], ideas: [], results: null, step: 1, tasteOn: [], exp: null, suggestions: [], extraOn: [], cal: null, placeNames: {} };
 
 const ui = (k) => i18n.ui[k][lang];
@@ -163,11 +164,14 @@ function renderIdeas() {
 }
 
 function updatePayload() {
-  const body = { city: $("city").value, tags: [...state.ideas.filter((x) => x.on).map((x) => x.tag_id), ...state.suggestions.filter((x) => state.extraOn.includes(x.activity)).map((x) => x.tag_id)] };
+  const body = { city: $("city").value, tags: [...new Set([...state.ideas.filter((x) => x.on).map((x) => x.tag_id), ...state.suggestions.filter((x) => state.extraOn.includes(x.activity)).map((x) => x.tag_id)])] };
   if (state.tasteOn.length) body.taste = [...state.tasteOn];
   if ($("quality").checked) body.quality = true;
   $("payload").textContent = JSON.stringify(body, null, 1);
-  $("go").disabled = !body.tags.length;
+  const extra = body.tags.length - MAX_TAGS; // too many: say how many to uncheck instead of sending a lookup the server will refuse
+  $("goNote").textContent = extra > 0 ? ui("too_many").replace("{max}", MAX_TAGS).replace("{n}", body.tags.length).replace("{extra}", extra) : "";
+  $("goNote").classList.toggle("hide", extra <= 0);
+  $("go").disabled = !body.tags.length || extra > 0;
   saveSession();
   return body;
 }
@@ -373,16 +377,22 @@ async function go() {
   setStep(4);
   pushStep(4);
   $("s5").scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
-  try {
-    const r = await fetch("/api/recommend", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    state.results = await r.json();
-    state.results.city = body.city;
-    renderResults();
-    saveSession();
-  } catch (e) {
-    $("results").innerHTML = `<p class="fine">${esc(ui("offline"))}</p>`;
+  // Each failure says what happened (and its code), so a visitor on a phone can tell a dropped connection from a refused lookup.
+  const fail = (key, code) => { $("results").innerHTML = `<p class="fine">${esc(ui(key))}${code ? esc(ui("err_code").replace("{code}", code)) : ""}</p>`; };
+  if (body.tags.length > MAX_TAGS) return fail("err_request");
+  let r;
+  try { r = await fetch("/api/recommend", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) }); }
+  catch (e) { return fail("err_network"); }
+  if (!r.ok) {
+    let error = ""; try { error = (await r.json()).error || ""; } catch (e) { /* not JSON: a proxy page */ }
+    const key = r.status === 400 || r.status === 413 ? "err_request" : r.status === 429 ? "err_slow"
+      : r.status === 503 ? (error === "budget" ? "err_budget" : "offline") : "err_server";
+    return fail(key, r.status);
   }
+  try { state.results = await r.json(); } catch (e) { return fail("err_network"); } // the body was cut off on the way
+  state.results.city = body.city;
+  renderResults();
+  saveSession();
 }
 
 function start(html) {
@@ -401,7 +411,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-11.6"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-19.1"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }

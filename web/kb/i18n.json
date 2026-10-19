@@ -428,6 +428,34 @@
    "en": "The place lookup service is not connected in this build yet.",
    "zh": "場所查詢服務尚未連上。"
   },
+  "too_many": {
+   "en": "Up to {max} categories per lookup; {n} are checked. Uncheck {extra} to continue.",
+   "zh": "一次最多查 {max} 個類別，目前勾選 {n} 個，請取消 {extra} 個再查詢。"
+  },
+  "err_request": {
+   "en": "The server did not accept this lookup (for example, more than 12 categories). Uncheck a few and try again.",
+   "zh": "伺服器不接受這次查詢（例如類別超過 12 個），請少勾幾個再試。"
+  },
+  "err_slow": {
+   "en": "Too many lookups in a short time. Wait a minute and try again.",
+   "zh": "短時間內查詢太多次，請等一分鐘再試。"
+  },
+  "err_budget": {
+   "en": "This month's lookup allowance has been used up.",
+   "zh": "本月的查詢額度已用完。"
+  },
+  "err_network": {
+   "en": "The connection dropped before the places arrived (weak signal, or the page went to the background). Check the network and press Find places again.",
+   "zh": "場所還沒傳回來連線就中斷了（訊號不穩，或頁面被切到背景）。請確認網路後再按一次查詢場所。"
+  },
+  "err_server": {
+   "en": "The server had a problem. Try again in a moment.",
+   "zh": "伺服器暫時出了問題，請稍後再試。"
+  },
+  "err_code": {
+   "en": " (code {code})",
+   "zh": "（代碼 {code}）"
+  },
   "lang": {
    "en": "中文",
    "zh": "English"
