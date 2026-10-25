@@ -1,4 +1,4 @@
-// Server protections: validation, path traversal, monthly budget, per-IP rate limit.
+// Server protections: validation, path traversal, call budget (per server run), per-IP rate limit.
 // Starts its own server on a free port picked at run time with a fake key and an unreachable Qloo address (no real quota is used),
 // and always stops it afterwards. Run: node --test test/server.test.mjs
 import test, { before, after } from "node:test";
@@ -62,7 +62,7 @@ test("taste names are validated", async () => {
   for (const taste of [Array(6).fill("Cafe A"), ["x"], ["a".repeat(61)], [5], ["bad\nname"], "Cafe A"])
     assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: [ok], taste })).status, 400, JSON.stringify(taste).slice(0, 40));
 });
-test("monthly budget guard returns 503 and never calls beyond the limit", async () => {
+test("call budget guard returns 503 and never calls beyond the limit", async () => {
   const tags = ["urn:tag:category:place:spa", "urn:tag:category:place:hotel", "urn:tag:category:place:art_museum", "urn:tag:category:place:golf_course"];
   const statuses = [];
   for (const t of tags) statuses.push((await call("POST", "/api/recommend", { city: "Taipei", tags: [t] })).status);
