@@ -18,7 +18,7 @@ It pursues one goal for you, to understand your taste privately and turn it into
 | Understand | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you |
 | **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it |
 | Act | Calls Qloo as a tool (`/search`, `/v2/insights`) | Uses places you saved as taste signals and ambience tags for quality-first ranking |
-| Adapt | Looks at what came back | Falls back to neighbouring categories when a city has none, relaxes the quality bar when nothing passes, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page |
+| Adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page |
 
 The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the personal part never leaves your device.
 
@@ -144,12 +144,12 @@ Running it yourself needs your own Qloo API key (see below).
 cp .env.example .env        # add your Qloo hackathon key
 node --env-file=.env server/server.mjs
 # open http://127.0.0.1:8770 and press "Use sample bookmarks"
-npm test                    # privacy-gate and ranking tests
+npm test                    # 62 tests: privacy gate, ranking, both samples, server protections, language, design lock
 ```
 Node 22 or newer. No dependencies.
 
 The server holds the API key, keeps Qloo answers only in memory (24 hours, never written to disk or this repository),
-spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run, under the 10,000 monthly limit.
+spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run (the counter resets when the server restarts; Qloo allows 10,000 calls a month).
 
 ## Repository map
 
@@ -157,7 +157,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 |---|---|
 | `web/` | The browser app: `js/gate.js` (privacy gate), `js/combine.js` (ranking), `js/app.js` (UI), `kb/activities.json` |
 | `server/server.mjs` | Static files plus the Qloo proxy |
-| `kb/activities.json` | Activity knowledge base: functions, Qloo tag ids, keywords, fallbacks |
+| `kb/activities.json` | Activity knowledge base: functions, Qloo tag ids, keywords, fallbacks. 76 entries; 73 can be suggested (2 have no Qloo tag, 1 is used only as a fallback) |
 | `kb/i18n.json` | English and Traditional Chinese names for activities, needs, removal reasons and interface text |
 | `filter_bookmarks.py` | Source of the privacy rules (Python), with self-tests |
 | `tools/export_rules.py` | Exports the rules and knowledge base to `web/` so both sides stay identical |
@@ -165,7 +165,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 | `web/js/themes.js` | The collapsible style switcher: 14 original styles, all driven by CSS variables |
 | `web/js/embed.js`, `web/eval.html` | Optional on-device matching and its reproducible check |
 | `kb/vocab.json` | Domain vocabulary per activity, used only by the on-device matching |
-| `test/` | Node tests for the gate and ranking |
+| `test/` | 62 Node tests: gate, ranking, samples, server, language, design lock |
 
 ## Honest limits
 - The privacy gate is rule based. It removes more than it keeps on purpose, and a rule can still miss something. Review the "kept" count.
