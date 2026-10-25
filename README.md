@@ -125,6 +125,19 @@ export bookmarks, so load a bookmarks.html exported on a computer.
 
 Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen.zeabur.app (demo data via "Use sample bookmarks")
 
+## How to test (for judges)
+
+The hosted demo needs no sign-in and no key: <https://understood-not-seen.zeabur.app/>
+
+1. Under **1. Load bookmarks**, press **Use sample bookmarks**, or choose your own bookmarks export (it is read inside the tab and never uploaded).
+2. **2. What stayed on your device** shows how many links the privacy gate removed, never their titles.
+3. Optionally pick needs under **3. What do you want from your time off?**
+4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick).
+5. Press **Find places**. **5. Places** lists real places from Qloo; a place found through a saved place you ticked says "because you saved ...". Each place opens on a map.
+6. Open **Evidence: every Qloo request behind this page** to see each request (endpoint, parameters, status, time, result count). The key is never shown.
+
+Running it yourself needs your own Qloo API key (see below).
+
 ## Run it
 
 ```bash
