@@ -1,0 +1,72 @@
+{
+  "what": "Same question asked three ways on 2026-10-11: a chat model through its API, the same model's web app, and Qloo's taste graph. This file backs the comparison on the Devpost page.",
+  "date": "2026-10-11",
+  "prompt": "Recommend 8 cafés in Taipei that someone who loves Simple Kaffa (a specialty coffee roaster) would also like. For each, give the name and the district. Answer only as JSON: [{\"name\": \"...\", \"district\": \"...\"}]",
+  "chat_api": {
+    "model": "gemini-3.8-flash",
+    "search_grounding": false,
+    "answers": [
+      {
+        "name": "VWI by CHADWANG",
+        "district": "Da'an District",
+        "chain": false
+      },
+      {
+        "name": "Fika Fika Cafe",
+        "district": "Zhongshan District",
+        "chain": false
+      },
+      {
+        "name": "Rufous Coffee Roasters",
+        "district": "Da'an District",
+        "chain": false
+      },
+      {
+        "name": "Mountain Kids Coffee Roaster",
+        "district": "Zhongzheng District",
+        "chain": false
+      },
+      {
+        "name": "All Day Roasting Company",
+        "district": "Songshan District",
+        "chain": false
+      },
+      {
+        "name": "Oasis Coffee Roasters",
+        "district": "Da'an District",
+        "chain": false
+      },
+      {
+        "name": "Coffee Sweet",
+        "district": "Zhongshan District",
+        "chain": false
+      },
+      {
+        "name": "Jack & Nana Coffee Store",
+        "district": "Da'an District",
+        "chain": false
+      }
+    ]
+  },
+  "chat_web_app": {
+    "note": "Gemini web app with Google Maps grounding, so not LLM-only",
+    "answers": [
+      "VWI BY CHADWANG",
+      "Fika Fika Cafe",
+      "RUFOUS COFFEE",
+      "All Day Roasting Company",
+      "Single Origin espresso & roast",
+      "Oasis Coffee Roasters",
+      "Jack & NaNa coffee store",
+      "Coffee Sweet"
+    ]
+  },
+  "results": {
+    "chat_api_places_that_exist": "8 of 8 (each found by a Qloo place search in Taipei)",
+    "chat_api_and_web_app_share": "7 of 8 (matched by hand: Rufous Coffee Roasters = RUFOUS COFFEE; only Mountain Kids Coffee Roaster is API-only and Single Origin espresso & roast is web-only)",
+    "qloo_places_returned": 8,
+    "qloo_places_with_because_you_saved": "8 of 8",
+    "qloo_places_in_neither_chat_answer": "6 of 8 (only RUFOUS COFFEE and Mountain Kids Coffee Roaster appear in a chat answer)"
+  },
+  "not_included": "Qloo's response (place list, addresses, ratings) is not stored in this repository, as the README's Data and attribution section states. Run the app with a key to reproduce it."
+}

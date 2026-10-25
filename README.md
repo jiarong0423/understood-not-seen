@@ -14,7 +14,7 @@ It pursues one goal for you, to understand your taste privately and turn it into
 | | Step | What the agent does |
 |---|---|---|
 | Perceive | Reads the bookmark export in your tab | Nothing is sent anywhere |
-| **Gate 1: privacy** | Fails closed | Removes adult, account, personal, private-address and identifier links and their neighbours before anything else sees them |
+| **Gate 1: privacy** | Runs first, with fixed rules | Removes adult, account, personal, private-address and identifier links before anything else sees them; adult and account links also take their neighbours on the same site |
 | Understand | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you |
 | **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it |
 | Act | Calls Qloo as a tool (`/search`, `/v2/insights`) | Uses places you saved as taste signals and ambience tags for quality-first ranking |
@@ -29,7 +29,7 @@ The decisions are rules plus a small on-device embedding model, not a chat model
 ```mermaid
 flowchart LR
   subgraph Device["Your browser tab, on your device"]
-    B["bookmarks.html"] --> G1{{"Gate 1: privacy<br/>fails closed"}}
+    B["bookmarks.html"] --> G1{{"Gate 1: privacy<br/>fixed rules, runs first"}}
     G1 -->|kept| U["Understand<br/>73 activities x daily needs<br/>optional on-device model"]
     G1 -.->|removed| X[("counts only<br/>never stored, never sent")]
     U --> I["Ideas + beyond your bookmarks<br/>deeper, same feeling, goes with, balance"]
@@ -103,7 +103,7 @@ Reading about work or news is never turned into a leisure need.
 
 ## Security checks (built into the repo)
 `npm run security` runs three tools: **gitleaks** (secrets in the files and the whole git history), **semgrep** (static analysis for JavaScript, Node and Python, plus a secrets rule pack) and **npm audit** (dependency vulnerabilities; the app has no npm dependencies). A **pre-push hook** (`git config core.hooksPath .githooks`) runs gitleaks and the full test suite before any push and refuses to push without gitleaks.
-The server tests also cover path traversal, input validation, a monthly budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
+The server tests also cover path traversal, input validation, a call budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
 
 ## One language per page
 Qloo stores one name per place and has no language setting, so place names go through a small mapping layer: `kb/place_names.json` (hand-written; entries marked `translated` are pinyin or translated type words, not official names), a rule that splits mixed names ("Mars Fitness 瑪爾斯全方位運動空間" shows the Latin part on the English page and the Chinese part on the Chinese page) and a fallback to Qloo's English descriptor. Names with no entry stay as Qloo stores them; `tools/unmapped_names.py` lists them. The demo has an English sample and a Chinese sample, and the button loads the one that matches the page.
@@ -149,7 +149,7 @@ npm test                    # privacy-gate and ranking tests
 Node 22 or newer. No dependencies.
 
 The server holds the API key, keeps Qloo answers only in memory (24 hours, never written to disk or this repository),
-spaces requests 250 ms apart, allows 20 requests per minute per address, and stops at a monthly budget of 8,000 calls.
+spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run, under the 10,000 monthly limit.
 
 ## Repository map
 
@@ -180,3 +180,8 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 
 ## Data and attribution
 Place data comes from the Qloo API under the hackathon key terms. Qloo responses are not stored in this repository.
+
+- The privacy gate is fixed rules, not AI. The only AI in the web app is an optional on-device embedding model, `Xenova/paraphrase-multilingual-MiniLM-L12-v2` (Apache-2.0), run with Transformers.js (`@huggingface/transformers` 4.3.1, Apache-2.0). It sees only bookmarks that passed the privacy gate, matches their titles to activities, recommends nothing and sends nothing. Every place comes from Qloo.
+- The repository also keeps an optional desktop script (`filter_bookmarks.py`, `build_signals.py`) that can use a local model; the web app and the hosted demo do not use it.
+- Icons: Lucide (ISC licence, `web/vendor/lucide/LICENSE`).
+- The three-way comparison quoted on Devpost (a chat model's API, the same model's web app, and Qloo) is summarised in [`evidence/llm_baseline_20261011_summary.json`](evidence/llm_baseline_20261011_summary.json). Qloo's own answer is left out, as stated above.
