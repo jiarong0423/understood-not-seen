@@ -29,7 +29,7 @@ before(async () => {
     const sig = u.searchParams.get("signal.interests.entities");
     if (u.searchParams.get("filter.type") === "urn:heatmap") { // the real API answers ~1,200 cells for a place signal and 0 for category tags
       const cells = sig ? Array.from({ length: 120 }, (_, i) => ({ location: { latitude: 25.0 + i / 1000, longitude: 121.5 + (i % 7) / 100, geohash: "wsq" + i }, query: { affinity: 1 - i / 200, affinity_rank: i + 1, popularity: 0.5 } })) : [];
-      return res.end(JSON.stringify({ success: true, results: { heatmap: cells } }));
+      return res.end(JSON.stringify({ success: true, results: { heatmap: cells }, query: { localities: { filter: [{ name: "Taichung", location: { lat: 25.03, lon: 121.52 } }] } } }));
     }
     const rankedTags = [{ id: "urn:tag:accessibility:place:wheelchair_accessible_entrance", type: "urn:tag:accessibility:place", name: "Wheelchair accessible entrance" }, { id: "urn:tag:decor:qloo:rustic_chic", type: "urn:tag:decor:qloo", name: "Rustic chic" }, { id: "urn:tag:ambience:qloo:modern", type: "urn:tag:ambience:qloo", name: "Modern" }, { id: "urn:tag:category:place:coffee_shop", type: "urn:tag:category:place", name: "Coffee shop" }, { id: "urn:tag:menu_highlight:qloo:pour_over", type: "urn:tag:menu_highlight:qloo", name: "Pour over" }, { id: "urn:tag:specialty_dish:place:toast", type: "urn:tag:specialty_dish:place", name: "Toast" }];
     const ents = sig && u.searchParams.get("filter.tags") === "urn:tag:category:place:concert_hall" ? [] // measured on the real API: a cafe signal leaves concert halls empty
@@ -147,6 +147,7 @@ test("taste heatmap: asked only with a saved place and heatmap:true, same city a
   assert.ok(!("filter.tags" in h[0].q) && !("signal.interests.tags" in h[0].q), "the heatmap carries the city and the saved place only");
   assert.equal(j.heat.total, 120);
   assert.equal(j.heat.cells.length, 80);
+  assert.deepEqual(j.heat.center, { lat: 25.03, lon: 121.52 }, "the city centre Qloo resolved, so the page can mark it");
   assert.ok(j.heat.cells.every((c) => Number.isFinite(c.lat) && Number.isFinite(c.lon) && c.affinity >= 0));
   assert.ok(j.heat.cells.every((c, i, a) => i === 0 || a[i - 1].affinity >= c.affinity), "strongest first");
   assert.deepEqual(j.groups[0].places[0].loc, { lat: 25.05, lon: 121.53 }, "places carry their position so the page can mark them on the heatmap");
@@ -166,4 +167,21 @@ test("taste heatmap: asked only with a saved place and heatmap:true, same city a
   assert.equal(off.heat, null);
   const bad = await fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], heatmap: "yes" }) });
   assert.equal(bad.status, 400);
+});
+
+test("heatmap is a separate, default-off choice: the payload carries it only when the visitor ticks it, and the server never asks otherwise", async () => {
+  const html = (await import("node:fs")).readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
+  const app = (await import("node:fs")).readFileSync(new URL("../web/js/app.js", import.meta.url), "utf8");
+  assert.match(html, /<input type="checkbox" id="heat">/, "its own checkbox, not checked by default");
+  assert.doesNotMatch(html, /id="heat"[^>]*checked/);
+  assert.match(app, /state\.tasteOn\.length && \$\("heat"\)\.checked\) body\.heatmap = true/, "heatmap enters the payload only with a ticked name AND the ticked box");
+  assert.doesNotMatch(app, /body\.taste = \[\.\.\.state\.tasteOn\];\s*body\.heatmap = true/, "ticking a name alone no longer turns it on");
+  seen.length = 0;
+  const post = (b) => fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }).then((r) => r.json());
+  const off = await post({ city: "Tainan", tags: ["urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"] }); // box unticked: payload has no heatmap key
+  assert.equal(off.heat, null);
+  assert.equal(seen.filter((x) => x.q["filter.type"] === "urn:heatmap").length, 0);
+  const on = await post({ city: "Tainan", tags: ["urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"], heatmap: true }); // box ticked
+  assert.ok(on.heat && on.heat.cells.length > 0);
+  assert.equal(seen.filter((x) => x.q["filter.type"] === "urn:heatmap").length, 1);
 });

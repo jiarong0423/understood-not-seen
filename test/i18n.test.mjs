@@ -10,7 +10,7 @@ const i18n = load("../web/kb/i18n.json");
 const cal = load("../web/kb/calendar.json");
 const kb = load("../web/kb/activities.json").filter((a) => a.tag_id);
 const CJK = /[一-鿿]/, LATIN_WORD = /[A-Za-z]{3,}/;
-const OK_LATIN = /^(Qloo|Chrome|API|MIT|PWA|JSON|CRT|Alt\+S|Y2K|Risograph|KTV|Live|House|Google|LINE|SPA|WebAssembly|English)$/i;
+const OK_LATIN = /^(Qloo|Chrome|API|MIT|PWA|JSON|CRT|Alt\+S|Y2K|Risograph|KTV|Live|House|Google|LINE|SPA|WebAssembly|English|cdn\.jsdelivr\.net|huggingface\.co|heatmap|true)$/i;
 const latinLeft = (zh) => (zh.replace(/\{[a-z]+\}/g, "").match(/[A-Za-z][A-Za-z0-9+.'-]*/g) || []).filter((w) => w.length >= 3 && !OK_LATIN.test(w));
 
 // themes menu labels and a few interface terms are named in the theme file, not in i18n.json

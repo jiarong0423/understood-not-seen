@@ -134,7 +134,10 @@ async function heatmap(city, taste, trace) {
   if (trace) trace[trace.length - 1].count = all.length;
   const cells = all.map((h) => ({ lat: h.location.latitude, lon: h.location.longitude, affinity: Number(h.query?.affinity) || 0 }))
     .sort((a, b) => b.affinity - a.affinity).slice(0, HEAT_CELLS);
-  const v = { total: all.length, cells };
+  // Qloo names the city it resolved (query.localities.filter[0].location); the page marks it so the cells can be read against a known point.
+  const cl = j.query?.localities?.filter?.[0]?.location;
+  const center = Number.isFinite(cl?.lat) && Number.isFinite(cl?.lon) ? { lat: cl.lat, lon: cl.lon } : null;
+  const v = { total: all.length, cells, center };
   cache.set(k, { t: Date.now(), v });
   return v;
 }

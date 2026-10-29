@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="build" content="2026-10-29.1">
+<meta name="build" content="2026-10-29.2">
 <!-- start downloading the reference data while the page is still being read (the code then finds it ready) -->
 <link rel="preload" href="kb/i18n.json" as="fetch" crossorigin="anonymous">
 <link rel="preload" href="kb/activities.json" as="fetch" crossorigin="anonymous">
@@ -12,7 +12,7 @@
 <link rel="preload" href="kb/place_names.json" as="fetch" crossorigin="anonymous">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Understood, not seen</title>
-<meta name="description" content="Turn your bookmarks into place ideas without uploading them.">
+<meta name="description" content="Turn your bookmarks into place ideas. The file is read in your tab and never uploaded; only a city, place-category ids and the place names you tick are sent to Qloo.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#4338ca">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
@@ -223,10 +223,10 @@ footer{margin-top:34px;text-align:center;font-size:13.5px;color:var(--muted)}
   <section class="hero">
     <div class="eyebrow">Qloo Agentic Hackathon</div>
     <h1 id="h1"></h1>
-    <p class="lede" data-i18n="sub">Your bookmarks are read in this browser tab. Nothing is uploaded. Only the places you approve are looked up.</p>
+    <p class="lede" data-i18n="sub">Your bookmarks are read in this tab and never uploaded; only the city, place-category ids and the saved place names you tick are sent to Qloo.</p>
     <div class="badges">
       <span class="badge"><span class="bi" data-g="lock"></span> <span data-i18n="badge1">Runs in your browser</span></span>
-      <span class="badge"><span class="bi" data-g="cloud-off"></span> <span data-i18n="badge2">Nothing is uploaded</span></span>
+      <span class="badge"><span class="bi" data-g="cloud-off"></span> <span data-i18n="badge2">Bookmark file never uploaded</span></span>
       <span class="badge"><span class="bi" data-g="check"></span> <span data-i18n="badge3">You approve every lookup</span></span>
     </div>
     <div class="flow" aria-label="data flow">
@@ -239,7 +239,7 @@ footer{margin-top:34px;text-align:center;font-size:13.5px;color:var(--muted)}
             <div class="node"><span class="bi" data-g="lightbulb"></span><small data-i18n="diag_c">Ideas you approve</small></div>
           </div>
         </div>
-        <div class="gate" aria-hidden="true">⇢<br><span data-i18n="diag_note">Only a city and place-category ids go out.</span></div>
+        <div class="gate" aria-hidden="true">⇢<br><span data-i18n="diag_note">Only a city, place-category ids and the place names you tick go out.</span></div>
         <div class="zone out"><b data-i18n="diag_outside">Outside</b>
           <div class="nodes"><div class="node"><span class="bi" data-g="map"></span><small data-i18n="diag_d">Qloo</small></div></div>
         </div>
@@ -306,10 +306,12 @@ footer{margin-top:34px;text-align:center;font-size:13.5px;color:var(--muted)}
       <label class="fine"><span data-i18n="city">City</span><br><select id="city"></select></label>
     </div>
     <label class="fine" style="display:block;margin-top:12px"><input type="checkbox" id="quality"> <b data-i18n="quality">Quality first</b><br><span data-i18n="quality_help"></span></label>
+    <label class="fine hide" id="heatBox" style="display:block;margin-top:12px"><input type="checkbox" id="heat"> <b data-i18n="heat_opt">Also show where these places cluster in the city</b><br><span data-i18n="heat_opt_help"></span></label>
     <div class="payload">
       <header><span data-i18n="payload_title">Everything that leaves your device</span><button class="mini" id="copy" type="button" data-i18n="copy">Copy</button></header>
       <code id="payload"></code>
     </div>
+    <p class="fine" id="otherReq"><b data-i18n="other_title">Other requests this page makes:</b> <span data-i18n="other_body"></span></p>
     <div class="row" style="margin-top:14px"><button id="go" class="btn primary" data-i18n="go">Find places</button></div>
     <p id="goNote" class="fine hide" role="status"></p>
   </section>

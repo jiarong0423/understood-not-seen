@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "node --env-file-if-exists=.env server/server.mjs",
-    "test": "node --test test/gate.test.mjs test/routing.test.mjs test/sample.test.mjs test/server.test.mjs test/taste.test.mjs test/expand.test.mjs test/calendar.test.mjs test/pwa.test.mjs test/i18n.test.mjs test/names.test.mjs test/design.lock.test.mjs test/limits.test.mjs",
+    "test": "node --test test/gate.test.mjs test/routing.test.mjs test/sample.test.mjs test/server.test.mjs test/taste.test.mjs test/expand.test.mjs test/calendar.test.mjs test/pwa.test.mjs test/i18n.test.mjs test/names.test.mjs test/design.lock.test.mjs test/limits.test.mjs test/heat.test.mjs test/privacy_copy.test.mjs",
     "security": "gitleaks detect --source . --no-banner --redact && semgrep scan --config p/javascript --config p/nodejs --config p/python --config p/secrets --metrics=off --quiet --error --exclude web/js/icons.js --exclude web/js/rules.js --exclude web/kb . && npm audit",
     "prepush": "gitleaks detect --source . --no-banner --redact && npm test"
   }

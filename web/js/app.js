@@ -6,6 +6,7 @@ import { waiting } from "./waiting.js";
 import { loadPlaceNames, placeName, hasForm } from "./names.js";
 import { loadCalendar, upcoming, isoDay, weekSeed, rotate } from "./calendar.js";
 import { activityIcon, glyph } from "./icons.js";
+import { project } from "./heat.js";
 import { candidateNames, MAX_TASTE } from "./taste.js";
 import { renderThemeMenu, applyTheme, savedTheme, bindMenuKeys } from "./themes.js";
 
@@ -168,7 +169,10 @@ function renderIdeas() {
 
 function updatePayload() {
   const body = { city: $("city").value, tags: [...new Set([...state.ideas.filter((x) => x.on).map((x) => x.tag_id), ...state.suggestions.filter((x) => state.extraOn.includes(x.activity)).map((x) => x.tag_id)])] };
-  if (state.tasteOn.length) { body.taste = [...state.tasteOn]; body.heatmap = true; } // the taste heatmap uses the same city and names, nothing more
+  if (state.tasteOn.length) body.taste = [...state.tasteOn];
+  // The heatmap has its own box, off by default: it sends nothing more than the same city and ticked names, but it is one more Qloo request.
+  $("heatBox").classList.toggle("hide", !state.tasteOn.length);
+  if (state.tasteOn.length && $("heat").checked) body.heatmap = true;
   if ($("quality").checked) body.quality = true;
   $("payload").textContent = JSON.stringify(body, null, 1);
   const extra = body.tags.length - MAX_TAGS; // too many: say how many to uncheck instead of sending a lookup the server will refuse
@@ -188,7 +192,7 @@ function saveSession() {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({ v: 1, lang, total: state.total, counts: state.counts,
       kept: state.kept.map((it) => ({ title: it.title, host: it.host, added: it.added || 0, hints: it.hints || [] })),
       chosen: state.chosen, off: state.ideas.filter((x) => !x.on).map((x) => x.activity), extraOn: state.extraOn, tasteOn: state.tasteOn,
-      quality: $("quality").checked, city: $("city").value, results: state.results, step: state.step, scroll: scrollY }));
+      quality: $("quality").checked, heat: $("heat").checked, city: $("city").value, results: state.results, step: state.step, scroll: scrollY }));
   } catch (e) { /* storage blocked or full: the page still works, it just will not restore */ }
 }
 function restoreSession() {
@@ -198,7 +202,7 @@ function restoreSession() {
   Object.assign(state, { kept: s.kept, counts: s.counts, total: s.total, chosen: s.chosen || [], ideas: [], extraOn: s.extraOn || [], tasteOn: s.tasteOn || [], results: s.results || null });
   for (const id of ["s2", "s3", "s4", "s2b"]) $(id).classList.remove("hide");
   $("aiBtn").classList.toggle("hide", !supported());
-  $("city").value = s.city || "Taipei"; $("quality").checked = !!s.quality;
+  $("city").value = s.city || "Taipei"; $("quality").checked = !!s.quality; $("heat").checked = !!s.heat;
   renderStats(false); renderNeeds();
   refreshIdeas();
   state.ideas.forEach((x) => { x.on = !(s.off || []).includes(x.activity); }); // the ticks the visitor had
@@ -256,23 +260,22 @@ function inviteHtml(groups) {
   return `<aside class="invite"><b>${esc(head)}</b> <span class="fine">· ${esc(mode)}</span>${lines.map((l) => `<p>${esc(l)}</p>`).join("")}${ritual}<p class="fine">${esc(ui("invite_step"))}</p><button class="btn" id="inviteBtn" type="button">${esc(ui("invite_friend"))}</button> <span class="fine" id="inviteDone"></span></aside>`;
 }
 
-// Taste heatmap card: Qloo's strongest cells for the saved places' taste, drawn as dots over the city's bounding box (no map tiles, nothing
-// else is loaded), with the places on this page marked where they fall inside it. Sizes and opacity follow Qloo's affinity for the cell.
+// Taste heatmap card: Qloo's strongest cells for the saved places' taste, drawn as dots in kilometres (heat.js) over the box that holds them,
+// with the city centre marked, a scale bar and the places on this page as rings. No map tiles, nothing else is loaded. Dot size and
+// opacity follow Qloo's affinity for the cell.
 function heatHtml(heat, groups) {
   if (!heat) return "";
   const t = state.results.taste || { used: [] }, names = t.used.map((x) => x.name).join(sep()), city = cityName(state.results.city);
   const head = `<h3><span class="emo" aria-hidden="true">${glyph("map-pin", "ic")}</span>${esc(ui("heat_title").replace("{names}", names).replace("{city}", city))}</h3>`;
   if (heat.failed || !heat.cells.length) return `<article class="res"> ${head}<p class="fine">${esc(ui(heat.failed ? "heat_failed" : "heat_none"))}</p></article>`;
-  const W = 640, H = 360, PAD = 18;
-  const lats = heat.cells.map((c) => c.lat), lons = heat.cells.map((c) => c.lon);
-  const lat0 = Math.min(...lats), lat1 = Math.max(...lats), lon0 = Math.min(...lons), lon1 = Math.max(...lons);
-  const x = (lon) => PAD + ((lon - lon0) / ((lon1 - lon0) || 1)) * (W - 2 * PAD), y = (lat) => H - PAD - ((lat - lat0) / ((lat1 - lat0) || 1)) * (H - 2 * PAD);
-  const top = heat.cells[0].affinity || 1;
-  const dots = heat.cells.map((c) => { const a = top ? c.affinity / top : 1; return `<circle cx="${x(c.lon).toFixed(1)}" cy="${y(c.lat).toFixed(1)}" r="${(6 + 14 * a).toFixed(1)}" fill="var(--accent)" fill-opacity="${(0.12 + 0.3 * a).toFixed(2)}"/>`; }).join("");
-  const inside = (p) => p.loc && p.loc.lat >= lat0 && p.loc.lat <= lat1 && p.loc.lon >= lon0 && p.loc.lon <= lon1;
-  const marks = groups.flatMap((g) => g.places.filter(inside).slice(0, 1)).slice(0, 12).map((p) =>
-    `<g><title>${esc(placeName(p.name, lang, state.placeNames))}</title><circle cx="${x(p.loc.lon).toFixed(1)}" cy="${y(p.loc.lat).toFixed(1)}" r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/></g>`).join("");
-  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ui("heat_alt"))}" style="display:block;width:100%;height:auto;background:var(--soft);border-radius:calc(var(--r)*.7)">${dots}${marks}</svg>`;
+  const g = project(heat.cells, heat.center || null), top = heat.cells[0].affinity || 1;
+  const dots = heat.cells.map((c) => { const a = top ? c.affinity / top : 1; return `<circle cx="${g.x(c.lon).toFixed(1)}" cy="${g.y(c.lat).toFixed(1)}" r="${(6 + 14 * a).toFixed(1)}" fill="var(--accent)" fill-opacity="${(0.12 + 0.3 * a).toFixed(2)}"/>`; }).join("");
+  const marks = groups.flatMap((gr) => gr.places.filter(g.inside).slice(0, 1)).slice(0, 12).map((p) =>
+    `<g><title>${esc(placeName(p.name, lang, state.placeNames))}</title><circle cx="${g.x(p.loc.lon).toFixed(1)}" cy="${g.y(p.loc.lat).toFixed(1)}" r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/></g>`).join("");
+  const c = heat.center ? `<g stroke="var(--ink)" stroke-width="2" stroke-linecap="round"><path d="M${(g.x(heat.center.lon) - 7).toFixed(1)} ${g.y(heat.center.lat).toFixed(1)}h14M${g.x(heat.center.lon).toFixed(1)} ${(g.y(heat.center.lat) - 7).toFixed(1)}v14"/></g><text x="${(g.x(heat.center.lon) + 10).toFixed(1)}" y="${(g.y(heat.center.lat) - 8).toFixed(1)}" font-size="13" fill="var(--ink)">${esc(ui("heat_center").replace("{city}", city))}</text>` : "";
+  const bar = `<g stroke="var(--ink)" stroke-width="2"><path d="M20 ${g.H - 10}h${g.bar.px.toFixed(1)}"/></g><text x="${(20 + g.bar.px + 6).toFixed(1)}" y="${g.H - 6}" font-size="12" fill="var(--ink)">${g.bar.km} km</text>`;
+  const label = `<text x="${g.W - 20}" y="18" text-anchor="end" font-size="12" fill="var(--muted)">${esc(ui("heat_top").replace("{n}", heat.cells.length))}</text>`;
+  const svg = `<svg viewBox="0 0 ${g.W} ${g.H}" role="img" aria-label="${esc(ui("heat_alt"))}" style="display:block;width:100%;height:auto;background:var(--soft);border-radius:calc(var(--r)*.7)">${dots}${c}${marks}${bar}${label}</svg>`;
   return `<article class="res">${head}${svg}<p class="fine">${esc(ui("heat_help").replace("{n}", heat.cells.length).replace("{total}", heat.total))}</p></article>`;
 }
 function cityName(en) { const c = cities.find((x) => x.en === en); return c ? (lang === "zh" ? c.zh : c.en) : en; }
@@ -447,7 +450,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-29.1"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-29.2"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
@@ -497,6 +500,7 @@ async function init() {
   });
   $("city").addEventListener("change", () => { renderExpand(); updatePayload(); });
   $("quality").addEventListener("change", updatePayload);
+  $("heat").addEventListener("change", updatePayload);
   $("go").addEventListener("click", go);
   document.addEventListener("click", (e) => { if (e.target.closest("#inviteBtn")) sendInvite(); }); // the button is re-created whenever results are drawn
   $("aiBtn").addEventListener("click", runAI);

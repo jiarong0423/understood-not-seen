@@ -1,7 +1,7 @@
 {
  "name": "被理解，不被看見 · Understood, not seen",
  "short_name": "Understood",
- "description": "Turn your bookmarks into place ideas without uploading them.",
+ "description": "Turn your bookmarks into place ideas. The file is read in your tab and never uploaded; only a city, place-category ids and the place names you tick are sent to Qloo.",
  "lang": "zh-Hant",
  "start_url": "./",
  "scope": "./",

@@ -1,15 +1,16 @@
 # Understood, not seen
 
-Turn your bookmarks into place ideas **without uploading them**.
+Turn your bookmarks into place ideas **without uploading them**: the file is read in your tab and never uploaded; only a city, place-category ids and the saved place names you tick are sent to Qloo.
 
 Most "personalised" tools ask you to hand over your history first. This one reads your bookmark export inside your own
-browser tab, removes anything private on the spot, and sends only a short list of public place categories plus a city to
-[Qloo](https://www.qloo.com)'s taste graph. You see exactly what would leave your device before you press the button.
+browser tab, removes anything private on the spot, and sends only a city, a short list of public place categories and, if you tick
+them, the names of places you saved (up to 5) to [Qloo](https://www.qloo.com)'s taste graph. You see exactly what would leave your device
+before you press the button.
 
 > Built for the Qloo Agentic Hackathon. License: MIT. Interface in English and Traditional Chinese, bookmark titles in either language, light and dark mode, and 14 switchable visual styles (top right, Alt+S).
 
 ## Why this is an agent
-It pursues one goal for you, to understand your taste privately and turn it into real places, in a sense, decide, act, check loop with a human
+It pursues one goal for you, to understand your taste privately and turn it into real places, a sense, decide, act, check loop with a human
 consent gate before the only outbound step. Every stage is a named function in this repository:
 
 | | Step | What the agent does | Where |
@@ -17,11 +18,11 @@ consent gate before the only outbound step. Every stage is a named function in t
 | Sense | Reads the bookmark export in your tab | Nothing is sent anywhere | `web/js/gate.js:22` `parseBookmarks` |
 | **Gate 1: privacy** | Runs first, with fixed rules | Removes adult, account, personal, private-address and identifier links before anything else sees them; adult and account links also take their neighbours on the same site | `web/js/gate.js:58` `runGate`; rules from `filter_bookmarks.py` |
 | Decide | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you | `web/js/combine.js:38` `rankActivities`; `web/js/embed.js:41` `matchItems` (on-device model) |
-| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:169` `updatePayload` draws the payload; `web/js/app.js:409` `go` sends it only on your click |
+| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:170` `updatePayload` draws the payload; `web/js/app.js:412` `go` sends it only on your click |
 | Act | Calls Qloo as a tool (`/search`, `/v2/insights` for places and for the taste heatmap) | Uses places you saved as taste signals and ambience tags for quality-first ranking, and asks where that taste clusters in the city | `server/server.mjs:56` `resolve`, `:100` `qloo`, `:126` `heatmap` |
-| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:163` (quality relaxed), `:168` (taste signal gave nothing), `:170` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
+| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:166` (quality relaxed), `:171` (taste signal gave nothing), `:173` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
 
-The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the personal part never leaves your device.
+The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the bookmark file and everything the gate removed stay on your device; only what you approve in the consent box goes out.
 
 ## How it works
 
@@ -51,7 +52,7 @@ flowchart LR
 ```
 
 What stays on your device: the bookmark file, every title and URL, and the text of anything the gate removed (only counts are shown).
-What goes out, after your click: a city name and Qloo place-category ids such as `urn:tag:category:place:badminton_court`.
+What goes out, after your click: a city name, Qloo place-category ids such as `urn:tag:category:place:badminton_court` and, only if you tick them, up to 5 saved place names (plus `"heatmap": true` if you tick that separate box).
 
 ### Where Qloo matters
 The ideas are mapped to Qloo place tags and looked up per city with `/v2/insights` (`filter.type=urn:entity:place`, `filter.tags`,
@@ -88,10 +89,12 @@ measured here. A saved cafe gives Qloo nothing to rank some ideas by (Taipei, co
 2026-10-29); for such an idea the page shows the ordinary list and says so, instead of "no places".
 
 ### Taste heatmap (with a saved place)
-When a saved place is ticked, the same two inputs (the city and the resolved place ids) are also sent to `/v2/insights` with
-`filter.type=urn:heatmap`. Qloo answers with about a thousand geohash cells and an affinity for each; the server keeps the 80 strongest
-and the page draws them as dots over the city's bounding box, with the places on the page marked as rings, in a card of its own. No map
-tiles or other third-party content are loaded for it. Category tags alone give no heatmap (0 cells for Taipei and for London, measured
+A separate box, off by default and shown only when a saved place is ticked ("Also show where these places cluster in the city"), adds
+`"heatmap": true` to the payload. Then the same two inputs (the city and the resolved place ids) are also sent to `/v2/insights` with
+`filter.type=urn:heatmap`. Nothing is sent for it unless that box is ticked. Qloo answers with about a thousand geohash cells and an affinity for each; the server keeps the 80 strongest
+and the page draws them as dots drawn to scale in kilometres (longitude corrected by cos of the latitude, so the shape is not stretched)
+inside the box that holds those cells, not the whole city; the card says "top 80 cells", marks the city centre Qloo resolved, shows a
+scale bar and marks places on the page as rings. No map tiles or other third-party content are loaded for it. Category tags alone give no heatmap (0 cells for Taipei and for London, measured
 2026-10-29), which is why the card appears only with a saved place. The request is listed in the Evidence panel like every other, and the
 payload box shows `"heatmap": true` before anything is sent.
 
@@ -106,6 +109,11 @@ pickleball game, or a refined dinner as a treat. When a Taiwan holiday or a wide
 the invitation follows it and adds a small ritual line; otherwise the picks rotate once a week. Taiwan dates come from public reports of
 the government work calendar and apply to government offices; check your own. Places are shown, not event sessions, and opening
 hours are not checked.
+
+### Other requests the page makes
+Listed under the consent box on the page: (1) only if you press "Start on-device matching", code from `cdn.jsdelivr.net` and model files from
+`huggingface.co` are downloaded and nothing from your bookmarks is sent; (2) only if you press a place's Map link, Google Maps loads with that
+place's name and address; (3) Qloo answers stay in the server's memory only. Everything else goes through this app's own server.
 
 ### Evidence of every Qloo call
 The results page has a collapsible "Evidence" panel that lists every request made to Qloo for that result: endpoint, parameters, status,
@@ -143,10 +151,10 @@ Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-se
 
 The hosted demo needs no sign-in and no key: <https://understood-not-seen.zeabur.app/>
 
-1. Under **1. Load bookmarks**, press **Use sample bookmarks**, or choose your own bookmarks export (it is read inside the tab and never uploaded).
+1. Under **1. Load bookmarks**, press **Use sample bookmarks**, or choose your own bookmarks export (it is read inside the tab and never uploaded; only what the box shows is sent).
 2. **2. What stayed on your device** shows how many links the privacy gate removed, never their titles.
 3. Optionally pick needs under **3. What do you want from your time off?**
-4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick).
+4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick; `"heatmap": true` only if you tick the separate heatmap box). The line under the box lists the page's other requests and when they happen.
 5. Press **Find places**. **5. Places** lists real places from Qloo; a place ranked by a saved place you ticked says "because you saved ... (N% taste match) · shares with it: ..."; other places say what they are known for. Each place opens on a map.
 6. Open **Evidence: every Qloo request behind this page** to see each request (endpoint, parameters, status, time, result count). The key is never shown.
 
@@ -158,7 +166,7 @@ Running it yourself needs your own Qloo API key (see below).
 cp .env.example .env        # add your Qloo hackathon key
 node --env-file=.env server/server.mjs
 # open http://127.0.0.1:8770 and press "Use sample bookmarks"
-npm test                    # 64 tests: privacy gate, ranking, both samples, server protections, language, design lock
+npm test                    # 73 tests: privacy gate, ranking, both samples, server protections, language, design lock
 ```
 Node 22 or newer. No dependencies.
 
@@ -179,10 +187,10 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 | `web/js/themes.js` | The collapsible style switcher: 14 original styles, all driven by CSS variables |
 | `web/js/embed.js`, `web/eval.html` | Optional on-device matching and its reproducible check |
 | `kb/vocab.json` | Domain vocabulary per activity, used only by the on-device matching |
-| `test/` | 64 Node tests: gate, ranking, samples, server, language, design lock |
+| `test/` | 73 Node tests: gate, ranking, samples, server, language, design lock |
 
 ## Honest limits
-- The privacy gate is rule based. It removes more than it keeps on purpose, and a rule can still miss something. Review the "kept" count.
+- The gate is rule-based; on the sample it kept 29 of 35 links (6 removed); review the kept count.
 - Optional on-device matching: a small multilingual embedding model (about 120 MB, runs in the tab with WebAssembly, no GPU needed)
   compares bookmark titles that matched no keyword with each activity's name, keywords and domain vocabulary. On a held-out set of
   20 titles that should match and 12 that should not, it got 18 of 20 right at the default threshold, with 1 wrong activity, 1 miss and
