@@ -31,6 +31,7 @@ test("the gate limit is stated as a measurement", () => {
   assert.match(readme, /The gate is rule-based; on the sample it kept 29 of 35 links \(6 removed\); review the kept count\./);
   const links = [...read("../web/sample_bookmarks.html").matchAll(/<A /g)].length;
   assert.equal(links, 35);
+  for (const n of ["i18n.json", "activities.json"]) assert.equal(read("../kb/" + n), read("../web/kb/" + n), "kb/" + n + " must match the served web/kb/" + n);
 });
 test("the data-flow diagram caption names the ticked place names too, in both languages and in the page's own fallback text", () => {
   assert.match(ui.diag_note.en, /place names you tick/); assert.match(ui.diag_note.zh, /勾選/);

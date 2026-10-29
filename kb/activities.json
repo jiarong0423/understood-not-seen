@@ -6,7 +6,13 @@
    "stress_relief"
   ],
   "source": "user",
-  "tag_id": "urn:tag:category:place:badminton_court"
+  "tag_id": "urn:tag:category:place:badminton_court",
+  "keywords": [
+   "badminton",
+   "羽球",
+   "羽毛球",
+   "羽毛球"
+  ]
  },
  {
   "activity": "Pickleball court",
@@ -20,7 +26,11 @@
    "urn:tag:category:place:badminton_court",
    "urn:tag:category:place:tennis_court"
   ],
-  "fallback_note": "shares courts with badminton and tennis (user knowledge)"
+  "fallback_note": "shares courts with badminton and tennis (user knowledge)",
+  "keywords": [
+   "pickleball",
+   "匹克球"
+  ]
  },
  {
   "activity": "Golf course",
@@ -28,7 +38,14 @@
    "business_talk"
   ],
   "source": "user",
-  "tag_id": "urn:tag:category:place:golf_course"
+  "tag_id": "urn:tag:category:place:golf_course",
+  "keywords": [
+   "golf",
+   "高爾夫",
+   "高尔夫",
+   "揮桿",
+   "挥杆"
+  ]
  },
  {
   "activity": "Bowling alley",
@@ -36,7 +53,12 @@
    "skill_display"
   ],
   "source": "user",
-  "tag_id": "urn:tag:category:place:bowling_alley"
+  "tag_id": "urn:tag:category:place:bowling_alley",
+  "keywords": [
+   "bowling",
+   "保齡",
+   "保龄"
+  ]
  },
  {
   "activity": "Billiards",
@@ -45,7 +67,15 @@
   ],
   "source": "user",
   "tag_id": "urn:tag:category:place:pool_hall",
-  "note": "the billiards-hall tag returned nothing in any city; pool_hall works (measured)"
+  "note": "the billiards-hall tag returned nothing in any city; pool_hall works (measured)",
+  "keywords": [
+   "billiard",
+   "pool hall",
+   "snooker",
+   "撞球",
+   "桌球",
+   "台球"
+  ]
  },
  {
   "activity": "Physical therapy",
@@ -53,7 +83,8 @@
    "physical_repair"
   ],
   "source": "gemini path 1",
-  "tag_id": null
+  "tag_id": null,
+  "keywords": []
  },
  {
   "activity": "Massage",
@@ -66,7 +97,12 @@
   "fallback_tags": [
    "urn:tag:category:place:massage_spa"
   ],
-  "fallback_note": "massage is also offered at massage spas (measured: both return places)"
+  "fallback_note": "massage is also offered at massage spas (measured: both return places)",
+  "keywords": [
+   "massage",
+   "按摩",
+   "推拿"
+  ]
  },
  {
   "activity": "Spa",
@@ -74,7 +110,14 @@
    "mental_comfort"
   ],
   "source": "gemini path 2",
-  "tag_id": "urn:tag:category:place:spa"
+  "tag_id": "urn:tag:category:place:spa",
+  "keywords": [
+   "spa",
+   "芳療",
+   "芳疗",
+   "水療",
+   "水疗"
+  ]
  },
  {
   "activity": "Meditation",
@@ -82,7 +125,8 @@
    "mental_comfort"
   ],
   "source": "gemini path 2",
-  "tag_id": null
+  "tag_id": null,
+  "keywords": []
  },
  {
   "activity": "Cocktail bar",
@@ -91,7 +135,14 @@
    "social"
   ],
   "source": "gemini path 2",
-  "tag_id": "urn:tag:category:place:cocktail_bar"
+  "tag_id": "urn:tag:category:place:cocktail_bar",
+  "keywords": [
+   "cocktail",
+   "speakeasy",
+   "酒吧",
+   "調酒",
+   "调酒"
+  ]
  },
  {
   "activity": "Wine bar",
@@ -100,7 +151,17 @@
    "social"
   ],
   "source": "gemini path 2",
-  "tag_id": "urn:tag:category:place:wine_bar"
+  "tag_id": "urn:tag:category:place:wine_bar",
+  "keywords": [
+   "wine",
+   "whisky",
+   "whiskey",
+   "品酒",
+   "威士忌",
+   "紅酒",
+   "红酒",
+   "葡萄酒"
+  ]
  },
  {
   "activity": "Concert hall",
@@ -109,7 +170,16 @@
    "entertainment"
   ],
   "source": "gemini shared",
-  "tag_id": "urn:tag:category:place:concert_hall"
+  "tag_id": "urn:tag:category:place:concert_hall",
+  "keywords": [
+   "concert",
+   "演唱會",
+   "演唱会",
+   "音樂會",
+   "音乐会",
+   "音樂廳",
+   "音乐厅"
+  ]
  },
  {
   "activity": "Swimming pool",
@@ -117,7 +187,11 @@
    "quiet_solo"
   ],
   "source": "gemini satellite (lawyers/accountants)",
-  "tag_id": "urn:tag:category:place:swimming_pool"
+  "tag_id": "urn:tag:category:place:swimming_pool",
+  "keywords": [
+   "swimming",
+   "游泳"
+  ]
  },
  {
   "activity": "Pilates studio",
@@ -126,7 +200,12 @@
    "physical_repair"
   ],
   "source": "gemini satellite + path 1",
-  "tag_id": "urn:tag:category:place:pilates_studio"
+  "tag_id": "urn:tag:category:place:pilates_studio",
+  "keywords": [
+   "pilates",
+   "皮拉提斯",
+   "普拉提"
+  ]
  },
  {
   "activity": "Art museum",
@@ -135,7 +214,17 @@
    "quiet_solo"
   ],
   "source": "gemini satellite (culture trips)",
-  "tag_id": "urn:tag:category:place:art_museum"
+  "tag_id": "urn:tag:category:place:art_museum",
+  "keywords": [
+   "museum",
+   "exhibition",
+   "美術館",
+   "美术馆",
+   "展覽",
+   "展览",
+   "博物館",
+   "博物馆"
+  ]
  },
  {
   "activity": "Yacht club",
@@ -144,7 +233,12 @@
    "social"
   ],
   "source": "gemini satellite (web3)",
-  "tag_id": "urn:tag:category:place:yacht_club"
+  "tag_id": "urn:tag:category:place:yacht_club",
+  "keywords": [
+   "yacht",
+   "遊艇",
+   "游艇"
+  ]
  },
  {
   "activity": "Fine dining restaurant",
@@ -153,7 +247,16 @@
    "status_display"
   ],
   "source": "gemini (finance, sat.)",
-  "tag_id": "urn:tag:category:place:fine_dining_restaurant"
+  "tag_id": "urn:tag:category:place:fine_dining_restaurant",
+  "keywords": [
+   "fine dining",
+   "omakase",
+   "michelin",
+   "米其林",
+   "無菜單",
+   "无菜单",
+   "板前"
+  ]
  },
  {
   "activity": "Tennis court",
@@ -163,7 +266,12 @@
    "business_talk"
   ],
   "source": "gemini (racket sports, networking)",
-  "tag_id": "urn:tag:category:place:tennis_court"
+  "tag_id": "urn:tag:category:place:tennis_court",
+  "keywords": [
+   "tennis",
+   "網球",
+   "网球"
+  ]
  },
  {
   "activity": "Ski resort",
@@ -172,7 +280,12 @@
    "status_display"
   ],
   "source": "gemini (travel)",
-  "tag_id": "urn:tag:category:place:ski_resort"
+  "tag_id": "urn:tag:category:place:ski_resort",
+  "keywords": [
+   "ski",
+   "skiing",
+   "滑雪"
+  ]
  },
  {
   "activity": "Hotel",
@@ -180,7 +293,15 @@
    "mental_comfort"
   ],
   "source": "gemini (travel)",
-  "tag_id": "urn:tag:category:place:hotel"
+  "tag_id": "urn:tag:category:place:hotel",
+  "keywords": [
+   "hotel",
+   "resort",
+   "飯店",
+   "饭店",
+   "酒店",
+   "民宿"
+  ]
  },
  {
   "activity": "Massage spa",
@@ -190,7 +311,8 @@
   ],
   "source": "fallback for Massage (measured)",
   "tag_id": "urn:tag:category:place:massage_spa",
-  "fallback_only": true
+  "fallback_only": true,
+  "keywords": []
  },
  {
   "activity": "Hot pot restaurant",
@@ -198,7 +320,16 @@
    "social"
   ],
   "source": "user-supplied dining notes: shared hot pot is a social buffer; table-side service suits business meals",
-  "tag_id": "urn:tag:genre:place:restaurant:hot_pot"
+  "tag_id": "urn:tag:genre:place:restaurant:hot_pot",
+  "keywords": [
+   "hot pot",
+   "hotpot",
+   "shabu",
+   "火鍋",
+   "火锅",
+   "涮涮鍋",
+   "鍋物"
+  ]
  },
  {
   "activity": "Ramen restaurant",
@@ -207,7 +338,12 @@
    "quick_meal"
   ],
   "source": "user-supplied dining notes: counter seating, solo meal ritual, clear order-to-bowl flow",
-  "tag_id": "urn:tag:genre:place:restaurant:ramen"
+  "tag_id": "urn:tag:genre:place:restaurant:ramen",
+  "keywords": [
+   "ramen",
+   "拉麵",
+   "拉面"
+  ]
  },
  {
   "activity": "Noodle shop",
@@ -215,7 +351,23 @@
    "quick_meal"
   ],
   "source": "user-supplied dining notes: traditional snacks as quick, reliable meals",
-  "tag_id": "urn:tag:genre:place:restaurant:noodle_shop"
+  "tag_id": "urn:tag:genre:place:restaurant:noodle_shop",
+  "keywords": [
+   "beef noodle",
+   "noodle shop",
+   "din tai fung",
+   "dumpling",
+   "xiaolongbao",
+   "牛肉麵",
+   "牛肉面",
+   "滷肉飯",
+   "卤肉饭",
+   "小吃",
+   "黑白切",
+   "鼎泰豐",
+   "小籠包",
+   "水餃"
+  ]
  },
  {
   "activity": "Night market",
@@ -224,7 +376,11 @@
    "entertainment"
   ],
   "source": "user-supplied dining notes: traditional street snacks",
-  "tag_id": "urn:tag:genre:place:night_market"
+  "tag_id": "urn:tag:genre:place:night_market",
+  "keywords": [
+   "night market",
+   "夜市"
+  ]
  },
  {
   "activity": "Clothing store",
