@@ -27,7 +27,7 @@
     <rect x="95" y="370" width="550" height="120" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
     <text x="120" y="408" font-weight="700">Understand</text>
     <text x="120" y="436" fill="#626672" font-size="16">73 activities × daily needs (social, stress relief, quiet time ...)</text>
-    <text x="120" y="462" fill="#626672" font-size="16">optional small on-device model · never a label for you</text>
+    <text x="120" y="462" fill="#626672" font-size="16">small on-device model you start · never a label for you</text>
 
     <rect x="95" y="520" width="550" height="96" rx="14" fill="#f6f3ec" stroke="#16181d" stroke-width="1.5"/>
     <text x="120" y="558" font-weight="700">Ideas + beyond your bookmarks</text>
@@ -51,7 +51,7 @@
     <text x="700" y="290">• the bookmark file</text>
     <text x="700" y="316">• every title and URL</text>
     <text x="700" y="342">• removed links</text>
-    <text x="700" y="368">• your needs and ticks</text>
+    <text x="700" y="368">• your chosen needs</text>
     <text x="700" y="410">Session kept in this tab</text>
     <text x="700" y="432">only; cleared on close or</text>
     <text x="700" y="454">with "Clear saved data"</text>

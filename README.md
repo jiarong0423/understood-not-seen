@@ -3,7 +3,7 @@
 Turn your bookmarks into place ideas **without uploading them**: the file is read in your tab and never uploaded; only a city, place-category ids and the saved place names you tick are sent to Qloo.
 
 Most "personalised" tools ask you to hand over your history first. This one reads your bookmark export inside your own
-browser tab, removes anything private on the spot, and sends only a city, a short list of public place categories and, if you tick
+browser tab, applies fixed privacy rules before anything is looked up, and sends only a city, a short list of public place categories and, if you tick
 them, the names of places you saved (up to 5) to [Qloo](https://www.qloo.com)'s taste graph. You see exactly what would leave your device
 before you press the button.
 
@@ -26,7 +26,7 @@ consent gate before the only outbound step. Every stage is a named function in t
 | Decide | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you | `web/js/combine.js:38` `rankActivities`; `web/js/embed.js:41` `matchItems` (on-device model) |
 | **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:170` `updatePayload` draws the payload; `web/js/app.js:412` `go` sends it only on your click |
 | Act | Calls Qloo as a tool (`/search`, `/v2/insights` for places and for the taste heatmap) | Uses places you saved as taste signals and ambience tags for quality-first ranking, and asks where that taste clusters in the city | `server/server.mjs:56` `resolve`, `:100` `qloo`, `:126` `heatmap` |
-| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:166` (quality relaxed), `:171` (taste signal gave nothing), `:173` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
+| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:180` (quality relaxed), `:185` (taste signal gave nothing), `:187` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
 
 The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the bookmark file and everything the gate removed stay on your device; only what you approve in the consent box goes out.
 
@@ -149,7 +149,7 @@ export bookmarks, so load a bookmarks.html exported on a computer.
 |---|---|---|
 | ![Landing](assets/screenshots/1_landing.png) | ![Privacy gate](assets/screenshots/2_privacy_gate.png) | ![Ideas](assets/screenshots/3_ideas.png) |
 | **Consent: what leaves the device** | **Invitation and places** | **Evidence of every Qloo request** |
-| ![Consent](assets/screenshots/4_consent_payload.png) | ![Invitation and places](assets/screenshots/5_invitation_and_places.png) | ![Evidence](assets/screenshots/7_evidence.png) |
+| ![Consent](assets/screenshots/4_consent_payload.png) | ![Invitation and places](assets/screenshots/5_invitation_and_places.png) | ![Evidence](assets/screenshots/6_evidence.png) |
 
 Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen-new.jace0423.com (demo data via "Use sample bookmarks")
 

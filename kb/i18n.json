@@ -441,8 +441,8 @@
    "zh": "短時間內查詢太多次，請等一分鐘再試。"
   },
   "err_budget": {
-   "en": "This month's lookup allowance has been used up.",
-   "zh": "本月的查詢額度已用完。"
+   "en": "This server run's lookup allowance has been used up.",
+   "zh": "本次伺服器執行的查詢額度已用完。"
   },
   "err_network": {
    "en": "The connection dropped before the places arrived (weak signal, or the page went to the background). Check the network and press Find places again.",
