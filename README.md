@@ -17,9 +17,9 @@ consent gate before the only outbound step. Every stage is a named function in t
 | Sense | Reads the bookmark export in your tab | Nothing is sent anywhere | `web/js/gate.js:22` `parseBookmarks` |
 | **Gate 1: privacy** | Runs first, with fixed rules | Removes adult, account, personal, private-address and identifier links before anything else sees them; adult and account links also take their neighbours on the same site | `web/js/gate.js:58` `runGate`; rules from `filter_bookmarks.py` |
 | Decide | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you | `web/js/combine.js:38` `rankActivities`; `web/js/embed.js:41` `matchItems` (on-device model) |
-| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:169` `updatePayload` draws the payload; `web/js/app.js:388` `go` sends it only on your click |
-| Act | Calls Qloo as a tool (`/search`, `/v2/insights`) | Uses places you saved as taste signals and ambience tags for quality-first ranking | `server/server.mjs:56` `resolve`, `:100` `qloo` |
-| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:141` (quality relaxed), `:146` (taste signal gave nothing), `:148` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
+| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:169` `updatePayload` draws the payload; `web/js/app.js:409` `go` sends it only on your click |
+| Act | Calls Qloo as a tool (`/search`, `/v2/insights` for places and for the taste heatmap) | Uses places you saved as taste signals and ambience tags for quality-first ranking, and asks where that taste clusters in the city | `server/server.mjs:56` `resolve`, `:100` `qloo`, `:126` `heatmap` |
+| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:163` (quality relaxed), `:168` (taste signal gave nothing), `:170` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
 
 The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the personal part never leaves your device.
 
@@ -42,12 +42,12 @@ flowchart LR
   end
   subgraph Q["Qloo API"]
     S["/search"]
-    N["/v2/insights"]
+    N["/v2/insights<br/>places, taste heatmap"]
   end
   G2 -->|"only after you press Find:<br/>city, tag ids, ticked names"| P
   P --> S
   P --> N
-  P -->|"places, because you saved X, trace"| R
+  P -->|"places with reasons, taste heatmap, trace"| R
 ```
 
 What stays on your device: the bookmark file, every title and URL, and the text of anything the gate removed (only counts are shown).
@@ -86,6 +86,14 @@ to three of its own descriptive tags instead, so two places under the same idea 
 taste-ranked cafe lists shared 0 to 1 of 8 places, so the signal changes the result. Whether the new ranking is better for a person is not
 measured here. A saved cafe gives Qloo nothing to rank some ideas by (Taipei, concert hall: 0 results with the signal, 5 without, measured
 2026-10-29); for such an idea the page shows the ordinary list and says so, instead of "no places".
+
+### Taste heatmap (with a saved place)
+When a saved place is ticked, the same two inputs (the city and the resolved place ids) are also sent to `/v2/insights` with
+`filter.type=urn:heatmap`. Qloo answers with about a thousand geohash cells and an affinity for each; the server keeps the 80 strongest
+and the page draws them as dots over the city's bounding box, with the places on the page marked as rings, in a card of its own. No map
+tiles or other third-party content are loaded for it. Category tags alone give no heatmap (0 cells for Taipei and for London, measured
+2026-10-29), which is why the card appears only with a saved place. The request is listed in the Evidence panel like every other, and the
+payload box shows `"heatmap": true` before anything is sent.
 
 ### Beyond the bookmarks
 Optional suggestions next to the ticked ideas, in four labelled ways: deeper (same world), same feeling (a shared need, another field),
@@ -150,7 +158,7 @@ Running it yourself needs your own Qloo API key (see below).
 cp .env.example .env        # add your Qloo hackathon key
 node --env-file=.env server/server.mjs
 # open http://127.0.0.1:8770 and press "Use sample bookmarks"
-npm test                    # 63 tests: privacy gate, ranking, both samples, server protections, language, design lock
+npm test                    # 64 tests: privacy gate, ranking, both samples, server protections, language, design lock
 ```
 Node 22 or newer. No dependencies.
 
@@ -171,7 +179,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 | `web/js/themes.js` | The collapsible style switcher: 14 original styles, all driven by CSS variables |
 | `web/js/embed.js`, `web/eval.html` | Optional on-device matching and its reproducible check |
 | `kb/vocab.json` | Domain vocabulary per activity, used only by the on-device matching |
-| `test/` | 63 Node tests: gate, ranking, samples, server, language, design lock |
+| `test/` | 64 Node tests: gate, ranking, samples, server, language, design lock |
 
 ## Honest limits
 - The privacy gate is rule based. It removes more than it keeps on purpose, and a rule can still miss something. Review the "kept" count.

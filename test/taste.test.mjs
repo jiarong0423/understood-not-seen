@@ -27,10 +27,14 @@ before(async () => {
       return res.end(JSON.stringify({ results: q === "Simple Kaffa" ? [{ name: "Other Cafe", entity_id: "bad" }, { name: "Simple Kaffa Huashan Flagship Store", entity_id: PLACE, tags: savedTags }] : [{ name: "Totally Different Name", entity_id: "zzz" }] }));
     }
     const sig = u.searchParams.get("signal.interests.entities");
+    if (u.searchParams.get("filter.type") === "urn:heatmap") { // the real API answers ~1,200 cells for a place signal and 0 for category tags
+      const cells = sig ? Array.from({ length: 120 }, (_, i) => ({ location: { latitude: 25.0 + i / 1000, longitude: 121.5 + (i % 7) / 100, geohash: "wsq" + i }, query: { affinity: 1 - i / 200, affinity_rank: i + 1, popularity: 0.5 } })) : [];
+      return res.end(JSON.stringify({ success: true, results: { heatmap: cells } }));
+    }
     const rankedTags = [{ id: "urn:tag:accessibility:place:wheelchair_accessible_entrance", type: "urn:tag:accessibility:place", name: "Wheelchair accessible entrance" }, { id: "urn:tag:decor:qloo:rustic_chic", type: "urn:tag:decor:qloo", name: "Rustic chic" }, { id: "urn:tag:ambience:qloo:modern", type: "urn:tag:ambience:qloo", name: "Modern" }, { id: "urn:tag:category:place:coffee_shop", type: "urn:tag:category:place", name: "Coffee shop" }, { id: "urn:tag:menu_highlight:qloo:pour_over", type: "urn:tag:menu_highlight:qloo", name: "Pour over" }, { id: "urn:tag:specialty_dish:place:toast", type: "urn:tag:specialty_dish:place", name: "Toast" }];
     const ents = sig && u.searchParams.get("filter.tags") === "urn:tag:category:place:concert_hall" ? [] // measured on the real API: a cafe signal leaves concert halls empty
       : sig
-      ? [{ name: "Ranked By Taste", external: { google_place: [{ place_id: "ChIJl2x52TmoQjQR-1T_Ft6XMz8" }] }, properties: { address: "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99號 2樓", short_description: "Popular indoor bowling center in Banqiao" }, tags: rankedTags, query: { affinity: 0.9716996430566086, explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
+      ? [{ name: "Ranked By Taste", location: { lat: 25.05, lon: 121.53 }, external: { google_place: [{ place_id: "ChIJl2x52TmoQjQR-1T_Ft6XMz8" }] }, properties: { address: "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99號 2樓", short_description: "Popular indoor bowling center in Banqiao" }, tags: rankedTags, query: { affinity: 0.9716996430566086, explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
       : [{ name: "Plain Result", properties: { address: "b" }, tags: [{ id: "urn:tag:genre:place", type: "urn:tag:genre:place", name: "Place" }, { id: "urn:tag:ambience:qloo:cozy", type: "urn:tag:ambience:qloo", name: "Cozy" }], query: {} }];
     res.end(JSON.stringify({ results: { entities: ents } }));
   });
@@ -130,4 +134,36 @@ test("an idea the taste signal cannot rank (0 results with it, places without it
   assert.equal(cafe.places[0].name, "Ranked By Taste");
   const hallCalls = seen.filter((s) => s.path === "/v2/insights" && s.q["filter.tags"] === "urn:tag:category:place:concert_hall");
   assert.deepEqual(hallCalls.map((s) => "signal.interests.entities" in s.q), [true, false], "ranked first, then the ordinary list; nothing else");
+});
+
+test("taste heatmap: asked only with a saved place and heatmap:true, same city and ids, strongest 80 of the cells, cached the second time", async () => {
+  seen.length = 0;
+  const post = (b) => fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(b) }).then((r) => r.json());
+  const j = await post({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"], heatmap: true });
+  const h = seen.filter((s) => s.q["filter.type"] === "urn:heatmap");
+  assert.equal(h.length, 1);
+  assert.equal(h[0].q["filter.location.query"], "Taichung");
+  assert.equal(h[0].q["signal.interests.entities"], PLACE);
+  assert.ok(!("filter.tags" in h[0].q) && !("signal.interests.tags" in h[0].q), "the heatmap carries the city and the saved place only");
+  assert.equal(j.heat.total, 120);
+  assert.equal(j.heat.cells.length, 80);
+  assert.ok(j.heat.cells.every((c) => Number.isFinite(c.lat) && Number.isFinite(c.lon) && c.affinity >= 0));
+  assert.ok(j.heat.cells.every((c, i, a) => i === 0 || a[i - 1].affinity >= c.affinity), "strongest first");
+  assert.deepEqual(j.groups[0].places[0].loc, { lat: 25.05, lon: 121.53 }, "places carry their position so the page can mark them on the heatmap");
+  const tr = j.trace.find((t) => t.params["filter.type"] === "urn:heatmap");
+  assert.ok(tr && tr.count === 120 && tr.cached === false, "the heatmap request is in the evidence trace with its cell count");
+  seen.length = 0;
+  const again = await post({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"], heatmap: true });
+  assert.equal(seen.filter((s) => s.q["filter.type"] === "urn:heatmap").length, 0, "answered from the 24-hour cache");
+  assert.equal(again.trace.find((t) => t.params["filter.type"] === "urn:heatmap").cached, true);
+  seen.length = 0;
+  const none = await post({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], heatmap: true });
+  assert.equal(seen.filter((s) => s.q["filter.type"] === "urn:heatmap").length, 0, "no saved place: category tags give no heatmap, so it is not asked");
+  assert.equal(none.heat, null);
+  seen.length = 0;
+  const off = await post({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"] });
+  assert.equal(seen.filter((s) => s.q["filter.type"] === "urn:heatmap").length, 0, "not asked unless the payload says heatmap:true");
+  assert.equal(off.heat, null);
+  const bad = await fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ city: "Taichung", tags: ["urn:tag:category:place:coffee_shop"], heatmap: "yes" }) });
+  assert.equal(bad.status, 400);
 });

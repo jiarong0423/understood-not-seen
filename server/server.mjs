@@ -111,8 +111,30 @@ async function qloo(tag, city, taste = [], quality = false, trace = null) {
     about: String(e.properties?.short_description || "").slice(0, 140),
     area: String(e.properties?.address || "").replace(/[一-鿿].*$/, "").replace(/[,\s]+$/, "").slice(0, 90), // the English part of the address
     place_id: /^[A-Za-z0-9_-]{10,200}$/.test(e.external?.google_place?.[0]?.place_id || "") ? e.external.google_place[0].place_id : "",
+    loc: Number.isFinite(e.location?.lat) && Number.isFinite(e.location?.lon) ? { lat: e.location.lat, lon: e.location.lon } : null,
     ...why(e, taste, quality),
   }));
+  cache.set(k, { t: Date.now(), v });
+  return v;
+}
+
+// Taste heatmap: where places with the taste of the saved places cluster in the city (filter.type=urn:heatmap with the same
+// signal.interests.entities). Qloo answers with about a thousand geohash cells and an affinity for each; the strongest cells are kept
+// for the page. The city and the saved places are the only inputs, the same ones the visitor already approved. Category tags alone
+// give no heatmap (0 cells for Taipei and London, measured 2026-10-29), so this is asked only when a saved place is ticked.
+const HEAT_CELLS = 80;
+async function heatmap(city, taste, trace) {
+  const ids = taste.map((t) => t.id).sort();
+  const k = "h|" + city + "|" + ids.join(","), c = cache.get(k);
+  const u = new URL(BASE + "/v2/insights");
+  u.search = new URLSearchParams({ "filter.type": "urn:heatmap", "filter.location.query": city, "signal.interests.entities": ids.join(",") });
+  if (c && Date.now() - c.t < TTL_MS) { if (trace) trace.push(traceEntry(u, { status: 200, ms: 0, cached: true, count: c.v.total })); return c.v; }
+  const j = await call(u, trace);
+  const all = (j.results?.heatmap || []).filter((h) => Number.isFinite(h.location?.latitude) && Number.isFinite(h.location?.longitude));
+  if (trace) trace[trace.length - 1].count = all.length;
+  const cells = all.map((h) => ({ lat: h.location.latitude, lon: h.location.longitude, affinity: Number(h.query?.affinity) || 0 }))
+    .sort((a, b) => b.affinity - a.affinity).slice(0, HEAT_CELLS);
+  const v = { total: all.length, cells };
   cache.set(k, { t: Date.now(), v });
   return v;
 }
@@ -125,8 +147,8 @@ const server = http.createServer(async (req, res) => {
       const arr = (hits.get(ip) || []).filter((t) => now - t < 60000); arr.push(now); hits.set(ip, arr);
       if (arr.length > PER_IP_PER_MIN) return send(429, { error: "slow_down" });
       let body = ""; for await (const ch of req) { body += ch; if (body.length > 4000) return send(413, { error: "too_large" }); }
-      const { city, tags, taste = [], quality = false } = JSON.parse(body || "{}");
-      if (typeof quality !== "boolean" || !CITIES.has(city) || !Array.isArray(tags) || tags.length > 12 || !tags.every((t) => typeof t === "string" && TAG_RE.test(t)) ||
+      const { city, tags, taste = [], quality = false, heatmap: wantHeat = false } = JSON.parse(body || "{}");
+      if (typeof quality !== "boolean" || typeof wantHeat !== "boolean" || !CITIES.has(city) || !Array.isArray(tags) || tags.length > 12 || !tags.every((t) => typeof t === "string" && TAG_RE.test(t)) ||
           !Array.isArray(taste) || taste.length > 5 || !taste.every((n) => typeof n === "string" && n.trim().length >= 2 && n.length <= 60 && !/[\u0000-\u001f]/.test(n)))
         return send(400, { error: "bad_request" });
       const trace = [], known = [], unknown = [];
@@ -155,7 +177,12 @@ const server = http.createServer(async (req, res) => {
         }
         catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); groups.push({ activity: nameOf[t] || t, places: [] }); }
       }
-      return send(200, { groups, source: "Qloo", quality, trace, taste: { used: known.map((k) => ({ name: k.name, matched: k.matched })), unknown } });
+      let heat = null;
+      if (wantHeat && known.length) {
+        try { heat = await heatmap(city, known, trace); }
+        catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); heat = { total: 0, cells: [], failed: true }; }
+      }
+      return send(200, { groups, source: "Qloo", quality, trace, heat, taste: { used: known.map((k) => ({ name: k.name, matched: k.matched })), unknown } });
     }
     if (req.method === "GET" && req.url === "/api/health") return send(200, { ok: true, configured: !!KEY, used });
     const path = normalize(decodeURIComponent((req.url || "/").split("?")[0])).replace(/^(\.\.[/\\])+/, "");

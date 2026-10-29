@@ -168,7 +168,7 @@ function renderIdeas() {
 
 function updatePayload() {
   const body = { city: $("city").value, tags: [...new Set([...state.ideas.filter((x) => x.on).map((x) => x.tag_id), ...state.suggestions.filter((x) => state.extraOn.includes(x.activity)).map((x) => x.tag_id)])] };
-  if (state.tasteOn.length) body.taste = [...state.tasteOn];
+  if (state.tasteOn.length) { body.taste = [...state.tasteOn]; body.heatmap = true; } // the taste heatmap uses the same city and names, nothing more
   if ($("quality").checked) body.quality = true;
   $("payload").textContent = JSON.stringify(body, null, 1);
   const extra = body.tags.length - MAX_TAGS; // too many: say how many to uncheck instead of sending a lookup the server will refuse
@@ -256,6 +256,27 @@ function inviteHtml(groups) {
   return `<aside class="invite"><b>${esc(head)}</b> <span class="fine">· ${esc(mode)}</span>${lines.map((l) => `<p>${esc(l)}</p>`).join("")}${ritual}<p class="fine">${esc(ui("invite_step"))}</p><button class="btn" id="inviteBtn" type="button">${esc(ui("invite_friend"))}</button> <span class="fine" id="inviteDone"></span></aside>`;
 }
 
+// Taste heatmap card: Qloo's strongest cells for the saved places' taste, drawn as dots over the city's bounding box (no map tiles, nothing
+// else is loaded), with the places on this page marked where they fall inside it. Sizes and opacity follow Qloo's affinity for the cell.
+function heatHtml(heat, groups) {
+  if (!heat) return "";
+  const t = state.results.taste || { used: [] }, names = t.used.map((x) => x.name).join(sep()), city = cityName(state.results.city);
+  const head = `<h3><span class="emo" aria-hidden="true">${glyph("map-pin", "ic")}</span>${esc(ui("heat_title").replace("{names}", names).replace("{city}", city))}</h3>`;
+  if (heat.failed || !heat.cells.length) return `<article class="res"> ${head}<p class="fine">${esc(ui(heat.failed ? "heat_failed" : "heat_none"))}</p></article>`;
+  const W = 640, H = 360, PAD = 18;
+  const lats = heat.cells.map((c) => c.lat), lons = heat.cells.map((c) => c.lon);
+  const lat0 = Math.min(...lats), lat1 = Math.max(...lats), lon0 = Math.min(...lons), lon1 = Math.max(...lons);
+  const x = (lon) => PAD + ((lon - lon0) / ((lon1 - lon0) || 1)) * (W - 2 * PAD), y = (lat) => H - PAD - ((lat - lat0) / ((lat1 - lat0) || 1)) * (H - 2 * PAD);
+  const top = heat.cells[0].affinity || 1;
+  const dots = heat.cells.map((c) => { const a = top ? c.affinity / top : 1; return `<circle cx="${x(c.lon).toFixed(1)}" cy="${y(c.lat).toFixed(1)}" r="${(6 + 14 * a).toFixed(1)}" fill="var(--accent)" fill-opacity="${(0.12 + 0.3 * a).toFixed(2)}"/>`; }).join("");
+  const inside = (p) => p.loc && p.loc.lat >= lat0 && p.loc.lat <= lat1 && p.loc.lon >= lon0 && p.loc.lon <= lon1;
+  const marks = groups.flatMap((g) => g.places.filter(inside).slice(0, 1)).slice(0, 12).map((p) =>
+    `<g><title>${esc(placeName(p.name, lang, state.placeNames))}</title><circle cx="${x(p.loc.lon).toFixed(1)}" cy="${y(p.loc.lat).toFixed(1)}" r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/></g>`).join("");
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(ui("heat_alt"))}" style="display:block;width:100%;height:auto;background:var(--soft);border-radius:calc(var(--r)*.7)">${dots}${marks}</svg>`;
+  return `<article class="res">${head}${svg}<p class="fine">${esc(ui("heat_help").replace("{n}", heat.cells.length).replace("{total}", heat.total))}</p></article>`;
+}
+function cityName(en) { const c = cities.find((x) => x.en === en); return c ? (lang === "zh" ? c.zh : c.en) : en; }
+
 function evidenceHtml(trace) {
   if (!trace || !trace.length) return "";
   const rows = trace.map((t) => {
@@ -289,7 +310,7 @@ function renderResults() {
     (relaxed.length ? `<p class="fine">${esc(ui("quality_relaxed"))} ${esc(relaxed.join(sep()))}</p>` : "") +
     (untasted.length ? `<p class="fine">${esc(ui("taste_untasted"))} ${esc(untasted.join(sep()))}</p>` : "") +
     (t.unknown.length ? `<p class="fine">${esc(ui("taste_unknown"))} ${esc(t.unknown.join(sep()))}</p>` : "");
-  $("results").innerHTML = inviteHtml(groups) + note + groups.map((g, gi) => {
+  $("results").innerHTML = inviteHtml(groups) + note + heatHtml(state.results.heat, groups) + groups.map((g, gi) => {
     const mine = g.places.filter((p) => where.get(p.name)[0] === gi);
     const dup = g.places.filter((p) => where.get(p.name)[0] !== gi);
     const via = g.via ? `<p class="fine"><span class="tag">${esc(ui("shared").replace(/[()（）]/g, ""))}</span> ${esc(g.via.replace(/ \(shared courts\)$/, "").split(" and ").map(act).join(sep()))}</p>` : "";

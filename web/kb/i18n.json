@@ -855,6 +855,26 @@
   "taste_untasted": {
    "en": "Your saved place gave Qloo nothing to rank these by, so the ordinary list is shown for:",
    "zh": "你收藏的場所無法為這些類別排序，因此改顯示一般清單："
+  },
+  "heat_title": {
+   "en": "Where the taste of {names} clusters in {city}",
+   "zh": "{names} 的品味在{city}的熱區"
+  },
+  "heat_help": {
+   "en": "Qloo's taste heatmap for the places you ticked: the {n} strongest of {total} cells, bigger and darker where the affinity is higher. White rings are places on this page. No map tiles are loaded.",
+   "zh": "Qloo 依你勾選的場所算出的品味熱區圖：{total} 個格子中最強的 {n} 個，越大越深代表相符度越高。白圈是本頁的場所。不載入任何地圖圖資。"
+  },
+  "heat_none": {
+   "en": "Qloo has no heatmap for this taste in this city.",
+   "zh": "Qloo 沒有這個品味在這個城市的熱區資料。"
+  },
+  "heat_failed": {
+   "en": "The heatmap request did not succeed this time; the places above are unaffected.",
+   "zh": "這次的熱區查詢沒有成功，上面的場所不受影響。"
+  },
+  "heat_alt": {
+   "en": "Taste heatmap: dots sized by Qloo affinity, rings for places on this page",
+   "zh": "品味熱區圖：圓點大小代表相符度，圓圈是本頁場所"
   }
  },
  "invite": {
