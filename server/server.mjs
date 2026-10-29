@@ -154,6 +154,7 @@ const SEC = {
   "x-frame-options": "DENY",
   "referrer-policy": "no-referrer",
   "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+  "strict-transport-security": "max-age=31536000", // browsers apply it only over HTTPS (the hosted site); ignored on local http
 };
 const server = http.createServer(async (req, res) => {
   const send = (code, obj, type = "application/json") => { res.writeHead(code, { "content-type": type, ...SEC }); res.end(typeof obj === "string" ? obj : JSON.stringify(obj)); };

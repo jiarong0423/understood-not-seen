@@ -47,6 +47,7 @@ test("app files are served with the right types (manifest, icons, service worker
     assert.match(h.get("content-security-policy") || "", /frame-ancestors 'none'/, p);
     assert.equal(h.get("x-content-type-options"), "nosniff", p);
     assert.equal(h.get("x-frame-options"), "DENY", p);
+    assert.match(h.get("strict-transport-security") || "", /max-age=31536000/, p);
   }
   const { createHash } = await import("node:crypto");
   const html = await (await fetch(`http://127.0.0.1:${PORT}/`)).text();
