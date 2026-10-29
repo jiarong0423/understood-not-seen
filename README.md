@@ -9,6 +9,12 @@ before you press the button.
 
 > Built for the Qloo Agentic Hackathon. License: MIT. Interface in English and Traditional Chinese, bookmark titles in either language, light and dark mode, and 14 switchable visual styles (top right, Alt+S).
 
+## Two-minute judge path
+
+1. Open <https://understood-not-seen-new.jace0423.com/> (no sign-in, no key) and press **Use sample bookmarks**.
+2. Tick a café idea under **4. Ideas to look up**, choose a city, read **Everything that leaves your device**, then press **Find places**.
+3. Open **Evidence: every Qloo request behind this page** to see each request exactly as sent. The full steps are under "How to test (for judges)" below; `npm test` runs the 73 tests.
+
 ## Why this is an agent
 It pursues one goal for you, to understand your taste privately and turn it into real places, a sense, decide, act, check loop with a human
 consent gate before the only outbound step. Every stage is a named function in this repository:
