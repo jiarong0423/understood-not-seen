@@ -64,7 +64,8 @@ async function resolve(name, trace) {
     const got = norm(e.name || ""); const short = Math.min(got.length, want.length);
     return short >= 3 && (got === want || got.startsWith(want) || want.startsWith(got));
   });
-  const v = hit ? { id: hit.entity_id, matched: hit.name } : null;
+  // The saved place's own descriptive tags (ambience, decor, drinks ...) are kept so each result can say what it shares with it.
+  const v = hit ? { id: hit.entity_id, matched: hit.name, tags: describing(hit.tags) } : null;
   cache.set(k, { t: Date.now(), v });
   return v;
 }
@@ -74,7 +75,28 @@ async function resolve(name, trace) {
 const QUALITY_TAGS = "urn:tag:ambience:qloo:refined,urn:tag:ambience:qloo:minimalist,urn:tag:ambience:qloo:artisan";
 const QUALITY_MIN_RATING = "4.3";
 
-// taste: [{id, name}] (already resolved). Results are ranked by Qloo with those places as taste signals.
+// Tags that describe a place (Qloo's own ambience, decor, drinks, setting ... and the place's dishes and price band), as opposed to
+// listing tags (category, accessibility, parking, payments). Both /search and /v2/insights return them; /search names the id "tag_id".
+const DESCRIBING = /^urn:tag:(?:[a-z_]+:qloo|specialty_dish:place|cost_description:place):/;
+const describing = (tags) => (tags || []).map((t) => ({ id: t.id || t.tag_id || "", name: String(t.name || "") })).filter((t) => DESCRIBING.test(t.id) && t.name);
+// The order in which a place's traits are shown: the three quality-first ambience tags first (when that mode is on), then feel, then food and drink.
+const TRAIT_ORDER = ["ambience", "decor", "setting", "noise_level", "interests", "menu_highlight", "beverage_offering", "specialty_dish", "culinary_style", "cost_description"];
+const traitRank = (id) => { const k = TRAIT_ORDER.findIndex((t) => id.startsWith("urn:tag:" + t + ":")); return k < 0 ? TRAIT_ORDER.length : k; };
+const QUALITY_SET = new Set(QUALITY_TAGS.split(","));
+// Why this place: which saved place it was ranked by and Qloo's affinity for it, the descriptive tags it shares with that saved place,
+// and (always) up to three of its own traits, so two places under the same idea never carry the same line.
+function why(e, taste, quality) {
+  const own = describing(e.tags);
+  const because = (e.query?.explainability?.["signal.interests.entities"] || []).map((x) => taste.find((t) => t.id === x.entity_id)).filter(Boolean);
+  const theirs = new Set(because.flatMap((t) => t.tags || []).map((t) => t.id));
+  const shared = [...new Map(own.filter((t) => theirs.has(t.id)).sort((a, b) => traitRank(a.id) - traitRank(b.id)).map((t) => [t.name, t])).values()].slice(0, 3).map((t) => t.name);
+  const ranked = own.sort((a, b) => (quality ? Number(QUALITY_SET.has(b.id)) - Number(QUALITY_SET.has(a.id)) : 0) || traitRank(a.id) - traitRank(b.id));
+  const traits = [...new Set(ranked.map((t) => t.name))].slice(0, 3);
+  const affinity = typeof e.query?.affinity === "number" ? Math.round(e.query.affinity * 100) : null;
+  return { because: because.map((t) => t.name), affinity, shared, traits };
+}
+
+// taste: [{id, name, tags}] (already resolved). Results are ranked by Qloo with those places as taste signals.
 async function qloo(tag, city, taste = [], quality = false, trace = null) {
   const ids = taste.map((t) => t.id).sort();
   const k = tag + "|" + city + "|" + ids.join(",") + (quality ? "|q" : ""), c = cache.get(k);
@@ -84,13 +106,12 @@ async function qloo(tag, city, taste = [], quality = false, trace = null) {
   const u = new URL(BASE + "/v2/insights"); u.search = new URLSearchParams(q);
   if (c && Date.now() - c.t < TTL_MS) { if (trace) trace.push(traceEntry(u, { status: 200, ms: 0, cached: true, count: c.v.length })); return c.v; }
   const j = await call(u, trace);
-  const nameById = Object.fromEntries(taste.map((t) => [t.id, t.name]));
   const v = (j.results?.entities || []).slice(0, 5).map((e) => ({
     name: e.name, address: e.properties?.address || "",
     about: String(e.properties?.short_description || "").slice(0, 140),
     area: String(e.properties?.address || "").replace(/[一-鿿].*$/, "").replace(/[,\s]+$/, "").slice(0, 90), // the English part of the address
     place_id: /^[A-Za-z0-9_-]{10,200}$/.test(e.external?.google_place?.[0]?.place_id || "") ? e.external.google_place[0].place_id : "",
-    because: (e.query?.explainability?.["signal.interests.entities"] || []).map((x) => nameById[x.entity_id]).filter(Boolean),
+    ...why(e, taste, quality),
   }));
   cache.set(k, { t: Date.now(), v });
   return v;
@@ -110,22 +131,27 @@ const server = http.createServer(async (req, res) => {
         return send(400, { error: "bad_request" });
       const trace = [], known = [], unknown = [];
       for (const n of [...new Set(taste.map((x) => x.trim()))]) {
-        try { const r = await resolve(n, trace); if (r) known.push({ id: r.id, name: n, matched: r.matched }); else unknown.push(n); }
+        try { const r = await resolve(n, trace); if (r) known.push({ id: r.id, name: n, matched: r.matched, tags: r.tags || [] }); else unknown.push(n); }
         catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); unknown.push(n); }
       }
       const groups = [];
       for (const t of tags) {
         try {
-          let places = await qloo(t, city, known, quality, trace), via = null, plain = null, relaxed = false;
+          let places = await qloo(t, city, known, quality, trace), via = null, plain = null, relaxed = false, untasted = false;
           if (quality && !places.length) { places = await qloo(t, city, known, false, trace); relaxed = true; } // nothing met the bar: show the ordinary list and say so
-          if (known.length || (quality && !relaxed)) plain = (await qloo(t, city, [], false, trace)).map((p) => p.name);
+          if (known.length || (quality && !relaxed)) {
+            const ordinary = await qloo(t, city, [], false, trace); plain = ordinary.map((p) => p.name);
+            // A saved cafe gives Qloo nothing to rank concert halls or golf courses by (0 results with the signal, 5 without, measured in
+            // Taipei), so the ordinary list is shown for that idea and the page says so, instead of "no places found".
+            if (!places.length && known.length && ordinary.length) { places = ordinary; untasted = true; }
+          }
           if (!places.length && fallbackOf[t]) {
             const seen = new Set(), merged = [];
             for (const ft of fallbackOf[t].tags) for (const p of await qloo(ft, city, known, quality, trace)) if (!seen.has(p.name)) { seen.add(p.name); merged.push(p); }
             places = merged.slice(0, 5);
             via = fallbackOf[t].tags.map((x) => nameOf[x] || x).join(" and ") + " (shared courts)";
           }
-          groups.push({ activity: nameOf[t] || t, places, via, plain, relaxed });
+          groups.push({ activity: nameOf[t] || t, places, via, plain, relaxed, untasted });
         }
         catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); groups.push({ activity: nameOf[t] || t, places: [] }); }
       }

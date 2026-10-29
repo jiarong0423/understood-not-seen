@@ -9,16 +9,17 @@ browser tab, removes anything private on the spot, and sends only a short list o
 > Built for the Qloo Agentic Hackathon. License: MIT. Interface in English and Traditional Chinese, bookmark titles in either language, light and dark mode, and 14 switchable visual styles (top right, Alt+S).
 
 ## Why this is an agent
-It pursues one goal for you, to understand your taste privately and turn it into real places, and it does so with two gates between your data and the world:
+It pursues one goal for you, to understand your taste privately and turn it into real places, in a sense, decide, act, check loop with a human
+consent gate before the only outbound step. Every stage is a named function in this repository:
 
-| | Step | What the agent does |
-|---|---|---|
-| Perceive | Reads the bookmark export in your tab | Nothing is sent anywhere |
-| **Gate 1: privacy** | Runs first, with fixed rules | Removes adult, account, personal, private-address and identifier links before anything else sees them; adult and account links also take their neighbours on the same site |
-| Understand | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you |
-| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it |
-| Act | Calls Qloo as a tool (`/search`, `/v2/insights`) | Uses places you saved as taste signals and ambience tags for quality-first ranking |
-| Adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page |
+| | Step | What the agent does | Where |
+|---|---|---|---|
+| Sense | Reads the bookmark export in your tab | Nothing is sent anywhere | `web/js/gate.js:22` `parseBookmarks` |
+| **Gate 1: privacy** | Runs first, with fixed rules | Removes adult, account, personal, private-address and identifier links before anything else sees them; adult and account links also take their neighbours on the same site | `web/js/gate.js:58` `runGate`; rules from `filter_bookmarks.py` |
+| Decide | Maps what is left to what each activity does for you (social, stress relief, quiet time ...), optionally with a small on-device model | Builds ideas, never a label for you | `web/js/combine.js:38` `rankActivities`; `web/js/embed.js:41` `matchItems` (on-device model) |
+| **Gate 2: consent** | Shows the exact outgoing payload | Nothing leaves until you approve it | `web/js/app.js:169` `updatePayload` draws the payload; `web/js/app.js:388` `go` sends it only on your click |
+| Act | Calls Qloo as a tool (`/search`, `/v2/insights`) | Uses places you saved as taste signals and ambience tags for quality-first ranking | `server/server.mjs:56` `resolve`, `:100` `qloo` |
+| Check and adapt | Looks at what came back | Falls back to neighbouring places when a city has none (pickleball to badminton and tennis courts, massage to massage spas), relaxes the quality bar when nothing passes, shows the ordinary list when your saved place cannot rank an idea, follows the calendar (Taiwan holidays and international days) or rotates weekly, and says so on the page | `server/server.mjs:141` (quality relaxed), `:146` (taste signal gave nothing), `:148` (neighbouring places); `web/js/calendar.js:9` `upcoming` |
 
 The decisions are rules plus a small on-device embedding model, not a chat model, and a person stays in the loop at the consent gate. That is deliberate: the personal part never leaves your device.
 
@@ -57,7 +58,7 @@ The ideas are mapped to Qloo place tags and looked up per city with `/v2/insight
 `filter.location.query`). Without Qloo there are no real places to show. Coverage was measured, not assumed, through the same path the page uses:
 the first 22 activities x 11 cities returned places in 213 of 242 cells (88%), the 44 added later (shopping, cafes, bars, cooking,
 gym, outdoors, physio and more) in 461 of 484 cells (95%), with no request errors and no dead activity (see `tools/probe_matrix.py`).
-Thin data is Qloo's, and the page then says "no places found". Pickleball courts, for example, are missing in some cities, so that
+Thin data is Qloo's, and the page then says that Qloo has no listing of that kind for the city. Pickleball courts, for example, are missing in some cities, so that
 idea falls back to shared badminton and tennis courts and says so.
 
 | City | Activities with places (of 66 measured) |
@@ -78,8 +79,13 @@ idea falls back to shared badminton and tennis courts and says so.
 A place the visitor saved, such as a cafe, can be ticked as a taste signal (up to 5, nothing ticked by default). The name is shown in the
 "everything that leaves your device" box, resolved to a Qloo place entity with `/search`, and passed to `/v2/insights` as
 `signal.interests.entities` with `feature.explainability=true`. Qloo then ranks places by taste similar to the saved place, and each place
-shows which saved place it came from. In a Taipei test the tags-only and taste-ranked cafe lists shared 0 to 1 of 8 places, so the signal
-changes the result. Whether the new ranking is better for a person is not measured here.
+carries a reason of its own, built from Qloo's answer: the saved place it was ranked by (`query.explainability`), Qloo's affinity for that
+place as a percentage (`query.affinity`, which differs from place to place), and the descriptive tags the two places share (ambience, decor,
+drinks, dishes, setting; the saved place's tags come from `/search`, the result's from `/v2/insights`). Without a saved place a result shows up
+to three of its own descriptive tags instead, so two places under the same idea never carry the same line. In a Taipei test the tags-only and
+taste-ranked cafe lists shared 0 to 1 of 8 places, so the signal changes the result. Whether the new ranking is better for a person is not
+measured here. A saved cafe gives Qloo nothing to rank some ideas by (Taipei, concert hall: 0 results with the signal, 5 without, measured
+2026-10-29); for such an idea the page shows the ordinary list and says so, instead of "no places".
 
 ### Beyond the bookmarks
 Optional suggestions next to the ticked ideas, in four labelled ways: deeper (same world), same feeling (a shared need, another field),
@@ -106,7 +112,7 @@ Reading about work or news is never turned into a leisure need.
 The server tests also cover path traversal, input validation, a call budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
 
 ## One language per page
-Qloo stores one name per place and has no language setting, so place names go through a small mapping layer: `kb/place_names.json` (hand-written; entries marked `translated` are pinyin or translated type words, not official names), a rule that splits mixed names ("Mars Fitness 瑪爾斯全方位運動空間" shows the Latin part on the English page and the Chinese part on the Chinese page) and a fallback to Qloo's English descriptor. Names with no entry stay as Qloo stores them; `tools/unmapped_names.py` lists them. The demo has an English sample and a Chinese sample, and the button loads the one that matches the page.
+Qloo stores one name per place and has no language setting, so place names go through a small mapping layer: `kb/place_names.json` (hand-written; entries marked `translated` are pinyin or translated type words, not official names), a rule that splits mixed names ("Mars Fitness 瑪爾斯全方位運動空間" shows the Latin part on the English page and the Chinese part on the Chinese page) and a fallback to Qloo's English descriptor. Names with no entry stay as Qloo stores them; `tools/unmapped_names.py` lists them. The demo has an English sample and a Chinese sample, and the button loads the one that matches the page. The language you choose is remembered in your browser (`localStorage`, cleared by "Clear saved data and cache"); the first visit follows the browser's language. The reason line under a place quotes Qloo's tag names, which exist in English only.
 
 ## The look is locked
 The stylesheet, the 14 themes, the icon set and the app icons are hashed in `design.lock.json`, and a test fails if any of them changes. A deliberate change is re-locked with `node tools/lock_design.mjs --approve "reason"`. Language strings are audited by `test/i18n.test.mjs` (every string in English and Traditional Chinese, no stray English in the Chinese page).
@@ -133,7 +139,7 @@ The hosted demo needs no sign-in and no key: <https://understood-not-seen.zeabur
 2. **2. What stayed on your device** shows how many links the privacy gate removed, never their titles.
 3. Optionally pick needs under **3. What do you want from your time off?**
 4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick).
-5. Press **Find places**. **5. Places** lists real places from Qloo; a place found through a saved place you ticked says "because you saved ...". Each place opens on a map.
+5. Press **Find places**. **5. Places** lists real places from Qloo; a place ranked by a saved place you ticked says "because you saved ... (N% taste match) · shares with it: ..."; other places say what they are known for. Each place opens on a map.
 6. Open **Evidence: every Qloo request behind this page** to see each request (endpoint, parameters, status, time, result count). The key is never shown.
 
 Running it yourself needs your own Qloo API key (see below).
@@ -144,7 +150,7 @@ Running it yourself needs your own Qloo API key (see below).
 cp .env.example .env        # add your Qloo hackathon key
 node --env-file=.env server/server.mjs
 # open http://127.0.0.1:8770 and press "Use sample bookmarks"
-npm test                    # 62 tests: privacy gate, ranking, both samples, server protections, language, design lock
+npm test                    # 63 tests: privacy gate, ranking, both samples, server protections, language, design lock
 ```
 Node 22 or newer. No dependencies.
 
@@ -165,7 +171,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
 | `web/js/themes.js` | The collapsible style switcher: 14 original styles, all driven by CSS variables |
 | `web/js/embed.js`, `web/eval.html` | Optional on-device matching and its reproducible check |
 | `kb/vocab.json` | Domain vocabulary per activity, used only by the on-device matching |
-| `test/` | 62 Node tests: gate, ranking, samples, server, language, design lock |
+| `test/` | 63 Node tests: gate, ranking, samples, server, language, design lock |
 
 ## Honest limits
 - The privacy gate is rule based. It removes more than it keeps on purpose, and a rule can still miss something. Review the "kept" count.

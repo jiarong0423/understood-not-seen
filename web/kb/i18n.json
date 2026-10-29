@@ -421,8 +421,8 @@
    "zh": "（共用場地）"
   },
   "noplaces": {
-   "en": "No places found in this city.",
-   "zh": "這個城市沒有找到場所。"
+   "en": "Qloo has no listing of this kind for this city (limited data).",
+   "zh": "Qloo 在這個城市沒有這類場所的資料（資料較少）。"
   },
   "offline": {
    "en": "The place lookup service is not connected in this build yet.",
@@ -839,6 +839,22 @@
   "no_file": {
    "en": "No file chosen",
    "zh": "尚未選擇檔案"
+  },
+  "affinity": {
+   "en": "taste match",
+   "zh": "品味相符"
+  },
+  "shares": {
+   "en": "shares with it:",
+   "zh": "與它的共同特色："
+  },
+  "matches": {
+   "en": "known for:",
+   "zh": "特色："
+  },
+  "taste_untasted": {
+   "en": "Your saved place gave Qloo nothing to rank these by, so the ordinary list is shown for:",
+   "zh": "你收藏的場所無法為這些類別排序，因此改顯示一般清單："
   }
  },
  "invite": {

@@ -13,7 +13,10 @@ const $ = (id) => document.getElementById(id);
 const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PALETTE = ["#d97706", "#e11d48", "#7c3aed", "#0891b2", "#64748b", "#a16207", "#be185d", "#4d7c0f"];
 let i18n = null, cities = [];
-let lang = (navigator.language || "en").toLowerCase().startsWith("zh") ? "zh" : "en";
+// The language the visitor chose stays chosen on the next visit (localStorage, this browser only); otherwise the browser's language decides.
+const LANG_KEY = "uns-lang";
+const savedLang = () => { try { const v = localStorage.getItem(LANG_KEY); return v === "zh" || v === "en" ? v : null; } catch (e) { return null; } };
+let lang = savedLang() || ((navigator.language || "en").toLowerCase().startsWith("zh") ? "zh" : "en");
 const MAX_TAGS = 12; // the server refuses more than this in one lookup (server/server.mjs, /api/recommend)
 const state = { kept: [], counts: {}, total: 0, chosen: [], kb: [], ideas: [], results: null, step: 1, tasteOn: [], exp: null, suggestions: [], extraOn: [], cal: null, placeNames: {} };
 
@@ -262,6 +265,16 @@ function evidenceHtml(trace) {
   return `<details class="evid"><summary>${esc(ui("evidence_title"))} (${trace.length})</summary><p class="fine">${esc(ui("evidence_help"))}</p>${rows}</details>`;
 }
 
+// One line per place that says why it is here. Ranked by a saved place: that place, Qloo's affinity for this one, and the descriptive tags
+// the two share. Otherwise the place's own traits, so two places under the same idea never carry the same line.
+function whyHtml(p) {
+  const parts = [];
+  if ((p.because || []).length) parts.push(`${ui("because")} ${p.because.join(sep())}` + (typeof p.affinity === "number" ? ` (${p.affinity}% ${ui("affinity")})` : ""));
+  if ((p.because || []).length && (p.shared || []).length) parts.push(`${ui("shares")} ${p.shared.join(sep())}`);
+  else if ((p.traits || []).length) parts.push(`${ui("matches")} ${p.traits.join(sep())}`);
+  return parts.length ? `<span class="why">${esc(parts.join(" · "))}</span>` : "";
+}
+
 function renderResults() {
   if (!state.results) return;
   const groups = state.results.groups;
@@ -270,9 +283,11 @@ function renderResults() {
   const t = state.results.taste || { used: [], unknown: [] };
   const changed = groups.reduce((n, g) => n + (g.plain ? g.places.filter((p) => !g.plain.includes(p.name)).length : 0), 0);
   const relaxed = groups.filter((g) => g.relaxed).map((g) => act(g.activity));
+  const untasted = groups.filter((g) => g.untasted).map((g) => act(g.activity));
   const note = (t.used.length ? `<p class="fine">${esc(ui("taste_used"))} ${esc(t.used.map((x) => x.name).join(sep()))} · ${changed} ${esc(ui("taste_differs"))}</p>` : "") +
     (state.results.quality && !t.used.length ? `<p class="fine">${esc(ui("quality"))} · ${changed} ${esc(ui("quality_changed"))}</p>` : "") +
     (relaxed.length ? `<p class="fine">${esc(ui("quality_relaxed"))} ${esc(relaxed.join(sep()))}</p>` : "") +
+    (untasted.length ? `<p class="fine">${esc(ui("taste_untasted"))} ${esc(untasted.join(sep()))}</p>` : "") +
     (t.unknown.length ? `<p class="fine">${esc(ui("taste_unknown"))} ${esc(t.unknown.join(sep()))}</p>` : "");
   $("results").innerHTML = inviteHtml(groups) + note + groups.map((g, gi) => {
     const mine = g.places.filter((p) => where.get(p.name)[0] === gi);
@@ -282,7 +297,7 @@ function renderResults() {
     if (mine.length) {
       body = "<ul>" + mine.map((p) => {
         const others = where.get(p.name).slice(1).map((o) => act(groups[o].activity));
-        const why = (p.because || []).length ? `<span class="why">${esc(ui("because"))} ${esc(p.because.join(sep()))}</span>` : "";
+        const why = whyHtml(p);
         const shown = placeName(p.name, lang, state.placeNames);
         const about = lang === "en" && !hasForm(p.name, "en", state.placeNames) && (p.about || p.area) ? `<span class="pl-about">${esc([p.about, p.area].filter(Boolean).join(" · "))}</span>` : "";
         const full = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name)}&query_place_id=${encodeURIComponent(p.place_id || "")}&hl=${lang === "zh" ? "zh-TW" : "en"}`;
@@ -340,7 +355,7 @@ function freshFrame(url) {
 // Clear everything this page keeps in the browser (the saved session, the offline copy, the style choice) and start fresh.
 async function clearData() {
   try { sessionStorage.clear(); } catch (e) { /* blocked */ }
-  try { localStorage.removeItem("uns-theme"); } catch (e) { /* blocked */ }
+  try { localStorage.removeItem("uns-theme"); localStorage.removeItem(LANG_KEY); } catch (e) { /* blocked */ }
   try { if (window.caches) for (const k of await caches.keys()) await caches.delete(k); } catch (e) { /* blocked */ }
   try { if (navigator.serviceWorker) for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister(); } catch (e) { /* blocked */ }
   location.replace(location.pathname);
@@ -411,7 +426,7 @@ function start(html) {
   pushStep(3);
 }
 
-const BUILD = "2026-10-19.1"; // must match <meta name="build"> in index.html and VERSION in sw.js
+const BUILD = "2026-10-29.1"; // must match <meta name="build"> in index.html and VERSION in sw.js
 function sameBuild() {
   const page = document.querySelector('meta[name="build"]')?.content;
   if (page === BUILD) { try { sessionStorage.removeItem("uns-reloaded"); } catch (e) { /* blocked */ } return true; }
@@ -455,6 +470,7 @@ async function init() {
   applyStatic();
   $("lang").addEventListener("click", () => {
     lang = lang === "zh" ? "en" : "zh";
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage blocked: the choice lasts for this page only */ }
     applyStatic();
     if (state.total) { renderStats(false); renderNeeds(); renderIdeas(); renderExpand(); renderTaste(); updatePayload(); renderResults(); }
   });

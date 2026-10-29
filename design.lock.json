@@ -1,8 +1,8 @@
 {
-  "locked_on": "2026-10-11",
-  "reason": "one language per page: the native file button followed the system language; replaced by a label in the page language",
+  "locked_on": "2026-10-29",
+  "reason": "375px phones: the hidden file input was 375px wide (input[type=file]{width:100%} beat .vh), widening the layout viewport and pushing the fixed Home button half off screen; .vh now wins",
   "files": {
-    "index.html <style>": "56c53d08ee0eced3d2e6fe3895a8d27632451f055a7a0facd684fb4f32a9499d",
+    "index.html <style>": "b6c013ff4153ccb69d6335ee18f677bedee1244175041f51655fde25d9f2e338",
     "js/themes.js": "0a38bcf42e63dd75c7dfcaa3c61b416409a93dc7abdb35949a4da15348ec0cda",
     "js/icons.js": "0913fd4af99974338cea2e82e8506ab99a3a194ac178f93bf961a5a9f4e9d39c",
     "icons/apple-touch-icon.png": "29bbce52705df761048ab3bd3b22331cdf6fbd9026765d64daddb9b44142f951",

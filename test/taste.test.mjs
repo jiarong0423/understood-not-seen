@@ -1,5 +1,7 @@
 // Taste-signal flow against a mock Qloo: names are resolved with one /search call each (place type only), only strict name matches
-// become signals, the signal and explainability parameters reach /v2/insights, and "because" names come back.
+// become signals, the signal and explainability parameters reach /v2/insights, and each place comes back with a reason of its own
+// (the saved place, Qloo's affinity, the tags the two share, the place's traits). When the signal leaves an idea with nothing
+// (a cafe cannot rank concert halls), the ordinary list is shown for it and marked "untasted".
 // No real quota is used. Run: node --test test/taste.test.mjs
 import test, { before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -20,12 +22,16 @@ before(async () => {
     res.setHeader("content-type", "application/json");
     if (u.pathname === "/search") {
       const q = u.searchParams.get("query");
-      return res.end(JSON.stringify({ results: q === "Simple Kaffa" ? [{ name: "Other Cafe", entity_id: "bad" }, { name: "Simple Kaffa Huashan Flagship Store", entity_id: PLACE }] : [{ name: "Totally Different Name", entity_id: "zzz" }] }));
+      // /search names the id "tag_id"; /v2/insights names it "id" (both seen on the real API)
+      const savedTags = [{ tag_id: "urn:tag:ambience:qloo:modern", type: "urn:tag:ambience:qloo", name: "Modern" }, { tag_id: "urn:tag:beverage_offering:qloo:beer", type: "urn:tag:beverage_offering:qloo", name: "Beer" }, { tag_id: "urn:tag:category:place:coffee_shop", type: "urn:tag:category:place", name: "Coffee shop" }];
+      return res.end(JSON.stringify({ results: q === "Simple Kaffa" ? [{ name: "Other Cafe", entity_id: "bad" }, { name: "Simple Kaffa Huashan Flagship Store", entity_id: PLACE, tags: savedTags }] : [{ name: "Totally Different Name", entity_id: "zzz" }] }));
     }
     const sig = u.searchParams.get("signal.interests.entities");
-    const ents = sig
-      ? [{ name: "Ranked By Taste", external: { google_place: [{ place_id: "ChIJl2x52TmoQjQR-1T_Ft6XMz8" }] }, properties: { address: "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99號 2樓", short_description: "Popular indoor bowling center in Banqiao" }, query: { explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
-      : [{ name: "Plain Result", properties: { address: "b" }, query: {} }];
+    const rankedTags = [{ id: "urn:tag:accessibility:place:wheelchair_accessible_entrance", type: "urn:tag:accessibility:place", name: "Wheelchair accessible entrance" }, { id: "urn:tag:decor:qloo:rustic_chic", type: "urn:tag:decor:qloo", name: "Rustic chic" }, { id: "urn:tag:ambience:qloo:modern", type: "urn:tag:ambience:qloo", name: "Modern" }, { id: "urn:tag:category:place:coffee_shop", type: "urn:tag:category:place", name: "Coffee shop" }, { id: "urn:tag:menu_highlight:qloo:pour_over", type: "urn:tag:menu_highlight:qloo", name: "Pour over" }, { id: "urn:tag:specialty_dish:place:toast", type: "urn:tag:specialty_dish:place", name: "Toast" }];
+    const ents = sig && u.searchParams.get("filter.tags") === "urn:tag:category:place:concert_hall" ? [] // measured on the real API: a cafe signal leaves concert halls empty
+      : sig
+      ? [{ name: "Ranked By Taste", external: { google_place: [{ place_id: "ChIJl2x52TmoQjQR-1T_Ft6XMz8" }] }, properties: { address: "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99號 2樓", short_description: "Popular indoor bowling center in Banqiao" }, tags: rankedTags, query: { affinity: 0.9716996430566086, explainability: { "signal.interests.entities": [{ entity_id: PLACE, score: 1 }] } } }]
+      : [{ name: "Plain Result", properties: { address: "b" }, tags: [{ id: "urn:tag:genre:place", type: "urn:tag:genre:place", name: "Place" }, { id: "urn:tag:ambience:qloo:cozy", type: "urn:tag:ambience:qloo", name: "Cozy" }], query: {} }];
     res.end(JSON.stringify({ results: { entities: ents } }));
   });
   await new Promise((r) => mock.listen(MOCK, "127.0.0.1", r));
@@ -44,6 +50,10 @@ test("a saved place becomes a taste signal, explained by its name; unknown names
   assert.equal(j.groups[0].places[0].name, "Ranked By Taste");
   assert.deepEqual(j.groups[0].places[0].because, ["Simple Kaffa"]);
   const p0 = j.groups[0].places[0];
+  assert.equal(p0.affinity, 97, "Qloo's affinity for this place, as a percentage");
+  assert.deepEqual(p0.shared, ["Modern"], "descriptive tags shared with the saved place (category and accessibility tags are not reasons)");
+  assert.deepEqual(p0.traits, ["Modern", "Rustic chic", "Pour over"], "the place's own traits, feel first, at most three");
+  assert.equal(j.groups[0].untasted, false);
   assert.equal(p0.about, "Popular indoor bowling center in Banqiao");
   assert.equal(p0.area, "220, Taiwan, New Taipei City, Banqiao District, Sanmin Rd, 99");
   assert.equal(p0.place_id, "ChIJl2x52TmoQjQR-1T_Ft6XMz8");
@@ -103,4 +113,21 @@ test("the evidence trace lists every Qloo request with its parameters and never 
   const again = await (await fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" },
     body: JSON.stringify({ city: "London", tags: ["urn:tag:category:place:wine_bar"], quality: true, taste: ["Simple Kaffa"] }) })).json();
   assert.ok(again.trace.length >= 3 && again.trace.every((t) => t.cached === true), "second identical request is answered from cache and says so");
+});
+
+test("an idea the taste signal cannot rank (0 results with it, places without it) shows the ordinary list and says so", async () => {
+  seen.length = 0;
+  const r = await fetch(`http://127.0.0.1:${PORT}/api/recommend`, { method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ city: "Taipei", tags: ["urn:tag:category:place:concert_hall", "urn:tag:category:place:coffee_shop"], taste: ["Simple Kaffa"] }) });
+  const j = await r.json();
+  const [hall, cafe] = j.groups;
+  assert.equal(hall.untasted, true);
+  assert.deepEqual(hall.places.map((p) => p.name), ["Plain Result"]);
+  assert.deepEqual(hall.places[0].because, []);
+  assert.equal(hall.places[0].affinity, null);
+  assert.deepEqual(hall.places[0].traits, ["Cozy"], "without a saved place the reason is the place's own traits");
+  assert.equal(cafe.untasted, false);
+  assert.equal(cafe.places[0].name, "Ranked By Taste");
+  const hallCalls = seen.filter((s) => s.path === "/v2/insights" && s.q["filter.tags"] === "urn:tag:category:place:concert_hall");
+  assert.deepEqual(hallCalls.map((s) => "signal.interests.entities" in s.q), [true, false], "ranked first, then the ordinary list; nothing else");
 });
