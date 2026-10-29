@@ -42,6 +42,17 @@ test("app files are served with the right types (manifest, icons, service worker
   assert.match(await head("/sw.js"), /text\/javascript/);
   for (const p of ["/", "/js/app.js", "/sw.js", "/kb/i18n.json"]) assert.equal((await fetch(`http://127.0.0.1:${PORT}${p}`)).headers.get("cache-control"), "no-cache", p);
   assert.match((await fetch(`http://127.0.0.1:${PORT}/icons/icon-192.png`)).headers.get("cache-control"), /max-age/);
+  for (const p of ["/", "/api/health"]) {
+    const h = (await fetch(`http://127.0.0.1:${PORT}${p}`)).headers;
+    assert.match(h.get("content-security-policy") || "", /frame-ancestors 'none'/, p);
+    assert.equal(h.get("x-content-type-options"), "nosniff", p);
+    assert.equal(h.get("x-frame-options"), "DENY", p);
+  }
+  const { createHash } = await import("node:crypto");
+  const html = await (await fetch(`http://127.0.0.1:${PORT}/`)).text();
+  const csp = (await fetch(`http://127.0.0.1:${PORT}/`)).headers.get("content-security-policy");
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g))
+    assert.ok(csp.includes("'sha256-" + createHash("sha256").update(m[1]).digest("base64") + "'"), "an inline script is not allowed by the CSP hash");
 });
 test("path traversal and hidden files are not served", async () => {
   for (const p of ["/..%2f.env", "/%2e%2e/.env", "/..%2fserver%2fserver.mjs", "/..%5c.env"]) {

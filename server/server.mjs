@@ -142,8 +142,21 @@ async function heatmap(city, taste, trace) {
   return v;
 }
 
+// Browser-side security headers. The page loads its on-device model code from cdn.jsdelivr.net, the model files from Hugging Face,
+// runs WebAssembly, and shows a Google Maps frame; nothing else is allowed. The one inline script (the start-up safety net in
+// index.html) is allowed by its hash; test/server.test.mjs fails if that script changes without the hash. Inline styles exist in index.html, so style-src allows them.
+const SEC = {
+  "content-security-policy": "default-src 'self'; script-src 'self' 'sha256-5N+dKx/zTemdokkZo0S3lzxqpcpcrtKbyndrqaH4ufo=' https://cdn.jsdelivr.net 'wasm-unsafe-eval' blob:; worker-src 'self' blob:; " +
+    "style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; " +
+    "connect-src 'self' https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co blob: data:; " +
+    "frame-src https://www.google.com https://maps.google.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'self'",
+  "x-content-type-options": "nosniff",
+  "x-frame-options": "DENY",
+  "referrer-policy": "no-referrer",
+  "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+};
 const server = http.createServer(async (req, res) => {
-  const send = (code, obj, type = "application/json") => { res.writeHead(code, { "content-type": type }); res.end(typeof obj === "string" ? obj : JSON.stringify(obj)); };
+  const send = (code, obj, type = "application/json") => { res.writeHead(code, { "content-type": type, ...SEC }); res.end(typeof obj === "string" ? obj : JSON.stringify(obj)); };
   try {
     if (req.method === "POST" && req.url === "/api/recommend") {
       const ip = clientIp(req), now = Date.now();
@@ -194,7 +207,7 @@ const server = http.createServer(async (req, res) => {
     const data = await readFile(file);
     const type = MIME[extname(file)] || "application/octet-stream";
     const fresh = /^(text\/|application\/(json|javascript|manifest))/.test(type); // page, code, data: always ask the server again
-    res.writeHead(200, { "content-type": type.startsWith("image/png") ? type : type + "; charset=utf-8", "cache-control": fresh ? "no-cache" : "public, max-age=86400" }); res.end(data);
+    res.writeHead(200, { "content-type": type.startsWith("image/png") ? type : type + "; charset=utf-8", "cache-control": fresh ? "no-cache" : "public, max-age=86400", ...SEC }); res.end(data);
   } catch (e) { send(e.code === "ENOENT" ? 404 : 500, { error: "error" }); }
 });
 // Behind a hosting proxy that reuses connections, keep idle connections open longer than the proxy does (Node's default is 5 s);
