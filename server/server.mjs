@@ -14,7 +14,7 @@ const BASE = process.env.QLOO_BASE || "https://hackathon.api.qloo.com"; // overr
 const CITIES = new Set(JSON.parse(await readFile(join(ROOT, "kb", "cities.json"), "utf8")).cities.map((c) => c.en));
 const TAG_RE = /^urn:tag:[a-z_]+:place(?::[a-z0-9_]+){1,2}$/;
 const MONTHLY_BUDGET = Number(process.env.QLOO_MONTHLY_BUDGET || 8000); // keep headroom under the 10,000 limit
-// Behind a proxy (Zeabur, Cloudflare) every request arrives from the proxy's address, so the per-IP limit needs the visitor's address from the
+// Behind a proxy (Coolify/Traefik, Cloudflare) every request arrives from the proxy's address, so the per-IP limit needs the visitor's address from the
 // proxy's header. Only when TRUST_PROXY=1 (set in the Dockerfile): on a direct connection those headers can be forged.
 const TRUST_PROXY = process.env.TRUST_PROXY === "1";
 const clientIp = (req) => {

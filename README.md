@@ -38,7 +38,7 @@ flowchart LR
     I --> G2{{"Gate 2: consent<br/>the exact payload is shown"}}
     R["Results<br/>invitation, map in the page, evidence"]
   end
-  subgraph Server["Thin proxy (Node, Zeabur)"]
+  subgraph Server["Thin proxy (Node, Coolify)"]
     P["validate, rate limit, budget,<br/>24 h cache, API key, trace"]
   end
   subgraph Q["Qloo API"]
@@ -145,11 +145,11 @@ export bookmarks, so load a bookmarks.html exported on a computer.
 | **Consent: what leaves the device** | **Invitation and places** | **Evidence of every Qloo request** |
 | ![Consent](assets/screenshots/4_consent_payload.png) | ![Invitation and places](assets/screenshots/5_invitation_and_places.png) | ![Evidence](assets/screenshots/7_evidence.png) |
 
-Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen.zeabur.app (demo data via "Use sample bookmarks")
+Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen-new.jace0423.com (demo data via "Use sample bookmarks")
 
 ## How to test (for judges)
 
-The hosted demo needs no sign-in and no key: <https://understood-not-seen.zeabur.app/>
+The hosted demo needs no sign-in and no key: <https://understood-not-seen-new.jace0423.com/>
 
 1. Under **1. Load bookmarks**, press **Use sample bookmarks**, or choose your own bookmarks export (it is read inside the tab and never uploaded; only what the box shows is sent).
 2. **2. What stayed on your device** shows how many links the privacy gate removed, never their titles.
