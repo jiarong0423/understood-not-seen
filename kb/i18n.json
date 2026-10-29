@@ -722,7 +722,7 @@
   },
   "invite_two": {
    "en": "Want to {verb}? How about {a} or {b}?",
-   "zh": "週末想{verb}嗎？來場{a}或{b}吧！"
+   "zh": "想{verb}嗎？來試試{a}或{b}吧。"
   },
   "invite_step": {
    "en": "Start small: one hour, one friend. These are places, not events, and opening hours are not checked.",

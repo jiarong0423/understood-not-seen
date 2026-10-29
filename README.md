@@ -58,7 +58,7 @@ flowchart LR
 ```
 
 What stays on your device: the bookmark file, every title and URL, and the text of anything the gate removed (only counts are shown).
-What goes out, after your click: a city name, Qloo place-category ids such as `urn:tag:category:place:badminton_court` and, only if you tick them, up to 5 saved place names (plus `"heatmap": true` if you tick that separate box).
+What goes out, after your click: a city name, Qloo place-category ids such as `urn:tag:category:place:badminton_court` and, only if you tick them, up to 5 saved place names (plus `"heatmap": true` if you tick that separate box, and `"quality": true` if you tick Quality first; the server then adds three fixed ambience tags and a 4.3 minimum rating to the Qloo request).
 
 ### Where Qloo matters
 The ideas are mapped to Qloo place tags and looked up per city with `/v2/insights` (`filter.type=urn:entity:place`, `filter.tags`,
@@ -160,7 +160,7 @@ The hosted demo needs no sign-in and no key: <https://understood-not-seen-new.ja
 1. Under **1. Load bookmarks**, press **Use sample bookmarks**, or choose your own bookmarks export (it is read inside the tab and never uploaded; only what the box shows is sent).
 2. **2. What stayed on your device** shows how many links the privacy gate removed, never their titles.
 3. Optionally pick needs under **3. What do you want from your time off?**
-4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick; `"heatmap": true` only if you tick the separate heatmap box). The line under the box lists the page's other requests and when they happen.
+4. Under **4. Ideas to look up**, tick up to 12 ideas, choose a **City**, and read **Everything that leaves your device**: the exact payload (a city, Qloo tag ids and only the saved place names you tick; `"heatmap": true` only if you tick the separate heatmap box, `"quality": true` only if you tick Quality first). The line under the box lists the page's other requests and when they happen.
 5. Press **Find places**. **5. Places** lists real places from Qloo; a place ranked by a saved place you ticked says "because you saved ... (N% taste match) · shares with it: ..."; other places say what they are known for. Each place opens on a map.
 6. Open **Evidence: every Qloo request behind this page** to see each request (endpoint, parameters, status, time, result count). The key is never shown.
 
@@ -177,7 +177,7 @@ npm test                    # 73 tests: privacy gate, ranking, both samples, ser
 Node 22 or newer. No dependencies.
 
 The server holds the API key, keeps Qloo answers only in memory (24 hours, never written to disk or this repository),
-spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run (the counter resets when the server restarts; Qloo allows 10,000 calls a month).
+spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run (`QLOO_MONTHLY_BUDGET`, default 8000; the counter resets when the server restarts; Qloo allows 10,000 calls a month).
 
 ## Repository map
 
