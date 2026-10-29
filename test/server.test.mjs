@@ -54,6 +54,12 @@ test("app files are served with the right types (manifest, icons, service worker
   const csp = (await fetch(`http://127.0.0.1:${PORT}/`)).headers.get("content-security-policy");
   for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g))
     assert.ok(csp.includes("'sha256-" + createHash("sha256").update(m[1]).digest("base64") + "'"), "an inline script is not allowed by the CSP hash");
+  // every other page the app ships: an inline script would be blocked by the CSP (eval.html once was), so none is allowed there
+  for (const f of ["eval.html", "sample_bookmarks.html", "sample_bookmarks.zh.html"]) {
+    const page = await (await fetch(`http://127.0.0.1:${PORT}/${f}`)).text();
+    for (const m of page.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g))
+      assert.ok(csp.includes("'sha256-" + createHash("sha256").update(m[1]).digest("base64") + "'"), f + " has an inline script that the CSP blocks");
+  }
 });
 test("path traversal and hidden files are not served", async () => {
   for (const p of ["/..%2f.env", "/%2e%2e/.env", "/..%2fserver%2fserver.mjs", "/..%5c.env"]) {
