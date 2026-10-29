@@ -331,7 +331,7 @@ function renderResults() {
     } else if (dup.length) {
       const firsts = [...new Set(dup.map((p) => act(groups[where.get(p.name)[0]].activity)))];
       body = `<p class="same">${esc(ui("same_as"))} ${esc(firsts.join(sep()))}</p>`;
-    } else body = `<p class="fine">${esc(ui("noplaces"))}</p>`;
+    } else body = `<p class="fine">${esc(ui(g.failed ? "failed" : "noplaces"))}</p>`;
     return `<article class="res"><h3><span class="emo" aria-hidden="true">${icon(g.activity)}</span>${esc(act(g.activity))}</h3>${via}${body}</article>`;
   }).join("") + evidenceHtml(state.results.trace);
 }

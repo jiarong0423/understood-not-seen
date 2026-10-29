@@ -44,7 +44,7 @@ flowchart LR
     I --> G2{{"Gate 2: consent<br/>the exact payload is shown"}}
     R["Results<br/>invitation, map in the page, evidence"]
   end
-  subgraph Server["Thin proxy (Node, Coolify)"]
+  subgraph Server["Thin proxy (our own Node server on Coolify, behind Cloudflare)"]
     P["validate, rate limit, budget,<br/>24 h cache, API key, trace"]
   end
   subgraph Q["Qloo API"]
@@ -57,8 +57,10 @@ flowchart LR
   P -->|"places with reasons, taste heatmap, trace"| R
 ```
 
-What stays on your device: the bookmark file, every title and URL, and the text of anything the gate removed (only counts are shown).
+What stays on your device: the bookmark file, every title and URL except the saved place names you tick, and the text of anything the gate removed (only counts are shown).
 What goes out, after your click: a city name, Qloo place-category ids such as `urn:tag:category:place:badminton_court` and, only if you tick them, up to 5 saved place names (plus `"heatmap": true` if you tick that separate box, and `"quality": true` if you tick Quality first; the server then adds three fixed ambience tags and a 4.3 minimum rating to the Qloo request).
+
+The request travels from your browser to our own server (a small Node process on Coolify, behind Cloudflare), which adds the API key and calls Qloo; the browser never talks to Qloo directly and never holds the key. The server does not write requests to disk or log them; it keeps a 24 h in-memory cache of Qloo answers and returns a request trace to your page (the Evidence panel). The hosting layers (Coolify, Cloudflare) see ordinary connection metadata such as your IP address.
 
 ### Where Qloo matters
 The ideas are mapped to Qloo place tags and looked up per city with `/v2/insights` (`filter.type=urn:entity:place`, `filter.tags`,
@@ -119,7 +121,7 @@ hours are not checked.
 ### Other requests the page makes
 Listed under the consent box on the page: (1) only if you press "Start on-device matching", code from `cdn.jsdelivr.net` and model files from
 `huggingface.co` are downloaded and nothing from your bookmarks is sent; (2) only if you press a place's Map link, Google Maps loads with that
-place's name and address; (3) Qloo answers stay in the server's memory only. Everything else goes through this app's own server.
+place's name and address; (3) what you send after you press Find goes through this app's own server (Coolify, behind Cloudflare), which adds the API key and calls Qloo, and Qloo answers stay in the server's memory only; (4) the `/eval.html` check page downloads the same code and model (about 120 MB the first time) as soon as it opens, and sends nothing. Everything else goes through this app's own server.
 
 ### Evidence of every Qloo call
 The results page has a collapsible "Evidence" panel that lists every request made to Qloo for that result: endpoint, parameters, status,
@@ -132,6 +134,9 @@ Reading about work or news is never turned into a leisure need.
 ## Security checks (built into the repo)
 `npm run security` runs three tools: **gitleaks** (secrets in the files and the whole git history), **semgrep** (static analysis for JavaScript, Node and Python, plus a secrets rule pack) and **npm audit** (dependency vulnerabilities; the app has no npm dependencies). A **pre-push hook** (`git config core.hooksPath .githooks`) runs gitleaks and the full test suite before any push and refuses to push without gitleaks.
 The server tests also cover path traversal, input validation, a call budget guard and a per-IP rate limit. The one third-party script the page loads at runtime is the optional on-device matcher (transformers.js, pinned version, from a CDN), which downloads a model once; it is only fetched when the visitor presses the button.
+
+### Browser protections and storage
+Every response carries a Content-Security-Policy (`default-src 'self'`; scripts from this site, `cdn.jsdelivr.net` and one inline start-up script allowed by its hash; model files from `huggingface.co` and `hf.co`; a Google Maps frame only), `Strict-Transport-Security`, `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy: no-referrer` and a Permissions-Policy that switches the camera, microphone and location off; `test/server.test.mjs` checks the policy directive by directive. The page keeps its session in `sessionStorage` (this tab only, cleared when the tab closes or with "Clear saved data") and the language choice in `localStorage`. The third-party code it can load is the pinned Transformers.js build from the CDN and the model files, both only after you press "Start on-device matching".
 
 ## One language per page
 Qloo stores one name per place and has no language setting, so place names go through a small mapping layer: `kb/place_names.json` (hand-written; entries marked `translated` are pinyin or translated type words, not official names), a rule that splits mixed names ("Mars Fitness 瑪爾斯全方位運動空間" shows the Latin part on the English page and the Chinese part on the Chinese page) and a fallback to Qloo's English descriptor. Names with no entry stay as Qloo stores them; `tools/unmapped_names.py` lists them. The demo has an English sample and a Chinese sample, and the button loads the one that matches the page. The language you choose is remembered in your browser (`localStorage`, cleared by "Clear saved data and cache"); the first visit follows the browser's language. The reason line under a place quotes Qloo's tag names, which exist in English only.
@@ -201,7 +206,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
   compares bookmark titles that matched no keyword with each activity's name, keywords and domain vocabulary. On a held-out set of
   20 titles that should match and 12 that should not, it got 18 of 20 right at the default threshold, with 1 wrong activity, 1 miss and
   1 false positive (a podcast about Roman history matched "concert hall"). The titles were written by the same author as the vocabulary, so
-  treat this as optimistic. Open `/eval.html` in the running app to reproduce it. A generative 1.5B model was tried first and rejected:
+  treat this as optimistic. Open `/eval.html` in the running app to reproduce it (it downloads the model on open). A generative 1.5B model was tried first and rejected:
   it picked the right activity for 1 of 13 titles.
 - Qloo coverage differs by city and activity. The page says when a city has no listing and shows a "limited data" label for thin cities.
 - Places come from Qloo and are shown as returned.

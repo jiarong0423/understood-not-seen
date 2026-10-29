@@ -50,14 +50,25 @@ test("app files are served with the right types (manifest, icons, service worker
     assert.match(h.get("strict-transport-security") || "", /max-age=31536000/, p);
   }
   const { createHash } = await import("node:crypto");
+  // the policy itself, directive by directive: a widened or weakened policy fails here, not only a missing hash
+  const cspNow = (await fetch(`http://127.0.0.1:${PORT}/`)).headers.get("content-security-policy");
+  const dir = Object.fromEntries(cspNow.split(";").map((d) => d.trim()).filter(Boolean).map((d) => [d.split(" ")[0], d.split(" ").slice(1)]));
+  assert.deepEqual(Object.keys(dir).sort(), ["base-uri", "connect-src", "default-src", "font-src", "form-action", "frame-ancestors", "frame-src", "img-src", "object-src", "script-src", "style-src", "worker-src"]);
+  assert.deepEqual(dir["default-src"], ["'self'"]);
+  assert.deepEqual([dir["frame-ancestors"], dir["base-uri"], dir["object-src"], dir["form-action"]], [["'none'"], ["'none'"], ["'none'"], ["'self'"]]);
+  assert.ok(!dir["script-src"].includes("'unsafe-inline'") && !dir["script-src"].includes("'unsafe-eval'"));
+  assert.deepEqual(dir["script-src"].filter((t) => !t.startsWith("'sha256-")).sort(), ["'self'", "'wasm-unsafe-eval'", "blob:", "https://cdn.jsdelivr.net"]);
+  assert.deepEqual([...dir["frame-src"]].sort(), ["https://maps.google.com", "https://www.google.com"]);
+  assert.deepEqual(dir["connect-src"].filter((t) => /^https:\/\//.test(t)).sort(), ["https://*.hf.co", "https://*.huggingface.co", "https://cdn.jsdelivr.net", "https://huggingface.co"]);
+  for (const name of ["script-src", "worker-src", "frame-src", "img-src"]) assert.ok(!dir[name].includes("https:") && !dir[name].includes("*"), name);
   const html = await (await fetch(`http://127.0.0.1:${PORT}/`)).text();
   const csp = (await fetch(`http://127.0.0.1:${PORT}/`)).headers.get("content-security-policy");
-  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g))
+  for (const m of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi))
     assert.ok(csp.includes("'sha256-" + createHash("sha256").update(m[1]).digest("base64") + "'"), "an inline script is not allowed by the CSP hash");
   // every other page the app ships: an inline script would be blocked by the CSP (eval.html once was), so none is allowed there
   for (const f of ["eval.html", "sample_bookmarks.html", "sample_bookmarks.zh.html"]) {
     const page = await (await fetch(`http://127.0.0.1:${PORT}/${f}`)).text();
-    for (const m of page.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g))
+    for (const m of page.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi))
       assert.ok(csp.includes("'sha256-" + createHash("sha256").update(m[1]).digest("base64") + "'"), f + " has an inline script that the CSP blocks");
   }
 });
@@ -72,7 +83,7 @@ test("input validation", async () => {
   assert.equal((await call("POST", "/api/recommend", { city: "Atlantis", tags: [ok] })).status, 400);
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["urn:tag:evil;drop"] })).status, 400);
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: Array(13).fill(ok) })).status, 400);
-  assert.equal((await call("POST", "/api/recommend", "not json")).status >= 400, true);
+  for (const raw of ["not json", "null", "[1]", "{"]) assert.equal((await call("POST", "/api/recommend", raw)).status, 400, raw); // never a 500 for a body that is not an object
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["x".repeat(5000)] })).status, 413);
 });
 test("taste names are validated", async () => {
@@ -82,11 +93,12 @@ test("taste names are validated", async () => {
 });
 test("call budget guard returns 503 and never calls beyond the limit", async () => {
   const tags = ["urn:tag:category:place:spa", "urn:tag:category:place:hotel", "urn:tag:category:place:art_museum", "urn:tag:category:place:golf_course"];
-  const statuses = [];
-  for (const t of tags) statuses.push((await call("POST", "/api/recommend", { city: "Taipei", tags: [t] })).status);
+  const statuses = []; let first;
+  for (const t of tags) { const r = await call("POST", "/api/recommend", { city: "Taipei", tags: [t] }); statuses.push(r.status); first ||= r; }
+  assert.equal(JSON.parse(first.body).groups[0].failed, true, "a failed Qloo request is marked failed, not shown as 'no listing'");
   assert.deepEqual(statuses.slice(0, 3), [200, 200, 200]);
   assert.equal(statuses[3], 503);
-  assert.equal(JSON.parse((await call("GET", "/api/health")).body).used, 3);
+  assert.equal("used" in JSON.parse((await call("GET", "/api/health")).body), false, "health must not publish how many requests others have made");
 });
 test("per-IP rate limit", async () => {
   const codes = [];

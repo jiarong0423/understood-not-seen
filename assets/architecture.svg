@@ -49,7 +49,7 @@
   <text x="700" y="256" font-size="18" font-weight="700" fill="#b45309">Never leaves</text>
   <g font-size="15" fill="#7a3d06">
     <text x="700" y="290">• the bookmark file</text>
-    <text x="700" y="316">• every title and URL</text>
+    <text x="700" y="316">• unticked titles + URLs</text>
     <text x="700" y="342">• removed links</text>
     <text x="700" y="368">• your chosen needs</text>
     <text x="700" y="410">Session kept in this tab</text>
@@ -76,7 +76,8 @@
     <text x="1012" y="620">• 24 h memory cache</text>
     <text x="1012" y="648">• API key: server only</text>
     <text x="1012" y="676">• request trace</text>
-    <text x="1012" y="716" fill="#626672">hosted on Coolify</text>
+    <text x="1012" y="716" fill="#626672">hosted on Coolify,</text>
+    <text x="1012" y="738" fill="#626672">behind Cloudflare</text>
   </g>
 
   <!-- qloo -->

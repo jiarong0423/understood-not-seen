@@ -424,6 +424,10 @@
    "en": "Qloo has no listing of this kind for this city (limited data).",
    "zh": "Qloo 在這個城市沒有這類場所的資料（資料較少）。"
   },
+  "failed": {
+   "en": "Qloo did not answer for this idea (a request failed). Try again in a moment.",
+   "zh": "這項想法 Qloo 暫時沒有回應（請求失敗），請稍後再試。"
+  },
   "offline": {
    "en": "The place lookup service is not connected in this build yet.",
    "zh": "場所查詢服務尚未連上。"
@@ -889,8 +893,8 @@
    "zh": "本頁的其他對外請求："
   },
   "other_body": {
-   "en": "(1) Only if you press \"Start on-device matching\": the code from cdn.jsdelivr.net and the model files from huggingface.co are downloaded; nothing from your bookmarks is sent. (2) Only if you press a place's Map link: Google Maps loads with that place's name and address. (3) Your Qloo answers are never stored on the server's disk.",
-   "zh": "（1）只有在你按「啟動裝置上的比對」時：從 cdn.jsdelivr.net 下載程式、從 huggingface.co 下載模型檔，不會送出任何書籤內容。（2）只有在你按某個場所的「地圖」連結時：Google 地圖會帶著該場所的名稱與地址載入。（3）Qloo 的回應不會寫入伺服器磁碟。"
+   "en": "(1) Only if you press \"Start on-device matching\": the code from cdn.jsdelivr.net and the model files from huggingface.co are downloaded; nothing from your bookmarks is sent. (2) Only if you press a place's Map link: Google Maps loads with that place's name and address. (3) What you send after you press Find goes through this app's own server (hosted on Coolify, behind Cloudflare), which adds the API key and calls Qloo; your Qloo answers are never stored on the server's disk.",
+   "zh": "（1）只有在你按「啟動裝置上的比對」時：從 cdn.jsdelivr.net 下載程式、從 huggingface.co 下載模型檔，不會送出任何書籤內容。（2）只有在你按某個場所的「地圖」連結時：Google 地圖會帶著該場所的名稱與地址載入。（3）你按「查詢」後送出的內容會經過本應用自己的伺服器（架在 Coolify，前面有 Cloudflare），由它補上金鑰再呼叫 Qloo；Qloo 的回應不會寫入伺服器磁碟。"
   },
   "heat_center": {
    "en": "{city} centre",

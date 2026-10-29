@@ -19,31 +19,41 @@ const MONTHLY_BUDGET = Number(process.env.QLOO_MONTHLY_BUDGET || 8000); // keep 
 const TRUST_PROXY = process.env.TRUST_PROXY === "1";
 const clientIp = (req) => {
   if (TRUST_PROXY) {
-    const cf = req.headers["cf-connecting-ip"], xff = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+    // The last X-Forwarded-For entry is the one our own proxy appended; the first is whatever the client wrote.
+    const cf = req.headers["cf-connecting-ip"], xff = String(req.headers["x-forwarded-for"] || "").split(",").pop().trim();
     const ip = (typeof cf === "string" && cf.trim()) || xff;
     if (/^[0-9a-fA-F:.]{3,45}$/.test(ip)) return ip;
   }
   return req.socket.remoteAddress;
 };
-const GAP_MS = 250, TTL_MS = 24 * 3600 * 1000, PER_IP_PER_MIN = 20;
+const GAP_MS = 250, TTL_MS = 24 * 3600 * 1000, PER_IP_PER_MIN = 20, GLOBAL_PER_MIN = 120, MAX_CACHE = 4000, MAX_TRACKED_IPS = 5000, FETCH_TIMEOUT_MS = 15000;
 const kb = JSON.parse(await readFile(join(ROOT, "kb", "activities.json"), "utf8"));
 const nameOf = Object.fromEntries(kb.filter((a) => a.tag_id).map((a) => [a.tag_id, a.activity]));
 const fallbackOf = Object.fromEntries(kb.filter((a) => a.fallback_tags).map((a) => [a.tag_id, { tags: a.fallback_tags, note: a.fallback_note }]));
 const cache = new Map(), hits = new Map();
+const remember = (k, v) => { cache.set(k, { t: Date.now(), v }); while (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value); };
+let globalHits = [];
+setInterval(() => { const now = Date.now(); for (const [ip, arr] of hits) if (!arr.some((t) => now - t < 60000)) hits.delete(ip); for (const [k, c] of cache) if (now - c.t >= TTL_MS) cache.delete(k); }, 300000).unref();
 let used = 0, last = 0;
 const MIME = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".css": "text/css", ".webmanifest": "application/manifest+json", ".svg": "image/svg+xml", ".png": "image/png" };
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Every Qloo request is recorded for the visitor ("Evidence" panel): endpoint, parameters, status, time, result count, cache state. The key is never part of it.
 const traceEntry = (u, extra) => ({ endpoint: u.pathname, params: Object.fromEntries(u.searchParams), ...extra });
+// One Qloo request: the budget and the 250 ms spacing are claimed synchronously (before any await), so concurrent visitors queue one after another
+// and can never spend past the budget together.
+async function take() {
+  if (used >= MONTHLY_BUDGET) throw new Error("budget");
+  const slot = Math.max(Date.now(), last + GAP_MS); last = slot; used++;
+  const wait = slot - Date.now(); if (wait > 0) await sleep(wait);
+}
+const fetchQloo = (u) => fetch(u, { headers: { "X-Api-Key": KEY }, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
 async function call(u, trace) {
   if (!KEY) throw new Error("not_configured");
-  if (used >= MONTHLY_BUDGET) throw new Error("budget");
-  const wait = last + GAP_MS - Date.now(); if (wait > 0) await sleep(wait);
-  last = Date.now(); used++;
+  await take();
   const t0 = Date.now();
-  let r = await fetch(u, { headers: { "X-Api-Key": KEY } });
-  if (r.status === 429) { await sleep(1200); last = Date.now(); r = await fetch(u, { headers: { "X-Api-Key": KEY } }); }
+  let r = await fetchQloo(u);
+  if (r.status === 429) { await sleep(1200); await take(); r = await fetchQloo(u); } // the retry is a Qloo request too: it counts against the budget and the spacing
   if (trace) trace.push(traceEntry(u, { status: r.status, ms: Date.now() - t0, cached: false }));
   if (!r.ok) throw new Error("upstream_" + r.status);
   const j = await r.json();
@@ -53,8 +63,8 @@ async function call(u, trace) {
 
 // Taste signals: a saved place name -> a Qloo place entity id. One /search call per name (one entity type per call).
 const norm = (x) => x.normalize("NFKC").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();
-async function resolve(name, trace) {
-  const k = "r|" + norm(name), c = cache.get(k);
+async function resolve(name, trace, owner = "") {
+  const k = "r|" + owner + "|" + norm(name), c = cache.get(k); // a saved place name is cached per visitor, so nobody can learn what another visitor typed from the "cached" flag
   const u = new URL(BASE + "/search");
   u.search = new URLSearchParams({ query: name, types: "urn:entity:place", take: "5" });
   if (c && Date.now() - c.t < TTL_MS) { if (trace) trace.push(traceEntry(u, { status: 200, ms: 0, cached: true, count: c.v ? 1 : 0 })); return c.v; }
@@ -66,7 +76,7 @@ async function resolve(name, trace) {
   });
   // The saved place's own descriptive tags (ambience, decor, drinks ...) are kept so each result can say what it shares with it.
   const v = hit ? { id: hit.entity_id, matched: hit.name, tags: describing(hit.tags) } : null;
-  cache.set(k, { t: Date.now(), v });
+  remember(k, v);
   return v;
 }
 
@@ -97,9 +107,9 @@ function why(e, taste, quality) {
 }
 
 // taste: [{id, name, tags}] (already resolved). Results are ranked by Qloo with those places as taste signals.
-async function qloo(tag, city, taste = [], quality = false, trace = null) {
+async function qloo(tag, city, taste = [], quality = false, trace = null, owner = "") {
   const ids = taste.map((t) => t.id).sort();
-  const k = tag + "|" + city + "|" + ids.join(",") + (quality ? "|q" : ""), c = cache.get(k);
+  const k = tag + "|" + city + "|" + ids.join(",") + (quality ? "|q" : "") + (ids.length ? "|" + owner : ""), c = cache.get(k); // results ranked by someone's saved places are cached per visitor
   const q = { "filter.type": "urn:entity:place", "filter.location.query": city, "filter.tags": tag, take: "5" };
   if (ids.length) { q["signal.interests.entities"] = ids.join(","); q["feature.explainability"] = "true"; }
   if (quality) { q["signal.interests.tags"] = QUALITY_TAGS; q["filter.rating.min"] = QUALITY_MIN_RATING; }
@@ -114,7 +124,7 @@ async function qloo(tag, city, taste = [], quality = false, trace = null) {
     loc: Number.isFinite(e.location?.lat) && Number.isFinite(e.location?.lon) ? { lat: e.location.lat, lon: e.location.lon } : null,
     ...why(e, taste, quality),
   }));
-  cache.set(k, { t: Date.now(), v });
+  remember(k, v);
   return v;
 }
 
@@ -123,9 +133,9 @@ async function qloo(tag, city, taste = [], quality = false, trace = null) {
 // for the page. The city and the saved places are the only inputs, the same ones the visitor already approved. Category tags alone
 // give no heatmap (0 cells for Taipei and London, measured 2026-10-29), so this is asked only when a saved place is ticked.
 const HEAT_CELLS = 80;
-async function heatmap(city, taste, trace) {
+async function heatmap(city, taste, trace, owner = "") {
   const ids = taste.map((t) => t.id).sort();
-  const k = "h|" + city + "|" + ids.join(","), c = cache.get(k);
+  const k = "h|" + city + "|" + ids.join(",") + "|" + owner, c = cache.get(k);
   const u = new URL(BASE + "/v2/insights");
   u.search = new URLSearchParams({ "filter.type": "urn:heatmap", "filter.location.query": city, "signal.interests.entities": ids.join(",") });
   if (c && Date.now() - c.t < TTL_MS) { if (trace) trace.push(traceEntry(u, { status: 200, ms: 0, cached: true, count: c.v.total })); return c.v; }
@@ -138,7 +148,7 @@ async function heatmap(city, taste, trace) {
   const cl = j.query?.localities?.filter?.[0]?.location;
   const center = Number.isFinite(cl?.lat) && Number.isFinite(cl?.lon) ? { lat: cl.lat, lon: cl.lon } : null;
   const v = { total: all.length, cells, center };
-  cache.set(k, { t: Date.now(), v });
+  remember(k, v);
   return v;
 }
 
@@ -162,22 +172,26 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "POST" && req.url === "/api/recommend") {
       const ip = clientIp(req), now = Date.now();
       const arr = (hits.get(ip) || []).filter((t) => now - t < 60000); arr.push(now); hits.set(ip, arr);
-      if (arr.length > PER_IP_PER_MIN) return send(429, { error: "slow_down" });
+      if (hits.size > MAX_TRACKED_IPS) hits.delete(hits.keys().next().value);       // a flood of made-up addresses cannot grow the table without bound
+      globalHits = globalHits.filter((t) => now - t < 60000); globalHits.push(now);  // and cannot burn the Qloo budget either: one ceiling for everybody
+      if (arr.length > PER_IP_PER_MIN || globalHits.length > GLOBAL_PER_MIN) return send(429, { error: "slow_down" });
       let body = ""; for await (const ch of req) { body += ch; if (body.length > 4000) return send(413, { error: "too_large" }); }
-      const { city, tags, taste = [], quality = false, heatmap: wantHeat = false } = JSON.parse(body || "{}");
+      let parsed; try { parsed = JSON.parse(body || "{}"); } catch { return send(400, { error: "bad_request" }); }
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return send(400, { error: "bad_request" });
+      const { city, tags, taste = [], quality = false, heatmap: wantHeat = false } = parsed;
       if (typeof quality !== "boolean" || typeof wantHeat !== "boolean" || !CITIES.has(city) || !Array.isArray(tags) || tags.length > 12 || !tags.every((t) => typeof t === "string" && TAG_RE.test(t)) ||
           !Array.isArray(taste) || taste.length > 5 || !taste.every((n) => typeof n === "string" && n.trim().length >= 2 && n.length <= 60 && !/[\u0000-\u001f]/.test(n)))
         return send(400, { error: "bad_request" });
       const trace = [], known = [], unknown = [];
       for (const n of [...new Set(taste.map((x) => x.trim()))]) {
-        try { const r = await resolve(n, trace); if (r) known.push({ id: r.id, name: n, matched: r.matched, tags: r.tags || [] }); else unknown.push(n); }
+        try { const r = await resolve(n, trace, ip); if (r) known.push({ id: r.id, name: n, matched: r.matched, tags: r.tags || [] }); else unknown.push(n); }
         catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); unknown.push(n); }
       }
       const groups = [];
       for (const t of tags) {
         try {
-          let places = await qloo(t, city, known, quality, trace), via = null, plain = null, relaxed = false, untasted = false;
-          if (quality && !places.length) { places = await qloo(t, city, known, false, trace); relaxed = true; } // nothing met the bar: show the ordinary list and say so
+          let places = await qloo(t, city, known, quality, trace, ip), via = null, plain = null, relaxed = false, untasted = false;
+          if (quality && !places.length) { places = await qloo(t, city, known, false, trace, ip); relaxed = true; } // nothing met the bar: show the ordinary list and say so
           if (known.length || (quality && !relaxed)) {
             const ordinary = await qloo(t, city, [], false, trace); plain = ordinary.map((p) => p.name);
             // A saved cafe gives Qloo nothing to rank concert halls or golf courses by (0 results with the signal, 5 without, measured in
@@ -186,22 +200,22 @@ const server = http.createServer(async (req, res) => {
           }
           if (!places.length && fallbackOf[t]) {
             const seen = new Set(), merged = [];
-            for (const ft of fallbackOf[t].tags) for (const p of await qloo(ft, city, known, quality, trace)) if (!seen.has(p.name)) { seen.add(p.name); merged.push(p); }
+            for (const ft of fallbackOf[t].tags) for (const p of await qloo(ft, city, known, quality, trace, ip)) if (!seen.has(p.name)) { seen.add(p.name); merged.push(p); }
             places = merged.slice(0, 5);
             via = fallbackOf[t].tags.map((x) => nameOf[x] || x).join(" and ") + " (shared courts)";
           }
           groups.push({ activity: nameOf[t] || t, places, via, plain, relaxed, untasted });
         }
-        catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); groups.push({ activity: nameOf[t] || t, places: [] }); }
+        catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); groups.push({ activity: nameOf[t] || t, places: [], failed: true }); }
       }
       let heat = null;
       if (wantHeat && known.length) {
-        try { heat = await heatmap(city, known, trace); }
+        try { heat = await heatmap(city, known, trace, ip); }
         catch (e) { if (["not_configured", "budget"].includes(e.message)) return send(503, { error: e.message }); heat = { total: 0, cells: [], failed: true }; }
       }
       return send(200, { groups, source: "Qloo", quality, trace, heat, taste: { used: known.map((k) => ({ name: k.name, matched: k.matched })), unknown } });
     }
-    if (req.method === "GET" && req.url === "/api/health") return send(200, { ok: true, configured: !!KEY, used });
+    if (req.method === "GET" && req.url === "/api/health") return send(200, { ok: true, configured: !!KEY });
     const path = normalize(decodeURIComponent((req.url || "/").split("?")[0])).replace(/^(\.\.[/\\])+/, "");
     const file = join(ROOT, path === "/" || path === "\\" ? "index.html" : path);
     if (!file.startsWith(ROOT)) return send(403, "forbidden", "text/plain");
