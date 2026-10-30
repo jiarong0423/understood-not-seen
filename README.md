@@ -179,7 +179,8 @@ node --env-file=.env server/server.mjs
 # open http://127.0.0.1:8770 and press "Use sample bookmarks"
 npm test                    # 73 tests: privacy gate, ranking, both samples, server protections, language, design lock
 ```
-Node 22 or newer. No dependencies.
+
+Node 22 or newer. No dependencies. GitHub Actions runs the same `npm test` on Node 22 on every push to `main` and on pull requests (`.github/workflows/tests.yml`).
 
 The server holds the API key, keeps Qloo answers only in memory (24 hours, never written to disk or this repository),
 spaces requests 250 ms apart, allows 20 requests per minute per address, and stops after 8,000 Qloo calls per server run (`QLOO_MONTHLY_BUDGET`, default 8000; the counter resets when the server restarts; Qloo allows 10,000 calls a month).
