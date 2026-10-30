@@ -1,0 +1,27 @@
+name: tests
+
+# The project has no third-party packages, so there is nothing to install: check out, set up Node, run the suite.
+# `npm test` is the 73 tests named in the README (privacy gate, ranking, both samples, server protections, language, design lock).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ['22.x']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Test suite
+        run: npm test
