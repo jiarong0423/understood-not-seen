@@ -156,7 +156,7 @@ export bookmarks, so load a bookmarks.html exported on a computer.
 | **Consent: what leaves the device** | **Invitation and places** | **Evidence of every Qloo request** |
 | ![Consent](assets/screenshots/4_consent_payload.png) | ![Invitation and places](assets/screenshots/5_invitation_and_places.png) | ![Evidence](assets/screenshots/6_evidence.png) |
 
-Demo video: https://youtu.be/MT7yZcMng34 · Live demo: https://understood-not-seen-new.jace0423.com (demo data via "Use sample bookmarks")
+Demo video: https://youtu.be/fbXd-iXgSyg · Live demo: https://understood-not-seen-new.jace0423.com (demo data via "Use sample bookmarks")
 
 ## How to test (for judges)
 
