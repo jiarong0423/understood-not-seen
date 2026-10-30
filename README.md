@@ -210,6 +210,7 @@ spaces requests 250 ms apart, allows 20 requests per minute per address, and sto
   it picked the right activity for 1 of 13 titles.
 - Qloo coverage differs by city and activity. The page says when a city has no listing and shows a "limited data" label for thin cities.
 - Places come from Qloo and are shown as returned.
+- No user study has been done; whether taste-ranked results are better for a person is not measured.
 
 ## Data and attribution
 Place data comes from the Qloo API under the hackathon key terms. Qloo responses are not stored in this repository.
@@ -217,4 +218,6 @@ Place data comes from the Qloo API under the hackathon key terms. Qloo responses
 - The privacy gate is fixed rules, not AI. The only AI in the web app is an optional on-device embedding model, `Xenova/paraphrase-multilingual-MiniLM-L12-v2` (Apache-2.0), run with Transformers.js (`@huggingface/transformers` 4.3.1, Apache-2.0). It sees only bookmarks that passed the privacy gate, matches their titles to activities, recommends nothing and sends nothing. Every place comes from Qloo.
 - The repository also keeps an optional desktop script (`filter_bookmarks.py`, `build_signals.py`) that can use a local model; the web app and the hosted demo do not use it.
 - Icons: Lucide (ISC licence, `web/vendor/lucide/LICENSE`).
+- 15 of the 76 knowledge-base entries in `kb/activities.json` came from Gemini chat answers pasted into the project notes (their `source` field says so); Gemini is not called at runtime.
+- The demo video uses Veo clips, Gemini text-to-speech narration and the music "A Tale's Background" by Liborio Conti (no-copyright-music.com).
 - The three-way comparison quoted on Devpost (a chat model's API, the same model's web app, and Qloo) is summarised in [`evidence/llm_baseline_20261011_summary.json`](evidence/llm_baseline_20261011_summary.json). Qloo's own answer is left out, as stated above.
