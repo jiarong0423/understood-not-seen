@@ -82,6 +82,7 @@ test("input validation", async () => {
   const ok = "urn:tag:category:place:spa";
   assert.equal((await call("POST", "/api/recommend", { city: "Atlantis", tags: [ok] })).status, 400);
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["urn:tag:evil;drop"] })).status, 400);
+  assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["urn:tag:category:place:not_in_the_knowledge_base"] })).status, 400, "a well-formed tag the knowledge base does not know is refused");
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: Array(13).fill(ok) })).status, 400);
   for (const raw of ["not json", "null", "[1]", "{"]) assert.equal((await call("POST", "/api/recommend", raw)).status, 400, raw); // never a 500 for a body that is not an object
   assert.equal((await call("POST", "/api/recommend", { city: "Taipei", tags: ["x".repeat(5000)] })).status, 413);
@@ -109,13 +110,16 @@ test("per-IP rate limit", async () => {
 // Behind a proxy the limit must be per visitor, not per proxy: own server with TRUST_PROXY=1 and forwarded addresses.
 test("behind a proxy the rate limit counts each visitor separately (TRUST_PROXY=1), and ignores forged headers without it", async () => {
   const port = await freePort();
-  const kid = spawn("node", ["server/server.mjs"], { env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", QLOO_API_KEY: "", TRUST_PROXY: "1" }, stdio: "ignore" });
+  const kid = spawn("node", ["server/server.mjs"], { env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", QLOO_API_KEY: "", TRUST_PROXY: "1", QLOO_PER_IP_HOURLY: "5" }, stdio: "ignore" });
   try {
     for (let i = 0; i < 40; i++) { try { if ((await fetch(`http://127.0.0.1:${port}/api/health`)).ok) break; } catch { await wait(100); } }
     const post = (ip) => fetch(`http://127.0.0.1:${port}/api/recommend`, { method: "POST", headers: { "content-type": "application/json", "x-forwarded-for": ip }, body: JSON.stringify({ city: "Taipei", tags: ["urn:tag:category:place:spa"] }) }).then((r) => r.status);
     const a = []; for (let i = 0; i < 22; i++) a.push(await post("203.0.113.7"));
     assert.ok(a.includes(429), "visitor A should be limited after 20 requests");
     assert.notEqual(await post("203.0.113.8"), 429, "visitor B behind the same proxy must not be limited by A");
+    // the hourly allowance (5 lookups here) stops one address long before the per-minute limit of 20 would
+    const h = []; for (let i = 0; i < 7; i++) h.push(await post("203.0.113.9"));
+    assert.deepEqual(h.map((x) => x === 429), [false, false, false, false, false, true, true], "hourly allowance: " + h.join(","));
   } finally { kid.kill("SIGTERM"); }
   // without TRUST_PROXY a forged header must not buy a fresh allowance (own server, so earlier tests cannot have used up the limit)
   const port2 = await freePort();

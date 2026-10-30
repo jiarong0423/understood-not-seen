@@ -5,11 +5,6 @@ data_external/
 cache/
 # private working notes and research tooling (not part of the public project)
 docs/
-profile_brief_for_gemini.md
-topology.py
-relation_chain.py
-backtest_claims.py
-wash.py
 build_profile.py
 build_extension.py
 serve_feedback.py
